@@ -1,0 +1,12 @@
+.DS_Store
+Thumbs.db
+/vendor/
+.phpunit.result.cache
+*.log
+.env
+.env.local
+.env.*.local
+coverage/
+.phpunit.cache/
+*.tmp
+*.swp
