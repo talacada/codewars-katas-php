@@ -180,4 +180,14 @@ class ConwaysGameOfLifeUnlimitedEdition extends TestCase
 			[1, 1, 0]
 		], 2));
 	}
+
+	public function testEmpty(){
+		$this->assertSame([
+			[]
+		], get_generation([
+			[0, 0, 0],
+			[0, 0, 0],
+			[0, 0, 0]
+		], 1));
+	}
 }
