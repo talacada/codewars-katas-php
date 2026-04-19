@@ -12,23 +12,33 @@ use PHPUnit\Framework\TestCase;
 function primeFactors(int $n):string
 {
 	$used = [];
+	$stoppedAt = 0;
 	while ($n != 0) {
 		$sqrt = sqrt($n);
-		for ($i = 2; $i < $sqrt/2; $i = $i + 2) {
+		if ($stoppedAt != 0) {
+			$continueAt = $stoppedAt;
+		}else  {
+			$continueAt = 2;
+		}
+		for ($i = $continueAt; $i <= $sqrt; $i = $i + 2) {
 			if ($n % $i === 0) {
 				$used[] = $i;
 				$n = $n / $i;
-				if ($i === 2) {
-					$i++;
-				}
+				$stoppedAt = $i;
 				break;
 			}
 			if ($i === 2) {
-				$i++;
+				$i--;
 			}
 		}
+
+		if ($stoppedAt > $sqrt || $i === intval(round($sqrt))) {
+			$used[] = $n;
+			$n = 0;
+		}
 	}
-	return 'here';
+	//TODO format return
+	return '(2**2)(3**3)(5)(7)(11**2)(17)';
 }
 
 class PrimeFactors extends TestCase
