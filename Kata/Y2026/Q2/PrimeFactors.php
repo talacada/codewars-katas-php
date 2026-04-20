@@ -32,13 +32,22 @@ function primeFactors(int $n):string
 			}
 		}
 
-		if ($stoppedAt > $sqrt || $i === intval(round($sqrt))) {
+		if ($stoppedAt > $sqrt || $i === intval(round($sqrt)) || $i > intval(round($sqrt))) {
 			$used[] = $n;
 			$n = 0;
 		}
 	}
-	//TODO format return
-	return '(2**2)(3**3)(5)(7)(11**2)(17)';
+	$return = '';
+	$used = array_count_values($used);
+
+	foreach ($used as $number => $count) {
+		if ($count === 1) {
+			$return .= '(' . $number . ')';
+		}else {
+			$return .= '(' . $number . '**' . $count . ')';
+		}
+	}
+	return $return;
 }
 
 class PrimeFactors extends TestCase
