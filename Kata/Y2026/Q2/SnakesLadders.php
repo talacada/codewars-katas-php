@@ -81,8 +81,16 @@ class SnakesLadders
 		}elseif (array_key_exists($this->position[$this->onTurn] + $sum, SnakesLadders::SNAKES)) {
 			$this->position[$this->onTurn] = SnakesLadders::SNAKES[$this->position[$this->onTurn] + $sum];
 		}else {
-			//TODO bounce
-			$this->position[$this->onTurn] += $sum;
+			if ($this->position[$this->onTurn] + $sum > 100) {
+				$this->position[$this->onTurn] = 100 - ($this->position[$this->onTurn] + $sum - 100);
+				if (array_key_exists($this->position[$this->onTurn], SnakesLadders::LADDERS)) {
+					$this->position[$this->onTurn] = SnakesLadders::LADDERS[$this->position[$this->onTurn]];
+				}elseif (array_key_exists($this->position[$this->onTurn], SnakesLadders::SNAKES)) {
+					$this->position[$this->onTurn] = SnakesLadders::SNAKES[$this->position[$this->onTurn]];
+				}
+			}else {
+				$this->position[$this->onTurn] += $sum;
+			}
 		}
 
 		if ($this->position[$this->onTurn] === 100) {
