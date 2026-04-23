@@ -38,11 +38,42 @@ Good luck and enjoy!
 namespace Kata\Y2026\Q2;
 use PHPUnit\Framework\TestCase;
 
-function escape($carpark): array
+function escape(array $carpark): array
 {
 	$return = [];
-	//
+	$hasStart = false;
+	foreach ($carpark as $index => $row) {
+		if (!$hasStart) {
+			if (in_array(2, $row, true)) {
+				$return[] = countSteps($row);
+				$return[] = 'D1';
+				$hasStart = true;
+			}
+		}else {
+			$return[] = countSteps($row);
+			$return[] = 'D1';
+		}
+	}
+	var_dump($return);
 	return $return;
+}
+
+function countSteps(array $row): string
+{
+	$stairsIndex = array_search( 1, $row, true);
+	$nowIndex = 0;
+	if (in_array(2, $row, true)) {
+		$nowIndex = array_search(2, $row, true);
+	}else {
+		$nowIndex = array_search(1, $row, true);
+	}
+
+	if ($nowIndex > $stairsIndex) {
+		return "L" . $nowIndex - $stairsIndex;
+	}elseif ($nowIndex < $stairsIndex) {
+		return "R" . $stairsIndex - $nowIndex;
+	}
+	return $nowIndex;
 }
 
 
