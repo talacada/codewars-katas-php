@@ -42,38 +42,54 @@ function escape(array $carpark): array
 {
 	$return = [];
 	$hasStart = false;
+	$nowOnIndex = 0;
+	$arrayCount = count($carpark);
 	foreach ($carpark as $index => $row) {
 		if (!$hasStart) {
 			if (in_array(2, $row, true)) {
-				$return[] = countSteps($row);
-				$return[] = 'D1';
+				$nowOnIndex = array_search(2, $row, true);
+				[$move, $nowOnIndex] = countSteps($row, $nowOnIndex);
+				if ($move != null) {
+					$return[] = $move;
+				}
+				if ($arrayCount != $index + 1) {
+					$return[] = 'D1';
+				}
 				$hasStart = true;
 			}
 		}else {
-			$return[] = countSteps($row);
-			$return[] = 'D1';
+			[$move, $nowOnIndex] = countSteps($row, $nowOnIndex);
+			if ($move != null) {
+				$return[] = $move;
+				if ($arrayCount != $index + 1) {
+					$return[] = 'D1';
+				}
+			}else {
+				if ($arrayCount != $index + 1) {
+					$return[array_key_last($return)] = "D" . str_split($return[array_key_last($return)])[1] + 1;
+				}
+			}
+
 		}
 	}
-	var_dump($return);
 	return $return;
 }
 
-function countSteps(array $row): string
+function countSteps(array $row, int $nowIndex): array
 {
-	$stairsIndex = array_search( 1, $row, true);
-	$nowIndex = 0;
-	if (in_array(2, $row, true)) {
-		$nowIndex = array_search(2, $row, true);
+	if (in_array(1, $row, true)) {
+		$goToIndex = array_search(1, $row, true);
 	}else {
-		$nowIndex = array_search(1, $row, true);
+		$goToIndex = array_key_last($row);
 	}
 
-	if ($nowIndex > $stairsIndex) {
-		return "L" . $nowIndex - $stairsIndex;
-	}elseif ($nowIndex < $stairsIndex) {
-		return "R" . $stairsIndex - $nowIndex;
+	if ($nowIndex > $goToIndex) {
+		return ["L" . $nowIndex - $goToIndex, $goToIndex];
+	}elseif ($nowIndex < $goToIndex) {
+		return ["R" . $goToIndex - $nowIndex, $goToIndex];
+	}else {
+		return [null, $goToIndex];
 	}
-	return $nowIndex;
 }
 
 
