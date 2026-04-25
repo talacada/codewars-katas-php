@@ -66,7 +66,7 @@ function escape(array $carpark): array
 				}
 			}else {
 				if ($arrayCount != $index + 1) {
-					$return[array_key_last($return)] = "D" . str_split($return[array_key_last($return)])[1] + 1;
+					$return[array_key_last($return)] = "D" . (str_split($return[array_key_last($return)])[1] + 1);
 				}
 			}
 
@@ -84,9 +84,9 @@ function countSteps(array $row, int $nowIndex): array
 	}
 
 	if ($nowIndex > $goToIndex) {
-		return ["L" . $nowIndex - $goToIndex, $goToIndex];
+		return ["L" . ($nowIndex - $goToIndex), $goToIndex];
 	}elseif ($nowIndex < $goToIndex) {
-		return ["R" . $goToIndex - $nowIndex, $goToIndex];
+		return ["R" . ($goToIndex - $nowIndex), $goToIndex];
 	}else {
 		return [null, $goToIndex];
 	}
