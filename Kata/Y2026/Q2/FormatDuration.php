@@ -43,30 +43,17 @@ A unit of time must be used "as much as possible". It means that the function sh
 
 namespace Kata\Y2026\Q2;
 
+
 class FormatDuration
 {
 	private int $inputSeconds;
-	private int $seconds;
-	private int $minutes;
-	private int $hours;
-	private int $days;
-	private int $years;
-	const array ENGLISHTERMS = [
-		'single' => [
-			's' => 'second',
-			'm' => 'minute',
-			'h' => 'hour',
-			'd' => 'day',
-			'y' => 'year',
-		],
-		'multiple' => [
-			's' => 'seconds',
-			'm' => 'minutes',
-			'h' => 'hours',
-			'd' => 'days',
-			'y' => 'years',
-		]
-	];
+	private int $seconds = 0;
+	private int $minutes = 0;
+	private int $hours = 0;
+	private int $days = 0;
+	private int $years = 0;
+	private string $stringWithNoSeparators = '';
+	private string $returnString = '';
 	const int SECONDINSECOND = 1;
 	const int SECONDSINMINUTE = 60;
 	const int SECONDSINDHOUR = 3600;
@@ -82,7 +69,8 @@ class FormatDuration
 	{
 		$this->splitSecondsIntoComponents();
 		$this->formatComponentsIntoStrings();
-		return '';
+		$this->addConnectors();
+		return $this->returnString;
 	}
 
 	private function splitSecondsIntoComponents(): void
@@ -112,6 +100,62 @@ class FormatDuration
 
 	private function formatComponentsIntoStrings(): void
 	{
+		if ($this->years > 0) {
+			if ($this->years === 1) {
+				$this->stringWithNoSeparators .= $this->years . ' year|';
+			}else {
+				$this->stringWithNoSeparators .= $this->years . ' years|';
+			}
+		}
+		if ($this->days > 0) {
+			if ($this->days === 1) {
+				$this->stringWithNoSeparators .= $this->days . ' day|';
+			}else {
+				$this->stringWithNoSeparators .= $this->days . ' days|';
+			}
+		}
+		if ($this->hours > 0) {
+			if ($this->hours === 1) {
+				$this->stringWithNoSeparators .= $this->hours . ' hour|';
+			}else {
+				$this->stringWithNoSeparators .= $this->hours . ' hours|';
+			}
+		}
+		if ($this->minutes > 0) {
+			if ($this->minutes === 1) {
+				$this->stringWithNoSeparators .= $this->minutes . ' minute|';
+			}else {
+				$this->stringWithNoSeparators .= $this->minutes . ' minutes|';
+			}
+		}
+		if ($this->seconds > 0) {
+			if ($this->seconds === 1) {
+				$this->stringWithNoSeparators .= $this->seconds . ' second|';
+			}else {
+				$this->stringWithNoSeparators .= $this->seconds . ' seconds|';
+			}
+		}
+	}
 
+	private function addConnectors(): void
+	{
+		$components = explode('|', $this->stringWithNoSeparators);
+		$count =  count($components) - 1;
+
+		for ($i = 0; $i < $count; $i++) {
+			if ($i === $count - 1) {
+				continue;
+			}elseif ($i === $count - 2) {
+				$components[$i] = $components[$i] . ' and ';
+			}else {
+				$components[$i] = $components[$i] . ', ';
+			}
+		}
+
+		$this->returnString = str_replace('|', '', implode('|', $components));
+
+		if ($this->stringWithNoSeparators === '') {
+			$this->returnString = 'now';
+		}
 	}
 }
