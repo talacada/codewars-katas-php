@@ -37,5 +37,14 @@ class ZonkGame
 	private function bestCombination():int
 	{
 		// Nemuzu jit postupne po combinachich. musím porovnat vsechny a vybrat nejlepsi co dava nejvice bodu
+
+		while (true) {
+			foreach (self::COMBINATIONS as $combination) {
+				if (array_diff($this->rolled, $combination[0])) {
+					var_dump($combination);
+				}
+			}
+		}
 	}
+
 }
