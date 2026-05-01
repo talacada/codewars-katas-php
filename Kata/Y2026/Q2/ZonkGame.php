@@ -53,7 +53,7 @@ class ZonkGame
 {
 	private array $rolled;
 
-	const array THREEOFKIND = [
+	const THREEOFKIND = [
 		1 => 1000,
 		2 => 200,
 		3 => 300,
