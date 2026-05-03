@@ -41,14 +41,46 @@ namespace Kata\Y2026\Q2;
 
 class ScreenLockingPatterns
 {
+	private array $grid;
+	private int $startIndex;
+	private mixed $finalLength;
+	private $numberOfCombinations;
 
 	function __construct($start, $length) {
-		$this->startLetter = $start;
+		$this->startIndex = ord(($start)) - ord('A');
+		$this->grid = $this->createGrid($start);
 		$this->finalLength = $length;
 	}
 
-	function getNumberOfCombinations() {
-		return $this->combinations;
+	public function getNumberOfCombinations():int {
+		$this->numberOfCombinations = $this->calculateFinalLength();
+		return $this->numberOfCombinations;
+	}
+
+	private function createGrid($start)
+	{
+		/*
+		A  B  C
+		D  E  F  -> A  B  C  D  E  F  G  H  I
+		G  H  I
+		*/
+		$grid = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+		$grid[$this->startIndex] = 1;
+		return $grid;
+	}
+
+	// Postup je že zjistim všechny možné body z počátečníhí a z nich všchny možné body a takto to pojede dokud nevyplýtvám požadovaný počet
+	private function calculateFinalLength():int {
+		$allPossibleLinesFromStart = $this->getAllNextAvailablePoints($this->grid, $this->startIndex);
+
+		for ($i = 0; $i < $allPossibleLinesFromStart; $i++) {
+
+		}
+	}
+
+	private function getAllNextAvailablePoints(array $grid, int $startIndex): int
+	{
+		//Math na ziskani vsech moznych sousedů
 	}
 
 }
