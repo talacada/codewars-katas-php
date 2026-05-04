@@ -42,13 +42,15 @@ namespace Kata\Y2026\Q2;
 class ScreenLockingPatterns
 {
 	private array $grid;
-	private int $startIndex;
+	private array $startIndex;
 	private mixed $finalLength;
 	private $numberOfCombinations;
 
 	function __construct($start, $length) {
-		$this->startIndex = ord(($start)) - ord('A');
-		$this->grid = $this->createGrid($start);
+		$startLetter = ord(($start)) - ord('A') + 1;
+		$this->startIndex[0] = ceil($startLetter / 3) - 1;
+		$this->startIndex[1] = ceil($startLetter / 3) - 1;
+		$this->grid = $this->createGrid();
 		$this->finalLength = $length;
 	}
 
@@ -57,15 +59,20 @@ class ScreenLockingPatterns
 		return $this->numberOfCombinations;
 	}
 
-	private function createGrid($start)
+	private function createGrid()
 	{
 		/*
 		A  B  C
 		D  E  F  -> A  B  C  D  E  F  G  H  I
 		G  H  I
 		*/
-		$grid = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-		$grid[$this->startIndex] = 1;
+		$grid = [
+			[0, 0, 0],
+			[0, 0, 0],
+			[0, 0, 0]
+		];
+
+		$grid[$this->startIndex[0]][$this->startIndex[1]] = 1;
 		return $grid;
 	}
 
@@ -77,9 +84,16 @@ class ScreenLockingPatterns
 
 		}
 	}
-
-	private function getAllNextAvailablePoints(array $grid, int $startIndex): int
+	private function getAllNextAvailablePoints(array $grid, int $on): int
 	{
+		$availableMoves = [];
+		$neighbours = [[1, 0], [-1, 0], [0, 1], [0, -1], [-1, -1], [-1, 1], [1, -1], [1, 1]];
+		$cornerSuperDiagonals = [[-1, +2], [-2, +1], [-2, -1], [-1, -2], [+1, -2], [+1, +2], [+2, +1], [-2, -1]];
+		//TODO dodelat napr z A do G
+		$overCompleted = [[]];
+		array_push($availableMoves, $neighbours, $cornerSuperDiagonals, $overCompleted);
+		for ($i = 0; $i < 8; $i++) {
+		}
 		//Math na ziskani vsech moznych sousedů
 	}
 
