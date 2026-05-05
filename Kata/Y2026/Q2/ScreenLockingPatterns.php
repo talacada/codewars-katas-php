@@ -88,13 +88,22 @@ class ScreenLockingPatterns
 	{
 		$availableMoves = [];
 		$neighbours = [[1, 0], [-1, 0], [0, 1], [0, -1], [-1, -1], [-1, 1], [1, -1], [1, 1]];
-		$cornerSuperDiagonals = [[-1, +2], [-2, +1], [-2, -1], [-1, -2], [+1, -2], [+1, +2], [+2, +1], [-2, -1]];
-		//TODO dodelat napr z A do G
-		$overCompleted = [[]];
+		$cornerSuperDiagonals = [[-1, +2], [-2, +1], [-2, -1], [-1, -2], [+1, -2], [+1, +2], [+2, +1]];
+		$overCompleted = [[0, +2], [0, -2], [2, 0], [-2, 0]];
 		array_push($availableMoves, $neighbours, $cornerSuperDiagonals, $overCompleted);
+
+		$firstMove = $this->getAllPossibleNeighbours($grid, $on);
 		for ($i = 0; $i < 8; $i++) {
+
 		}
-		//Math na ziskani vsech moznych sousedů
+	}
+
+	private function getAllPossibleNeighbours(array $grid, int $on): int {
+		$count = 0;
+
+		//pocitani
+
+		return $count;
 	}
 
 }
