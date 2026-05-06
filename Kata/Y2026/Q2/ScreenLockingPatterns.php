@@ -84,7 +84,7 @@ class ScreenLockingPatterns
 
 		}
 	}
-	private function getAllNextAvailablePoints(array $grid, int $on): int
+	private function getAllNextAvailablePoints(array $grid, array $on): int
 	{
 		$availableMoves = [];
 		$neighbours = [[1, 0], [-1, 0], [0, 1], [0, -1], [-1, -1], [-1, 1], [1, -1], [1, 1]];
@@ -92,18 +92,23 @@ class ScreenLockingPatterns
 		$overCompleted = [[0, +2], [0, -2], [2, 0], [-2, 0]];
 		array_push($availableMoves, $neighbours, $cornerSuperDiagonals, $overCompleted);
 
-		$firstMove = $this->getAllPossibleNeighbours($grid, $on);
-		for ($i = 0; $i < 8; $i++) {
 
+		foreach ($availableMoves as $move) {
+			$possibleFinalPosition = $on[$on[0] + $move[0][$on[1] + $move[1]]];
+			if (isset($grid[$possibleFinalPosition[0]][$possibleFinalPosition[1]])) {
+				if ($grid[$possibleFinalPosition[0]][$possibleFinalPosition[1]] === 0) {
+					$possibleGridAfterMove = $grid[$possibleFinalPosition[0]][$possibleFinalPosition[1]] = 1;
+					if (in_array($move, $overCompleted)) {
+						$betweenMove = $move[$move[0] / 2][$move[1] / 2];
+						if ($grid[$betweenMove[0]][$betweenMove[1]] === 1) {
+							continue;
+						}
+					}
+					//TODO rekurze, ALE jenom na konci stromu pricit ++. Protoze kdyz pozadovana dalka hesla je 5 tak nepricitam pri konbinaci 2
+					$count = exit();//rekurze?
+
+				}
+			}
 		}
 	}
-
-	private function getAllPossibleNeighbours(array $grid, int $on): int {
-		$count = 0;
-
-		//pocitani
-
-		return $count;
-	}
-
 }
