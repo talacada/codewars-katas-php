@@ -47,9 +47,9 @@ class ScreenLockingPatterns
 	private $numberOfCombinations;
 
 	function __construct($start, $length) {
-		$startLetter = ord(($start)) - ord('A') + 1;
-		$this->startIndex[0] = ceil($startLetter / 3) - 1;
-		$this->startIndex[1] = ceil($startLetter / 3) - 1;
+		$startLetter = ord(($start)) - ord('A');
+		$this->startIndex[0] = intdiv($startLetter, 3);
+		$this->startIndex[1] = $startLetter % 3;
 		$this->grid = $this->createGrid();
 		$this->finalLength = $length;
 	}
@@ -78,37 +78,52 @@ class ScreenLockingPatterns
 
 	// Postup je že zjistim všechny možné body z počátečníhí a z nich všchny možné body a takto to pojede dokud nevyplýtvám požadovaný počet
 	private function calculateFinalLength():int {
-		$allPossibleLinesFromStart = $this->getAllNextAvailablePoints($this->grid, $this->startIndex);
+		if ($this->finalLength < 1 || $this->finalLength > 8) {
+			return 0;
+		}else if ($this->finalLength === 1) {
+			return 1;
+		}
+		$count = $this->calculate($this->grid, $this->startIndex);
 
+		return $count;
+/*
 		for ($i = 0; $i < $allPossibleLinesFromStart; $i++) {
 
-		}
+		}*/
 	}
-	private function getAllNextAvailablePoints(array $grid, array $on): int
+	private function calculate(array $grid, array $on, $nowOnLength = 1): int
 	{
-		$availableMoves = [];
+		$combinations = 0;
 		$neighbours = [[1, 0], [-1, 0], [0, 1], [0, -1], [-1, -1], [-1, 1], [1, -1], [1, 1]];
 		$cornerSuperDiagonals = [[-1, +2], [-2, +1], [-2, -1], [-1, -2], [+1, -2], [+1, +2], [+2, +1]];
 		$overCompleted = [[0, +2], [0, -2], [2, 0], [-2, 0]];
-		array_push($availableMoves, $neighbours, $cornerSuperDiagonals, $overCompleted);
+		$availableMoves = array_merge($neighbours, $cornerSuperDiagonals, $overCompleted);
 
 
 		foreach ($availableMoves as $move) {
-			$possibleFinalPosition = $on[$on[0] + $move[0][$on[1] + $move[1]]];
+			$possibleFinalPosition = [$on[0] + $move[0], $on[1] + $move[1]];
 			if (isset($grid[$possibleFinalPosition[0]][$possibleFinalPosition[1]])) {
 				if ($grid[$possibleFinalPosition[0]][$possibleFinalPosition[1]] === 0) {
-					$possibleGridAfterMove = $grid[$possibleFinalPosition[0]][$possibleFinalPosition[1]] = 1;
+					$possibleGridAfterMove = $grid;
+					$possibleGridAfterMove[$possibleFinalPosition[0]][$possibleFinalPosition[1]] = 1;
 					if (in_array($move, $overCompleted)) {
-						$betweenMove = $move[$move[0] / 2][$move[1] / 2];
-						if ($grid[$betweenMove[0]][$betweenMove[1]] === 1) {
+						$betweenMove = [$move[0] / 2, $move[1] / 2];
+						$betweenMovePosition = [$on[0] + $betweenMove[0], $on[1] + $betweenMove[1]];
+						if ($grid[$betweenMovePosition[0]][$betweenMovePosition[1]] === 1) {
 							continue;
 						}
 					}
-					//TODO rekurze, ALE jenom na konci stromu pricit ++. Protoze kdyz pozadovana dalka hesla je 5 tak nepricitam pri konbinaci 2
-					$count = exit();//rekurze?
 
+					if ($nowOnLength < $this->finalLength) {
+						$nowOnLength ++;
+						$combinations += $this->calculate($possibleGridAfterMove, $on, $nowOnLength);//TODO tady jsou nějaké čachry s rekurzí
+					}else {
+						$combinations ++;
+					}
 				}
 			}
 		}
+
+		return $combinations;
 	}
 }

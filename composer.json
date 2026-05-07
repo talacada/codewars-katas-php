@@ -1,5 +1,10 @@
 {
     "name": "adamt/code-wars",
+    "config": {
+        "platform": {
+            "php": "8.0.30"
+        }
+    },
     "autoload": {
         "psr-4": {
             "Kata\\": "Kata/"
