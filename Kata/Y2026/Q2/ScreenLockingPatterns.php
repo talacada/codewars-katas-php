@@ -86,16 +86,12 @@ class ScreenLockingPatterns
 		$count = $this->calculate($this->grid, $this->startIndex);
 
 		return $count;
-/*
-		for ($i = 0; $i < $allPossibleLinesFromStart; $i++) {
-
-		}*/
 	}
 	private function calculate(array $grid, array $on, $nowOnLength = 1): int
 	{
 		$combinations = 0;
 		$neighbours = [[1, 0], [-1, 0], [0, 1], [0, -1], [-1, -1], [-1, 1], [1, -1], [1, 1]];
-		$cornerSuperDiagonals = [[-1, +2], [-2, +1], [-2, -1], [-1, -2], [+1, -2], [+1, +2], [+2, +1]];
+		$cornerSuperDiagonals = [[-1, +2], [-2, +1], [-2, -1], [-1, -2], [+1, -2], [+1, +2], [+2, +1], [+2, -1]];
 		$overCompleted = [[0, +2], [0, -2], [2, 0], [-2, 0]];
 		$availableMoves = array_merge($neighbours, $cornerSuperDiagonals, $overCompleted);
 
@@ -109,14 +105,13 @@ class ScreenLockingPatterns
 					if (in_array($move, $overCompleted)) {
 						$betweenMove = [$move[0] / 2, $move[1] / 2];
 						$betweenMovePosition = [$on[0] + $betweenMove[0], $on[1] + $betweenMove[1]];
-						if ($grid[$betweenMovePosition[0]][$betweenMovePosition[1]] === 1) {
+						if ($possibleGridAfterMove[$betweenMovePosition[0]][$betweenMovePosition[1]] === 0) {
 							continue;
 						}
 					}
 
-					if ($nowOnLength < $this->finalLength) {
-						$nowOnLength ++;
-						$combinations += $this->calculate($possibleGridAfterMove, $on, $nowOnLength);//TODO tady jsou nějaké čachry s rekurzí
+					if ($nowOnLength < $this->finalLength - 1) {
+						$combinations += $this->calculate($possibleGridAfterMove, $possibleFinalPosition, $nowOnLength + 1);
 					}else {
 						$combinations ++;
 					}
