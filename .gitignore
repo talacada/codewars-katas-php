@@ -10,3 +10,4 @@ coverage/
 .phpunit.cache/
 *.tmp
 *.swp
+/.idea

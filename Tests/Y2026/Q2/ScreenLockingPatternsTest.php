@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 function countPatternsFrom(string $f, int $l) : int {
 	$lock = new ScreenLockingPatterns($f, $l);
-	return $lock->getNumberOfCombinations();
+	return $lock->calculateFinalLength();
 }
 class ScreenLockingPatternsTest extends TestCase {
 	public function testBasicTests() {

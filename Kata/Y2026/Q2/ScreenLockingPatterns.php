@@ -44,7 +44,6 @@ class ScreenLockingPatterns
 	private array $grid;
 	private array $startIndex;
 	private mixed $finalLength;
-	private $numberOfCombinations;
 
 	function __construct($start, $length) {
 		$startLetter = ord(($start)) - ord('A');
@@ -54,31 +53,20 @@ class ScreenLockingPatterns
 		$this->finalLength = $length;
 	}
 
-	public function getNumberOfCombinations():int {
-		$this->numberOfCombinations = $this->calculateFinalLength();
-		return $this->numberOfCombinations;
-	}
-
 	private function createGrid()
 	{
-		/*
-		A  B  C
-		D  E  F  -> A  B  C  D  E  F  G  H  I
-		G  H  I
-		*/
 		$grid = [
-			[0, 0, 0],
-			[0, 0, 0],
-			[0, 0, 0]
+			[0, 0, 0],	// 	A  B  C
+			[0, 0, 0],  //	D  E  F
+			[0, 0, 0]	// 	G  H  I
 		];
 
 		$grid[$this->startIndex[0]][$this->startIndex[1]] = 1;
 		return $grid;
 	}
 
-	// Postup je že zjistim všechny možné body z počátečníhí a z nich všchny možné body a takto to pojede dokud nevyplýtvám požadovaný počet
-	private function calculateFinalLength():int {
-		if ($this->finalLength < 1 || $this->finalLength > 8) {
+	public function calculateFinalLength():int {
+		if ($this->finalLength < 1 || $this->finalLength > 9) {
 			return 0;
 		}else if ($this->finalLength === 1) {
 			return 1;
@@ -92,7 +80,7 @@ class ScreenLockingPatterns
 		$combinations = 0;
 		$neighbours = [[1, 0], [-1, 0], [0, 1], [0, -1], [-1, -1], [-1, 1], [1, -1], [1, 1]];
 		$cornerSuperDiagonals = [[-1, +2], [-2, +1], [-2, -1], [-1, -2], [+1, -2], [+1, +2], [+2, +1], [+2, -1]];
-		$overCompleted = [[0, +2], [0, -2], [2, 0], [-2, 0]];
+		$overCompleted = [[0, +2], [0, -2], [2, 0], [-2, 0], [2,2], [2,-2], [-2,2], [-2,-2]];
 		$availableMoves = array_merge($neighbours, $cornerSuperDiagonals, $overCompleted);
 
 
