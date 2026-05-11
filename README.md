@@ -8,4 +8,4 @@ Profile: https://www.codewars.com/users/Rukla
 - `Kata/YYYY/Qn/` — solutions + tests in single-file format
 
 ## Goal
-1 kata per day
+Work on Kata every day
