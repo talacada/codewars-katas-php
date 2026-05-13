@@ -25,7 +25,28 @@ use PHPUnit\Framework\TestCase;
 
 function stripComments(string $str, array $markers): string
 {
-	return "";
+	$explodedString = explode("\n", $str);
+	$arrayWithoutComments = [];
+
+	foreach ($explodedString as $line) {
+		$found = false;
+		foreach ($markers as $marker) {
+			$index = strpos($line, $marker);
+
+			if ($index !== false) {
+				$line = substr($line, 0, $index);
+				$line = rtrim($line);
+				$arrayWithoutComments[] = $line;
+				$found = true;
+				break;
+			}
+		}
+		if (!$found) {
+			$line = rtrim($line);
+			$arrayWithoutComments[] = $line;
+		}
+	}
+	return implode("\n", $arrayWithoutComments);
 }
 
 class StripComments extends TestCase
@@ -36,5 +57,19 @@ class StripComments extends TestCase
 		$this->assertSame("apples, pears\ngrapes\nbananas", stripComments("apples, pears # and bananas\ngrapes\nbananas !apples", ['#', '!']));
 		$this->assertSame("a\nc\nd", stripComments("a #b\nc\nd \$e f g", ['#', '$']));
 		$this->assertSame(" a\nc\nd", stripComments(" a #b\nc\nd \$e f g", ['#', '$']));
+	}
+
+	public function testShouldReturnStringWithoutComments()
+	{
+		$input = "apples, pears # and bananas\ngrapes\nbananas !";
+		$this->assertSame("apples, pears\ngrapes\nbananas", stripComments($input, ['#', '!']));
+	}
+
+	public function testRandomTests()
+	{
+		$input = "avocados \npears , oranges \nwatermelons avocados cherries \nlemons cherries \n";
+		$expected = "avocados \npears , oranges \nwatermelons avocados cherries \nlemons cherries \n";
+
+		$this->assertSame($expected, stripComments($input, ['@']));
 	}
 }
