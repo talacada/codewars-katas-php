@@ -30,20 +30,25 @@ function stripComments(string $str, array $markers): string
 
 	foreach ($explodedString as $line) {
 		$found = false;
+		$markerIndex = [];
+
 		foreach ($markers as $marker) {
 			$index = strpos($line, $marker);
-
-			//TODO kontrolujou se markers ve spatnem poradi
 			if ($index !== false) {
-				$line = substr($line, 0, $index);
-				$line = rtrim($line);
-				$arrayWithoutComments[] = $line;
-				$found = true;
-				break;
+				$markerIndex[] = $index;
 			}
 		}
-		if (!$found) {
+		asort($markerIndex);
+		$markerIndex = array_values($markerIndex);
+
+		if (isset($markerIndex[0]) && $markerIndex[0] !== false) {
+			$line = substr($line, 0, $markerIndex[0]);
 			$line = rtrim($line);
+			$arrayWithoutComments[] = $line;
+			$found = true;
+		}
+
+		if (!$found) {
 			$arrayWithoutComments[] = $line;
 		}
 	}
@@ -54,8 +59,9 @@ class StripComments extends TestCase
 {
 	public function testSample()
 	{
-		// /n je nový řádek takže to resetuje ten commment
-		//$this->assertSame("apples, pears\ngrapes\nbananas", stripComments("apples, pears # and bananas\ngrapes\nbananas !apples", ['#', '!']));
+		$this->assertSame("avocados cherries \noranges avocados \n? pears - oranges ' \navocados pears pears \n",
+			stripComments("avocados cherries \noranges avocados \n? pears - oranges ' \navocados pears pears \n", [',', '^']));
+		$this->assertSame("apples, pears\ngrapes\nbananas", stripComments("apples, pears # and bananas\ngrapes\nbananas !apples", ['#', '!']));
 		$this->assertSame("apples, pears\ngrapes\nbananas", stripComments("apples, pears # and bananas\ngrapes\nbananas !#apples", ['#', '!']));
 		$this->assertSame("a\nc\nd", stripComments("a #b\nc\nd \$e f g", ['#', '$']));
 		$this->assertSame(" a\nc\nd", stripComments(" a #b\nc\nd \$e f g", ['#', '$']));
