@@ -30,7 +30,7 @@ function stripComments(string $str, array $markers): string
 
 	foreach ($explodedString as $line) {
 		$found = false;
-		$markerIndex = [];//test
+		$markerIndex = [];//tes
 
 		foreach ($markers as $marker) {
 			$index = strpos($line, $marker);
