@@ -36,7 +36,7 @@ function stripComments(string $str, array $markers): string
 			$index = strpos($line, $marker);
 			if ($index !== false) {
 				$markerIndex[] = $index;
-			}//Test
+			}
 		}
 		asort($markerIndex);
 		$markerIndex = array_values($markerIndex);
