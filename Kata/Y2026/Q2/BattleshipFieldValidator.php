@@ -19,7 +19,7 @@ namespace Kata\Y2026\Q2;
 
 class BattleshipFieldValidator {
 	private array $field = [];
-	const USEDSPACE = 20;
+	const USED_SPACE = 20;
 	const SHIPS = [
 		'battleship' => [
 			'count' => 1,
@@ -37,6 +37,13 @@ class BattleshipFieldValidator {
 			'count' => 4,
 			'size' => 1
 		]
+	];
+
+	const POSSIBLE_DIRECTIONS_OF_SHIP = [
+		[0, -1],
+		[-1, 0],
+		[1, 0],
+		[0, 1]
 	];
 
 	public function __construct($field) {
@@ -64,8 +71,9 @@ class BattleshipFieldValidator {
 
 	private function validateSpecificTypeOfShip(array $shipInfo): bool
 	{
+		$tempGrid = $this->field;
 		for ($i = 0; $i < $shipInfo['count']; $i++) {
-			$ship = $this->findShipBySize($shipInfo['size']);
+			[$ship, $tempGrid] = $this->findShipBySize($shipInfo['size'], $tempGrid);
 			if ($ship === []) {
 				return false;
 			}
@@ -76,13 +84,47 @@ class BattleshipFieldValidator {
 		return true;
 	}
 
-	private function findShipBySize(int $size): array
+	private function findShipBySize(int $size, array $grid): array
 	{
 		//TODO najít a vrátit pozici všech políček lodi v arrayi
+		foreach ($grid as $rowIndex => $row) {
+			foreach ($row as $columnIndex => $cell) {
+				$possibleShip = [];
+				if ($cell === 1) {
+					$possibleShip[] = [$rowIndex, $columnIndex];
+					foreach (self::POSSIBLE_DIRECTIONS_OF_SHIP as $direction) {
+						$nowX = $rowIndex;
+						$nowY = $rowIndex;
+						$multiplier = $direction[0] + $direction[1] > 0 ? 1 : -1;
+						for ($i = 0; $i < $size; $i++) {
+							$x = $nowX + $direction[0] + $direction[0] === 0 ? 0 : $i*$multiplier;
+							$y = $nowY + $direction[1] + $direction[1] === 0 ? 0 : $i*$multiplier;
+							if (isset($grid[$x][$y]) && $grid[$x][$y] === 1) {
+								$possibleShip[] = [$rowIndex, $columnIndex];
+								$nowX = $x;
+								$nowY = $y;
+							}else {
+								break;
+							}
+
+							if ($i === $size - 1) {
+								return [$possibleShip];
+							}
+						}
+					}
+				}
+			}
+		}
+
 	}
 
 	private function validateFreeSpaceAroundShip(array $ship): bool
 	{
 		//TODO dostanu vsechna policka (indexy) kde je loď ověřím všechna políška okolo jestli je prázdno, lodě nemohou být hned vedle sebe...
+	}
+
+	private function discoverShip(array $startindex, array $field): array
+	{
+
 	}
 }
