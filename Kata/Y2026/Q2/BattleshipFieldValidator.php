@@ -18,8 +18,8 @@ This is all you need to solve this kata. If you're interested in more informatio
 namespace Kata\Y2026\Q2;
 
 class BattleshipFieldValidator {
-	private array $field = [];
-	const USED_SPACE = 20;
+	private array $field;
+	private array $fieldWithoutFoundShips;
 	const SHIPS = [
 		'battleship' => [
 			'count' => 1,
@@ -48,6 +48,7 @@ class BattleshipFieldValidator {
 
 	public function __construct($field) {
 		$this->field = $field;
+		$this->fieldWithoutFoundShips = $field;
 	}
 
 	public function isFieldValid(): bool
@@ -57,74 +58,89 @@ class BattleshipFieldValidator {
 
 	private function searchForShips(): bool
 	{
-		if (
+		return
 			$this->validateSpecificTypeOfShip(self::SHIPS['battleship']) &&
 			$this->validateSpecificTypeOfShip(self::SHIPS['cruiser']) &&
 			$this->validateSpecificTypeOfShip(self::SHIPS['destroyer']) &&
-			$this->validateSpecificTypeOfShip(self::SHIPS['submarine'])
-		) {
-			return false;
-		} else {
-			return true;
-		}
+			$this->validateSpecificTypeOfShip(self::SHIPS['submarine']) &&
+			!$this->hasExtraShips();
+
 	}
 
 	private function validateSpecificTypeOfShip(array $shipInfo): bool
 	{
-		$tempGrid = $this->field;
 		for ($i = 0; $i < $shipInfo['count']; $i++) {
-			[$ship, $tempGrid] = $this->findShipBySize($shipInfo['size'], $tempGrid);
+			$ship = $this->findShipBySize($shipInfo['size']);
 			if ($ship === []) {
 				return false;
 			}
 			if ($this->validateFreeSpaceAroundShip($ship) === false) {
 				return false;
-			};
+			}
 		}
 		return true;
 	}
 
-	private function findShipBySize(int $size, array $grid): array
+	private function findShipBySize(int $size): array
 	{
-		//TODO najít a vrátit pozici všech políček lodi v arrayi
-		foreach ($grid as $rowIndex => $row) {
+		foreach ($this->fieldWithoutFoundShips as $rowIndex => $row) {
 			foreach ($row as $columnIndex => $cell) {
-				$possibleShip = [];
 				if ($cell === 1) {
-					$possibleShip[] = [$rowIndex, $columnIndex];
 					foreach (self::POSSIBLE_DIRECTIONS_OF_SHIP as $direction) {
-						$nowX = $rowIndex;
-						$nowY = $rowIndex;
+						$possibleShip = [[$rowIndex, $columnIndex]];
 						$multiplier = $direction[0] + $direction[1] > 0 ? 1 : -1;
-						for ($i = 0; $i < $size; $i++) {
-							$x = $nowX + $direction[0] + $direction[0] === 0 ? 0 : $i*$multiplier;
-							$y = $nowY + $direction[1] + $direction[1] === 0 ? 0 : $i*$multiplier;
-							if (isset($grid[$x][$y]) && $grid[$x][$y] === 1) {
-								$possibleShip[] = [$rowIndex, $columnIndex];
-								$nowX = $x;
-								$nowY = $y;
+						if ($size === 1) {
+							foreach ($possibleShip as $returnCell) {
+								$this->fieldWithoutFoundShips[$returnCell[0]][$returnCell[1]] = 0;
+							}
+							return $possibleShip;
+						}
+						for ($i = 0; $i < $size - 1; $i++) {
+							$x = $rowIndex + $direction[0] + ($direction[0] === 0 ? 0 : $i*$multiplier);
+							$y = $columnIndex + $direction[1] + ($direction[1] === 0 ? 0 : $i*$multiplier);
+							if (isset($this->fieldWithoutFoundShips[$x][$y]) && $this->fieldWithoutFoundShips[$x][$y] === 1) {
+								$possibleShip[] = [$x, $y];
 							}else {
 								break;
 							}
 
-							if ($i === $size - 1) {
-								return [$possibleShip];
+							if (count($possibleShip) === $size) {
+								//deleting ship so next discovery algorithm will not see this
+								foreach ($possibleShip as $returnCell) {
+									$this->fieldWithoutFoundShips[$returnCell[0]][$returnCell[1]] = 0;
+								}
+								return $possibleShip;
 							}
 						}
 					}
 				}
 			}
 		}
-
+		return [];
 	}
 
 	private function validateFreeSpaceAroundShip(array $ship): bool
 	{
-		//TODO dostanu vsechna policka (indexy) kde je loď ověřím všechna políška okolo jestli je prázdno, lodě nemohou být hned vedle sebe...
+		foreach ($ship as $cell) {
+			for ($x = -1; $x < 2; $x++) {
+				for ($y = -1; $y < 2; $y++) {
+
+					if (isset($this->field[$cell[0] + $x][$cell[1] + $y])) {
+						if (!in_array([$cell[0] + $x, $cell[1] + $y], $ship, true) && $this->field[$cell[0] + $x][$cell[1] + $y] === 1) {
+							return false;
+						}
+					}
+				}
+			}
+		}
+
+		return true;
 	}
 
-	private function discoverShip(array $startindex, array $field): array
+	private function hasExtraShips(): bool
 	{
+		$oneArray = array_merge(...$this->fieldWithoutFoundShips);
 
+		return in_array(1, $oneArray, true);
 	}
 }
