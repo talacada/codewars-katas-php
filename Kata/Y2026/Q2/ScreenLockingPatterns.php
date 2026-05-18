@@ -34,7 +34,7 @@ Fun fact:
 
 In case you're wondering out of curiosity, for the Android lock screen, the valid patterns must have between 4 and 9 dots/points. There are 389112 possible valid patterns in total; that is, patterns with a length between 4 and 9 dots/points.
 
-
+https://www.codewars.com/kata/585894545a8a07255e0002f1
 */
 
 namespace Kata\Y2026\Q2;

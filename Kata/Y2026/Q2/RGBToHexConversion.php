@@ -11,6 +11,8 @@ Examples (input --> output):
 255, 255, 300 --> "FFFFFF"
 0, 0, 0       --> "000000"
 148, 0, 211   --> "9400D3"
+
+https://www.codewars.com/kata/513e08acc600c94f01000001
 */
 
 namespace Kata\Y2026\Q2;

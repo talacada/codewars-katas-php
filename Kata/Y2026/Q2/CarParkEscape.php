@@ -32,6 +32,7 @@ Result
 result = ["L4", "D1", "R4"]
 Good luck and enjoy!
 
+https://www.codewars.com/kata/591eab1d192fe0435e000014
 */
 
 

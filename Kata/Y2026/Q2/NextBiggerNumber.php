@@ -17,7 +17,7 @@ If the digits can't be rearranged to form a bigger number, return -1 (or nil in 
 111 ==> -1
 531 ==> -1
 
-
+https://www.codewars.com/kata/55983863da40caa2c900004e
 */
 
 function nextBigger(int $n):int

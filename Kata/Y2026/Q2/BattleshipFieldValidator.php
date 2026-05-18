@@ -13,6 +13,7 @@ The ship cannot overlap or be in contact with any other ship, neither by edge no
 
 This is all you need to solve this kata. If you're interested in more information about the game, visit this link.
 
+https://www.codewars.com/kata/52bb6539a4cf1b12d90005b7
 */
 
 namespace Kata\Y2026\Q2;

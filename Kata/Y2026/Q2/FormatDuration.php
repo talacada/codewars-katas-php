@@ -2,8 +2,6 @@
 
 /*
 
-https://www.codewars.com/kata/52742f58faf5485cae000b9a
-
 Your task in order to complete this Kata is to write a function which formats a duration, given as a number of seconds,
 in a human-friendly way.
 
@@ -39,6 +37,7 @@ A unit of time must be used "as much as possible". It means that the function sh
  but 1 minute and 1 second instead. Formally, the duration specified by of a component must not be greater than
  any valid more significant unit of time.
 
+https://www.codewars.com/kata/52742f58faf5485cae000b9a
 */
 
 namespace Kata\Y2026\Q2;

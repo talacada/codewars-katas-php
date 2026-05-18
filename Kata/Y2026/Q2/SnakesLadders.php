@@ -28,6 +28,8 @@ Return "Game over!" if a move is attempted after any player has won.
 Otherwise, return "Player n is on square x", where n is the current player and x is the square they are currently on.
 
 Good luck and enjoy!
+
+https://www.codewars.com/kata/587136ba2eefcb92a9000027
 */
 
 namespace Kata\Y2026\Q2;

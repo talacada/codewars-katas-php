@@ -41,7 +41,7 @@ Examples:
 [1,2,3,4,5]   =>  returns 150  = it's not straight
 Of course, in the real Zonk game it's sometimes not worth to collect all combination from a roll. Taking less dice and rerolling more remaining may be better, but this task is just to calculate the maximum possible score from a single roll.
 
-P.S. Inspired by this kata: https://www.codewars.com/kata/5270d0d18625160ada0000e4
+https://www.codewars.com/kata/53837b8c94c170e55f000811
 */
 
 declare(strict_types=1);
