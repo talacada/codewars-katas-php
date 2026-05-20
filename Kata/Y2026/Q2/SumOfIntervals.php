@@ -56,23 +56,31 @@ function sum_intervals(array $intervals): int {
 	$sum = 0;
 	$counted = [];
 	foreach ($intervals as $interval) {
-		foreach ($counted as $singleCount) {
-			//Bigger interval eated whole smaller interval
+		foreach ($counted as $countedIndex => $singleCount) {
+			//Bigger interval ate whole smaller interval
 			if ($interval[0] >= $singleCount[0] && $interval[1] <= $singleCount[1]) {
 				$interval = [];
 				break;
 			//Only the end of interval was eaten
-			}elseif ($interval[0] < $singleCount[0] && ($interval[1] >= $singleCount[0] && $interval[1] <= $singleCount[0])) {
+			}elseif ($interval[0] < $singleCount[0] && ($interval[1] >= $singleCount[0] && $interval[1] <= $singleCount[1])) {
 				$interval = [$interval[0], $singleCount[0]];
 			//Only the start of interval was eaten
-			}elseif ($interval[0] < $singleCount[0] && ($interval[1] >= $singleCount[0] && $interval[1] <= $singleCount[0])) {//TODO
-				$counted = 'dd';
+			}elseif (($interval[0] > $singleCount[0] && $interval[0] < $singleCount[1]) && $interval[1] >= $singleCount[1]) {
+				$interval = [$singleCount[1], $interval[1]];
 			//Only a portion in middle was ean by smaller interval
-			}elseif ($interval[0] < $singleCount[0] && ($interval[1] >= $singleCount[0] && $interval[1] <= $singleCount[0])) {//TODO
-				$counted = 'dd';
+			}elseif ($interval[0] < $singleCount[0] && $interval[1] > $singleCount[1]) {
+				unset($counted[$countedIndex]);
 			}
 		}
+		if (!empty($interval)) {
+			$counted[] = $interval;
+		}
 	}
+
+	foreach ($counted as $singleInterval) {
+		$sum += $singleInterval[1] - $singleInterval[0];
+	}
+
 	return $sum;
 }
 
