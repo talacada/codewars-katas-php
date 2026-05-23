@@ -58,6 +58,9 @@ class SudokuSolver {
 		while ($changed) {
 			foreach ($this->grid as $rowIndex => $row) {
 				foreach ($row as $columnIndex => $cell) {
+					if ($cell != 0) {
+						continue;
+					}
 					[$column, $square] = $this->getColumnAndSquare($rowIndex, $columnIndex);
 				}
 			}
@@ -75,6 +78,13 @@ class SudokuSolver {
 
 		//TODO return square
 		$square = [];
+		$squareRow = floor($rowIndex / 3);
+		$squareColumn = floor($columnIndex / 3);
+		for ($sqRow = 0; $sqRow < 3; $sqRow++) {
+			for ($sqColumn = 0; $sqColumn < 3; $sqColumn++) {
+				$square[] = $this->grid[$squareRow * 3 + $sqRow][$squareColumn * 3 + $sqColumn];
+			}
+		}
 
 		return [$column, $square];
 	}
