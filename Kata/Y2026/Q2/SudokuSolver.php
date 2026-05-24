@@ -62,6 +62,9 @@ class SudokuSolver {
 						continue;
 					}
 					[$column, $square] = $this->getColumnAndSquare($rowIndex, $columnIndex);
+
+					$onlyPossibleValues = $this->getPossibleValues($row, $column, $square, $rowIndex, $columnIndex);
+					var_dump($rowPossibleValues);//todo here, save into array
 				}
 			}
 		}
@@ -87,5 +90,14 @@ class SudokuSolver {
 		}
 
 		return [$column, $square];
+	}
+
+	private function getPossibleValues(array $row, array $column, array $square, int $rowIndex, int $columnIndex): array
+	{
+		$allPossibleValues = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+		$onlyPossibleValues = array_diff($allPossibleValues, $row, $column, $square);
+
+		return $onlyPossibleValues;
 	}
 }
