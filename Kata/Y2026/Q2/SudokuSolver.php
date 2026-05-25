@@ -56,17 +56,27 @@ class SudokuSolver {
 
 		$changed = true;
 		while ($changed) {
-			foreach ($this->grid as $rowIndex => $row) {
-				foreach ($row as $columnIndex => $cell) {
-					if ($cell != 0) {
+			$changed = false;
+			for ($rowIndex = 0; $rowIndex < 9; $rowIndex++) {
+				for ($columnIndex = 0; $columnIndex < 9; $columnIndex++) {
+					$cell = $this->grid[$rowIndex][$columnIndex];
+					if ($cell != 0 && !is_array($cell)) {
 						continue;
 					}
 					[$column, $square] = $this->getColumnAndSquare($rowIndex, $columnIndex);
 
-					$onlyPossibleValues = $this->getPossibleValues($row, $column, $square, $rowIndex, $columnIndex);
-					var_dump($rowPossibleValues);//todo here, save into array
+					$onlyPossibleValues = $this->getPossibleValues($this->grid[$rowIndex], $column, $square);
+					$onlyPossibleValues = array_values($onlyPossibleValues);
+
+					if (count($onlyPossibleValues) === 1) {
+						$this->grid[$rowIndex][$columnIndex] = $onlyPossibleValues[0];
+					}else {
+						$this->grid[$rowIndex][$columnIndex] = $onlyPossibleValues;
+					}
+					$changed = true;
 				}
 			}
+			$this->printSudoku($this->grid);
 		}
 
 		return $this->grid;
@@ -75,11 +85,10 @@ class SudokuSolver {
 	private function getColumnAndSquare(int $rowIndex, int $columnIndex): array
 	{
 		$column = [];
-		for ($row = 0; $row < 8; $row++) {
+		for ($row = 0; $row < 9; $row++) {
 			$column[] = $this->grid[$row][$columnIndex];
 		}
 
-		//TODO return square
 		$square = [];
 		$squareRow = floor($rowIndex / 3);
 		$squareColumn = floor($columnIndex / 3);
@@ -92,12 +101,41 @@ class SudokuSolver {
 		return [$column, $square];
 	}
 
-	private function getPossibleValues(array $row, array $column, array $square, int $rowIndex, int $columnIndex): array
+	private function getPossibleValues(array $row, array $column, array $square): array
 	{
 		$allPossibleValues = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-		$onlyPossibleValues = array_diff($allPossibleValues, $row, $column, $square);
+		return array_diff($allPossibleValues, $row, $column, $square);//TODO array to string
+	}
 
-		return $onlyPossibleValues;
+
+
+
+
+	function printSudoku(array $board): void
+	{
+		foreach ($board as $r => $row) {
+
+			if ($r % 3 === 0) {
+				echo "+-----------------------+\n";
+			}
+
+			foreach ($row as $c => $cell) {
+
+				if ($c % 3 === 0) {
+					echo "| ";
+				}
+
+				if (is_array($cell)) {
+					echo str_pad('[' . implode('', $cell) . ']', 7, ' ');
+				} else {
+					echo '  ' . $cell . '    ';
+				}
+			}
+
+			echo "|\n";
+		}
+
+		echo "+-----------------------+\n";
 	}
 }
