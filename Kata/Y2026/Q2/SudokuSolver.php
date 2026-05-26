@@ -49,9 +49,9 @@ class SudokuSolver {
 	{
 		/*
 		/plan
-		1. Získat ke každému poli $row, $column, $square
-		2. z 0 udělat array všech možných co na daném místě mohou být (0 -> [1, 5, 6, 9])
-		3. Projíždět ten cyklus do nekonečka, jelikož autor říkal že nemusí být žádné tipování, takže v každém průběhu cyklu se něco určitě vyplní co umožní vyplnit další
+		1. Get $row, $column, $square for each cell
+		2. Convert 0 into an array of all possible values for that position (0 -> [1, 5, 6, 9])
+		3. Run the loop indefinitely — the author said no guessing is needed, so each pass will definitely fill in something that unlocks the next cell
 		*/
 
 		$changed = true;
@@ -66,17 +66,18 @@ class SudokuSolver {
 					[$column, $square] = $this->getColumnAndSquare($rowIndex, $columnIndex);
 
 					$onlyPossibleValues = $this->getPossibleValues($this->grid[$rowIndex], $column, $square);
-					$onlyPossibleValues = array_values($onlyPossibleValues);
 
 					if (count($onlyPossibleValues) === 1) {
-						$this->grid[$rowIndex][$columnIndex] = $onlyPossibleValues[0];
-					}else {
+						$this->grid[$rowIndex][$columnIndex] = array_values($onlyPossibleValues)[0];
+						$changed = true;
+					}elseif (count($onlyPossibleValues) === 0) {
+						return [0];
+					}
+					else {
 						$this->grid[$rowIndex][$columnIndex] = $onlyPossibleValues;
 					}
-					$changed = true;
 				}
 			}
-			$this->printSudoku($this->grid);
 		}
 
 		return $this->grid;
@@ -105,37 +106,12 @@ class SudokuSolver {
 	{
 		$allPossibleValues = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-		return array_diff($allPossibleValues, $row, $column, $square);//TODO array to string
-	}
 
-
-
-
-
-	function printSudoku(array $board): void
-	{
-		foreach ($board as $r => $row) {
-
-			if ($r % 3 === 0) {
-				echo "+-----------------------+\n";
-			}
-
-			foreach ($row as $c => $cell) {
-
-				if ($c % 3 === 0) {
-					echo "| ";
-				}
-
-				if (is_array($cell)) {
-					echo str_pad('[' . implode('', $cell) . ']', 7, ' ');
-				} else {
-					echo '  ' . $cell . '    ';
-				}
-			}
-
-			echo "|\n";
-		}
-
-		echo "+-----------------------+\n";
+		return array_diff(
+			$allPossibleValues,
+			array_filter($row, 'is_int'),
+			array_filter($column, 'is_int'),
+			array_filter($square, 'is_int')
+		);
 	}
 }
