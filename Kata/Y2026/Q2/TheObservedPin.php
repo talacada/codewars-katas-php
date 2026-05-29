@@ -29,13 +29,33 @@ namespace Kata\Y2026\Q2;
 
 class TheObservedPin
 {
+	const KEYPAD =
+	[
+		[1, 2, 3],
+		[4, 5, 6],
+		[7, 8, 9],
+		[null, 0, null]
+	];
 
-	private mixed $pin;
+	private array $originalySeen;
+	private array $possibleCombinations;
 
-	public function __construct($pin) {
-		$this->pin = $pin;
+	public function __construct(string $pin)
+	{
+		$this->originalySeen = str_split($pin);
 	}
-	public function solve() {
+	public function getAllCombinations():array
+	{
+		$possiblePressed = [];
+		foreach ($this->originalySeen as $seenNumber) {
+			$possibleCombinations[] = $this->getNeighbours((int)$seenNumber);
+		}
+		//TODO cyklus co naparuje vsechny mozne kombinace. Nebudou existovat duplikaty. Viz poslední obrázek
+		return $this->possibleCombinations;
+	}
+
+	private function getNeighbours(int $seenNumber):array
+	{
 
 	}
 }

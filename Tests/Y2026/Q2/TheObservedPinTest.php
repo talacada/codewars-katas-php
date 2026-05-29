@@ -5,9 +5,10 @@ namespace Y2026\Q2;
 use Kata\Y2026\Q2\TheObservedPin;
 use PHPUnit\Framework\TestCase;
 
-function getPINs($pin) {
+function getPINs(string $pin): array
+{
 	$TheObservedPin = new TheObservedPin($pin);
-	return $TheObservedPin->solve();
+	return $TheObservedPin->getAllCombinations();
 }
 
 class TheObservedPinTest extends TestCase
