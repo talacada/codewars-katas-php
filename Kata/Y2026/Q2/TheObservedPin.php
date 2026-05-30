@@ -56,6 +56,23 @@ class TheObservedPin
 
 	private function getNeighbours(int $seenNumber):array
 	{
+		$neighbours = [[-1, 0], [0, -1], [0, 1], [1, 0], [0, 0]];
+		$numberIndex = $this->getPosition($seenNumber);
+		$allNeighbours = [];
+		foreach ($neighbours as $neighbour) {
+			if (isset(self::KEYPAD[$numberIndex[0] + $neighbour[0]][$numberIndex[1] + $neighbour[1]])) {
+				$allNeighbours[] = self::KEYPAD[$numberIndex[0] + $neighbour[0]][$numberIndex[1] + $neighbour[1]];
+			}
+		}
+		return $allNeighbours;
+	}
 
+	private function getPosition(int $seenNumber)
+	{
+		foreach (self::KEYPAD as $keypadrowIndex => $keypadrow) {
+			if (array_search($seenNumber, $keypadrow)) {
+				return [$keypadrowIndex, array_search($seenNumber, $keypadrow)];
+			}
+		}
 	}
 }
