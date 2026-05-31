@@ -38,7 +38,7 @@ class TheObservedPin
 	];
 
 	private array $originalySeen;
-	private array $possibleCombinations;
+	private array $possibleCombinations = [];
 
 	public function __construct(string $pin)
 	{
@@ -50,7 +50,18 @@ class TheObservedPin
 		foreach ($this->originalySeen as $seenNumber) {
 			$possibleCombinations[] = $this->getNeighbours((int)$seenNumber);
 		}
-		//TODO cyklus co naparuje vsechny mozne kombinace. Nebudou existovat duplikaty. Viz poslední obrázek
+
+		$this->possibleCombinations = array_reduce($possibleCombinations, function ($carry, $combination) {
+			$newCarry = array_map(function ($singleNumberFromCombination) use ($carry) {
+				$addedToAllExistingNumbers = [];
+				foreach ($carry as $alreadyHaveNumber) {
+					$addedToAllExistingNumbers[] = $alreadyHaveNumber . $singleNumberFromCombination;
+				}
+				return $addedToAllExistingNumbers;
+			}, $combination);
+			return array_merge(...$newCarry);
+		}, [""]);
+
 		return $this->possibleCombinations;
 	}
 
@@ -67,11 +78,11 @@ class TheObservedPin
 		return $allNeighbours;
 	}
 
-	private function getPosition(int $seenNumber)
+	private function getPosition(int $seenNumber):array
 	{
 		foreach (self::KEYPAD as $keypadrowIndex => $keypadrow) {
-			if (array_search($seenNumber, $keypadrow)) {
-				return [$keypadrowIndex, array_search($seenNumber, $keypadrow)];
+			if (in_array($seenNumber, $keypadrow)) {
+				return [$keypadrowIndex, array_search($seenNumber, $keypadrow, true)];
 			}
 		}
 	}
