@@ -4,83 +4,33 @@ namespace Kata\Y2026\Q2;
 
 use PHPUnit\Framework\TestCase;
 
-/*
-function solution($input):int
+function solution(array $input):int
 {
-	rsort($input);
-	do {
-		$changed = false;
-		for ($i = 0; $i < count($input); ++$i) {
-			if (isset($input[$i+1]) && $input[$i] > $input[$i+1]) {
-				$input[$i] = $input[$i] - $input[$i+1];
-				$changed = true;
-				rsort($input);
-				break;
-			}
-		}
-	}while ($changed);
-	return array_sum($input);
-}
-*/
-/*
-function solution($input):int
-{
-	rsort($input);
-	do {
-		$changed = false;
-		$unique = array_values(array_unique($input));
-		if (isset($unique[1]) && $unique[0] > $unique[1]) {
-			$input[0] = $unique[0] - $unique[1];
-			$changed = true;
-			rsort($input);
-		}
-	}while ($changed);
-	return array_sum($input);
-}
-*/
-/*
-function solution($input):int
-{
-	rsort($input);
-	do {
-		$changed = false;
-		$unique = array_values(array_unique($input));
-		if (isset($unique[1]) && $unique[0] > $unique[1]) {
-			if ($unique[0] % $unique[1] != 0) {
-				$input[0] = $unique[0] % $unique[1];
+	//rsort($input);
+	for ($i = 0; $i < count($input); $i++) {
+		if (isset($input[$i - 1])) {
+			if ($input[$i - 1] % $input[$i] === 0) {
+				continue;
+			}elseif ($input[$i] % $input[$i - 1] === 0) {
+				$input[$i] = $input[$i - 1];
 			}else {
-				$input[0] = $unique[0] - $unique[1];
+				if ($input[$i - 1] > $input[$i]) {
+					$input[$i] = $input[$i - 1] % $input[$i];
+				}else {
+					$input[$i] = $input[$i] % $input[$i - 1];
+				}
+
 			}
-			$changed = true;
-			rsort($input);
 		}
-	}while ($changed);
-	return array_sum($input);
-}
-*/
-//TODO udelat to pres foreach a ten modulus v nem pro vsechny mezi vsemi.
-function solution($input):int
-{
-	rsort($input);
-	do {
-		$changed = false;
-		$unique = array_values(array_unique($input));
-		if (isset($unique[1]) && $unique[0] > $unique[1]) {
-			if (($unique[0] % $unique[1]) === 0) {
-				$input[0] = $unique[1];
-			}else {
-				$input[0] = $unique[0] % $unique[1];
-			}
-			$changed = true;
-			rsort($input);
-		}
-	}while ($changed);
-	return array_sum($input);
+	}
+	return min($input) * count($input);
 }
 class SmallestPossibleSum extends TestCase
 {
 	public function testExample()
 	{
+		$this->assertSame(3, solution([10, 15, 21]));
+		$this->assertSame(6, solution([18, 12, 8]));
 		$this->assertSame(9, solution([6, 9, 21]));
 		$this->assertSame(18, solution([18, 3, 3, 3, 3, 3]));
 		$this->assertSame(2, solution([10000000000, 1]));
