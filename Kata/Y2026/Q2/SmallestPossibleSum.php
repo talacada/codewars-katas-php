@@ -6,23 +6,26 @@ use PHPUnit\Framework\TestCase;
 
 function solution(array $input):int
 {
-	//rsort($input);
-	for ($i = 0; $i < count($input); $i++) {
-		if (isset($input[$i - 1])) {
+	rsort($input);
+	do {
+		$changed = false;
+		for ($i = 1; $i < count($input); $i++) {
 			if ($input[$i - 1] % $input[$i] === 0) {
 				continue;
 			}elseif ($input[$i] % $input[$i - 1] === 0) {
 				$input[$i] = $input[$i - 1];
+				$changed = true;
 			}else {
 				if ($input[$i - 1] > $input[$i]) {
 					$input[$i] = $input[$i - 1] % $input[$i];
 				}else {
 					$input[$i] = $input[$i] % $input[$i - 1];
 				}
-
+				$changed = true;
 			}
 		}
-	}
+	} while ($changed);
+
 	return min($input) * count($input);
 }
 class SmallestPossibleSum extends TestCase
