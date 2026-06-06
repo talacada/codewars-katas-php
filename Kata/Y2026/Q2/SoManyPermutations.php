@@ -37,35 +37,25 @@ function permutations(string $string): array {
 
 	return $result;
 }
-/*
-function permutate(array $result, array $possibleInputs): array
-{
-	$possibleInputs = array_values($possibleInputs);
-	$result = array_reduce($result, function ($carry, $inputWithoutModifications) use ($possibleInputs) {
-		$carry[] = array_reduce($possibleInputs, function ($carry, $input) use ($possibleInputs, $inputWithoutModifications) {
-			$firstNullIndex = array_search(null, $inputWithoutModifications, true);
-			$inputWithoutModifications[$firstNullIndex] = $input;
-			$possibleInputsForRecursion = $possibleInputs;
-			unset($possibleInputsForRecursion[0]);
-			$recursionBranch = permutate($inputWithoutModifications, $possibleInputsForRecursion);
-			$carry[] = $recursionBranch;
-			return $carry;
-		});
-		return $carry;
-	});
-	return $result;
-}*/
-function permutate(array $inputArray, array $possibleInputs): array
+
+//Vysrat se na to. Ten array_reduce tam dělá bordel s tou rekruzí. Udělat rekurzi v loopu.
+function permutate(array $inputArray, array $possibleInputs): ?array
 {
 	$possibleInputs = array_values($possibleInputs);
 	$result = array_reduce($possibleInputs, function ($carry, $input) use ($possibleInputs, $inputArray) {
-		$firstNullIndex = array_search(null, $inputArray, true);
-		$inputArray[$firstNullIndex] = $input;
-		$possibleInputsForRecursion = $possibleInputs;
+		$inputArrayForThisRecursion = $inputArray;
+		$firstNullIndex = array_search(null, $inputArrayForThisRecursion, true);
+		$possibleInputsForRecursion = array_diff($possibleInputs, $inputArrayForThisRecursion);
+		$inputArrayForThisRecursion[$firstNullIndex] = $input;
 		unset($possibleInputsForRecursion[0]);
-		$recursionBranch[] = permutate($inputArray, $possibleInputsForRecursion);
-		$carry[] = $recursionBranch;
-		return $carry;
+		if (count($possibleInputsForRecursion) === 0) {
+			return $carry;
+		}else {
+			$recursionBranch[] = permutate($inputArrayForThisRecursion, $possibleInputsForRecursion);
+			$carry[] = $recursionBranch;
+			return $carry;
+		}
+
 	});
 	return $result;
 }
