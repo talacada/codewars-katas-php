@@ -33,31 +33,45 @@ function permutations(string $string): array {
 	$possibleInputs = str_split($string);
 	$result = array_fill(0, count($possibleInputs), null);
 
-	$result = permutate($result, $possibleInputs);
+	$result = flatten(permutate($result, $possibleInputs));
 
 	return $result;
 }
 
-//Vysrat se na to. Ten array_reduce tam dělá bordel s tou rekruzí. Udělat rekurzi v loopu.
-function permutate(array $inputArray, array $possibleInputs): ?array
+//TODO stejne nedostavam vsechny mozne
+function permutate(array $inputArray, array $possibleInputs): array
 {
-	$possibleInputs = array_values($possibleInputs);
-	$result = array_reduce($possibleInputs, function ($carry, $input) use ($possibleInputs, $inputArray) {
-		$inputArrayForThisRecursion = $inputArray;
-		$firstNullIndex = array_search(null, $inputArrayForThisRecursion, true);
-		$possibleInputsForRecursion = array_diff($possibleInputs, $inputArrayForThisRecursion);
-		$inputArrayForThisRecursion[$firstNullIndex] = $input;
-		unset($possibleInputsForRecursion[0]);
-		if (count($possibleInputsForRecursion) === 0) {
-			return $carry;
-		}else {
-			$recursionBranch[] = permutate($inputArrayForThisRecursion, $possibleInputsForRecursion);
-			$carry[] = $recursionBranch;
-			return $carry;
-		}
+	$firstNullIndex = array_search(null, $inputArray, true);
+	$recursionBranch = [];
+	foreach ($possibleInputs as $input) {
+		$inputArray[$firstNullIndex] = $input;
+		$possibleInputsThisCycle = $possibleInputs;
+		unset($possibleInputsThisCycle[array_search($input, $possibleInputs)]);
+		$possibleInputsThisCycle = array_values($possibleInputsThisCycle);
 
-	});
-	return $result;
+		if (count($possibleInputsThisCycle) === 0) {
+			return $inputArray;
+		}else {
+			$recursionBranch[] = permutate($inputArray, $possibleInputsThisCycle);
+		}
+	}
+
+	return $recursionBranch;
+}
+
+// TODO neflateruje se to
+function flatten(array $nestedArray): array
+{
+	$return = array();
+	foreach ($nestedArray as $key => $value) {
+		if (is_array($value[0])) {
+			$return[] = flatten($value[0]);
+		}else {
+			$return[] = [];
+			array_push($return[array_key_last($return)], ...$value);
+		}
+	}
+	return $return;
 }
 
 
@@ -69,6 +83,7 @@ final class SoManyPermutations extends TestCase {
 		$this->assertSame($expected, $actual, $msg);
 	}
 	public function testDescriptionExamples() {
+		$this->assertEquivalent([], permutations('abcd'));
 		$this->assertEquivalent(['aabb', 'abab', 'abba', 'baab', 'baba', 'bbaa'], permutations('aabb'));
 		$this->assertEquivalent(['a'], permutations('a'));
 		$this->assertEquivalent(['ab', 'ba'], permutations('ab'));
