@@ -35,10 +35,13 @@ function permutations(string $string): array {
 
 	$result = flatten(permutate($result, $possibleInputs));
 
+	if (isset($result[0]) && is_array($result[0])) {
+		$result = array_merge(...$result);
+	}
+
 	return $result;
 }
 
-//TODO stejne nedostavam vsechny mozne
 function permutate(array $inputArray, array $possibleInputs): array
 {
 	$firstNullIndex = array_search(null, $inputArray, true);
@@ -63,12 +66,22 @@ function permutate(array $inputArray, array $possibleInputs): array
 function flatten(array $nestedArray): array
 {
 	$return = array();
-	foreach ($nestedArray as $key => $value) {
-		if (is_array($value[0])) {
-			$return[] = flatten($value[0]);
+	foreach ($nestedArray as $value) {
+		if (isset($value[0][0]) && is_array($value[0][0])) {
+			foreach ($value as $subvalue) {
+				$return[] = array_merge(flatten($subvalue));
+			}
 		}else {
-			$return[] = [];
-			array_push($return[array_key_last($return)], ...$value);
+			if (is_array($value[0])) {
+				foreach ($value as $subvalue) {
+					$string = implode($subvalue);
+					$return[] = $string;
+				}
+			}else {
+				$string = implode($value);
+				$return[] = $string;
+			}
+
 		}
 	}
 	return $return;
@@ -83,7 +96,7 @@ final class SoManyPermutations extends TestCase {
 		$this->assertSame($expected, $actual, $msg);
 	}
 	public function testDescriptionExamples() {
-		$this->assertEquivalent([], permutations('abcd'));
+		$this->assertEquivalent([], permutations('abcdef'));
 		$this->assertEquivalent(['aabb', 'abab', 'abba', 'baab', 'baba', 'bbaa'], permutations('aabb'));
 		$this->assertEquivalent(['a'], permutations('a'));
 		$this->assertEquivalent(['ab', 'ba'], permutations('ab'));
