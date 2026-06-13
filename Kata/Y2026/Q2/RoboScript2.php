@@ -72,7 +72,34 @@ namespace Kata\Y2026\Q2;
 use PHPUnit\Framework\TestCase;
 
 function execute(string $code): string {
-	// Implement your RS1 interpreter here
+	$code = explode("", $code);
+	$facing = 1;
+	$grid = ['*'];
+
+	foreach ($code as $index => $step) {
+		$times = 1;
+		if (is_numeric($step)) {
+			continue;
+		}
+		if (isset($code[$index + 1]) && is_numeric($code[$index + 1])) {
+			$times = $code[$index + 1];
+		}
+		if ($step === 'F') {
+			$grid = move($grid, $facing, $times);
+		}elseif ($step === 'L' || $step === 'R') {
+			$facing = turn($facing, $times);
+		}
+	}
+}
+
+function turn(int $facing, int $times): int
+{
+
+}
+
+function move(array $grid, int $facing, int $times): array
+{
+
 }
 
 
