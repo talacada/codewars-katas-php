@@ -72,7 +72,7 @@ namespace Kata\Y2026\Q2;
 use PHPUnit\Framework\TestCase;
 
 function execute(string $code): string {
-	$code = explode("", $code);
+	$code = str_split($code);
 	$facing = 1;
 	$grid = ['*'];
 
@@ -87,14 +87,25 @@ function execute(string $code): string {
 		if ($step === 'F') {
 			$grid = move($grid, $facing, $times);
 		}elseif ($step === 'L' || $step === 'R') {
-			$facing = turn($facing, $times);
+			$facing = turn($step, $facing, $times);
 		}
 	}
 }
 
-function turn(int $facing, int $times): int
+function turn(string $rotationSide, int $facing, int $times): int
 {
+	if ($rotationSide === 'R') {
+		$facing = ($facing + $times) % 4;
+	}elseif ($rotationSide === 'L') {
+		$facing = abs(($facing - $times) % 4);
+		if ($facing === 1) {
+			$facing = 3;
+		}elseif ($facing === 3) {
+			$facing = 1;
+		}
+	}
 
+	return $facing;
 }
 
 function move(array $grid, int $facing, int $times): array
@@ -105,6 +116,7 @@ function move(array $grid, int $facing, int $times): array
 
 class RoboScript2 extends TestCase {
 	public function testDescriptionExamples() {
+		$this->assertSame("*", execute("R2L8R1R5R2R6L2L8L7L4L2"));
 		$this->assertSame("*", execute(""));
 		$this->assertSame("******", execute("FFFFF"));
 		$this->assertSame("******\r\n*    *\r\n*    *\r\n*    *\r\n*    *\r\n******", execute("FFFFFLFFFFFLFFFFFLFFFFFL"));
