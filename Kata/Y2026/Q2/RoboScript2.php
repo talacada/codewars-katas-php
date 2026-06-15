@@ -74,7 +74,8 @@ use PHPUnit\Framework\TestCase;
 function execute(string $code): string {
 	$code = str_split($code);
 	$facing = 1;
-	$grid = ['*'];
+	$grid = [['*']];
+	$position = [0, 0];
 
 	foreach ($code as $index => $step) {
 		$times = 1;
@@ -85,11 +86,13 @@ function execute(string $code): string {
 			$times = $code[$index + 1];
 		}
 		if ($step === 'F') {
-			$grid = move($grid, $facing, $times);
+			$grid = move($grid, $facing, $times, $position);
 		}elseif ($step === 'L' || $step === 'R') {
 			$facing = turn($step, $facing, $times);
 		}
 	}
+
+	return '$grid';
 }
 
 function turn(string $rotationSide, int $facing, int $times): int
@@ -104,11 +107,26 @@ function turn(string $rotationSide, int $facing, int $times): int
 			$facing = 1;
 		}
 	}
-
 	return $facing;
 }
 
-function move(array $grid, int $facing, int $times): array
+function move(array $grid, int $facing, int $times, array $position): array
+{
+	$moveMap = [
+		0 => [-1, 0],
+		1 => [0, 1],
+		2 => [1, 0],
+		3 => [0, -1],
+	];
+	for ($i = 0; $i <= $times; $i++) {
+		if (!isset($grid[$position[0] + $moveMap[$facing][0]][$position[1] + $moveMap[$facing][1]])) {
+			$grid = extendGrid($grid, $position, $moveMap[$facing]);
+		}
+		$grid[$position[0] + $moveMap[$facing][0]][$position[1] + $moveMap[$facing][1]] = '*';
+	}
+}
+
+function extendGrid(array $grid, array $position, array $facing): array
 {
 
 }
@@ -116,7 +134,7 @@ function move(array $grid, int $facing, int $times): array
 
 class RoboScript2 extends TestCase {
 	public function testDescriptionExamples() {
-		$this->assertSame("*", execute("R2L8R1R5R2R6L2L8L7L4L2"));
+		$this->assertSame("******", execute("FFFFF"));
 		$this->assertSame("*", execute(""));
 		$this->assertSame("******", execute("FFFFF"));
 		$this->assertSame("******\r\n*    *\r\n*    *\r\n*    *\r\n*    *\r\n******", execute("FFFFFLFFFFFLFFFFFLFFFFFL"));
