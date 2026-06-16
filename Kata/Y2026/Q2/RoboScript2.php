@@ -86,7 +86,7 @@ function execute(string $code): string {
 			$times = $code[$index + 1];
 		}
 		if ($step === 'F') {
-			$grid = move($grid, $facing, $times, $position);
+			[$grid, $position] = move($grid, $facing, $times, $position);
 		}elseif ($step === 'L' || $step === 'R') {
 			$facing = turn($step, $facing, $times);
 		}
@@ -118,23 +118,44 @@ function move(array $grid, int $facing, int $times, array $position): array
 		2 => [1, 0],
 		3 => [0, -1],
 	];
-	for ($i = 0; $i <= $times; $i++) {
+	for ($i = 0; $i < $times; $i++) {
 		if (!isset($grid[$position[0] + $moveMap[$facing][0]][$position[1] + $moveMap[$facing][1]])) {
-			$grid = extendGrid($grid, $position, $moveMap[$facing]);
+			$grid = extendGrid($grid, $position, $facing);
 		}
 		$grid[$position[0] + $moveMap[$facing][0]][$position[1] + $moveMap[$facing][1]] = '*';
+		$position = [$position[0] + $moveMap[$facing][0], $position[1] + $moveMap[$facing][1]];
 	}
+
+	return [$grid, $position];
 }
 
-function extendGrid(array $grid, array $position, array $facing): array
+function extendGrid(array $grid, int $facing): array
 {
-
+	if ($facing === 0 || $facing === 2) {
+		$empty = array_fill(0, count($grid[0]), ' ');
+		if ($facing === 0) {
+			array_unshift($grid, $empty);
+		}else {
+			$grid[] = $empty;
+		}
+	}elseif ($facing === 1 || $facing === 3) {
+		foreach ($grid as $index => $row) {
+			if ($facing === 1) {
+				$row[] = ' ';
+			}else {
+				array_unshift($row, ' ');
+			}
+			$grid[$index] = $row;
+		}
+	}
+	//TODO indexy kam se hybe se pokazej
+	return array_values($grid);
 }
 
 
 class RoboScript2 extends TestCase {
 	public function testDescriptionExamples() {
-		$this->assertSame("******", execute("FFFFF"));
+		$this->assertSame("******\r\n*    *\r\n*    *\r\n*    *\r\n*    *\r\n******", execute("FFFFFLFFFFFLFFFFFLFFFFFL"));
 		$this->assertSame("*", execute(""));
 		$this->assertSame("******", execute("FFFFF"));
 		$this->assertSame("******\r\n*    *\r\n*    *\r\n*    *\r\n*    *\r\n******", execute("FFFFFLFFFFFLFFFFFLFFFFFL"));
