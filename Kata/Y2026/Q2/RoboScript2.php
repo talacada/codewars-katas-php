@@ -72,6 +72,8 @@ namespace Kata\Y2026\Q2;
 use PHPUnit\Framework\TestCase;
 
 function execute(string $code): string {
+	$codeString = $code;
+	$digits = '0123456789';
 	$code = str_split($code);
 	$facing = 1;
 	$grid = [['*']];
@@ -83,8 +85,10 @@ function execute(string $code): string {
 			continue;
 		}
 		if (isset($code[$index + 1]) && is_numeric($code[$index + 1])) {
-			$times = $code[$index + 1];
+			$nextNumbers = strspn($codeString, $digits, $index +1);
+			$times = (int) substr($codeString, $index + 1, $nextNumbers);
 		}
+
 		if ($step === 'F') {
 			[$grid, $position] = move($grid, $facing, $times, $position);
 		}elseif ($step === 'L' || $step === 'R') {
@@ -92,7 +96,15 @@ function execute(string $code): string {
 		}
 	}
 
-	return '$grid';
+	$returnString = "";
+	foreach ($grid as $index => $row) {
+		$returnString .= implode('', $row);
+		if ($index < count($grid) - 1) {
+			$returnString .= "\r\n";
+		}
+	}
+
+	return $returnString;
 }
 
 function turn(string $rotationSide, int $facing, int $times): int
@@ -100,11 +112,14 @@ function turn(string $rotationSide, int $facing, int $times): int
 	if ($rotationSide === 'R') {
 		$facing = ($facing + $times) % 4;
 	}elseif ($rotationSide === 'L') {
-		$facing = abs(($facing - $times) % 4);
-		if ($facing === 1) {
-			$facing = 3;
-		}elseif ($facing === 3) {
-			$facing = 1;
+		$facing = ($facing - $times) % 4;
+		if ($facing < 0) {
+			$facing = abs($facing);
+			if ($facing === 1) {
+				$facing = 3;
+			}elseif ($facing === 3) {
+				$facing = 1;
+			}
 		}
 	}
 	return $facing;
@@ -120,7 +135,7 @@ function move(array $grid, int $facing, int $times, array $position): array
 	];
 	for ($i = 0; $i < $times; $i++) {
 		if (!isset($grid[$position[0] + $moveMap[$facing][0]][$position[1] + $moveMap[$facing][1]])) {
-			$grid = extendGrid($grid, $position, $facing);
+			[$grid, $position] = extendGrid($grid, $facing, $position);
 		}
 		$grid[$position[0] + $moveMap[$facing][0]][$position[1] + $moveMap[$facing][1]] = '*';
 		$position = [$position[0] + $moveMap[$facing][0], $position[1] + $moveMap[$facing][1]];
@@ -129,12 +144,13 @@ function move(array $grid, int $facing, int $times, array $position): array
 	return [$grid, $position];
 }
 
-function extendGrid(array $grid, int $facing): array
+function extendGrid(array $grid, int $facing, $position): array
 {
 	if ($facing === 0 || $facing === 2) {
 		$empty = array_fill(0, count($grid[0]), ' ');
 		if ($facing === 0) {
 			array_unshift($grid, $empty);
+			$position[0] += 1;
 		}else {
 			$grid[] = $empty;
 		}
@@ -147,9 +163,11 @@ function extendGrid(array $grid, int $facing): array
 			}
 			$grid[$index] = $row;
 		}
+		if ($facing === 3) {
+			$position[1] += 1;
+		}
 	}
-	//TODO indexy kam se hybe se pokazej
-	return array_values($grid);
+	return [array_values($grid), $position];
 }
 
 
@@ -161,5 +179,17 @@ class RoboScript2 extends TestCase {
 		$this->assertSame("******\r\n*    *\r\n*    *\r\n*    *\r\n*    *\r\n******", execute("FFFFFLFFFFFLFFFFFLFFFFFL"));
 		$this->assertSame("    ****\r\n    *  *\r\n    *  *\r\n********\r\n    *   \r\n    *   ", execute("LFFFFFRFFFRFFFRFFFFFFF"));
 		$this->assertSame("    ****\r\n    *  *\r\n    *  *\r\n********\r\n    *   \r\n    *   ", execute("LF5RF3RF3RF7"));
+	}
+
+	public function testSimpleDebug() {
+		$this->assertSame("***\r\n*  \r\n*  ", execute("LF2RF2"));
+	}
+
+	public function testMultiDigitParsing() {
+		$this->assertSame("*************", execute("F12"));
+	}
+
+	public function testLeftTurnFromDown() {
+		$this->assertSame("* \r\n**", execute("RFLF"));
 	}
 }
