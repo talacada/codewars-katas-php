@@ -59,6 +59,7 @@ class CodeInterpreter
 	{
 		$this->stringCode = $code;
 		$codeSteps = (new StepsDecoupler())->makeSteps($code);
+		var_dump($codeSteps);
 	}
 	public function output(): string
 	{
@@ -74,8 +75,12 @@ class StepsDecoupler
 		$steps = [];
 		$splitCode = str_split($code);
 		$inCycle = false;
+		$skipHereCauseCycle = -1;
 
 		foreach ($splitCode as $index => $step) {
+			if ($index <= $skipHereCauseCycle) {
+				continue;
+			}
 			if ($step === 'L' || $step === 'R' || $step === 'F') {
 				$times = 1;
 				if (isset($splitCode[$index + 1]) && is_numeric($splitCode[$index + 1])) {
@@ -87,7 +92,18 @@ class StepsDecoupler
 				$cycle = new Cycle();
 				$times = 1;
 				$nextCloseBracket = $this->findClosingBracket($code, $index);
+				if (isset($splitCode[$nextCloseBracket + 1]) && is_numeric($splitCode[$nextCloseBracket + 1])) {
+					$nextNumbers = strspn($code, self::digits, $nextCloseBracket + 1);
+					$times = (int) substr($code, $nextCloseBracket + 1, $nextNumbers);
+				}
+
+				$cycleCode = substr($code, $index + 1, $nextCloseBracket - $index - 1);
+				$cycle->setTimes($times);
+
+				$cycle->setChildren((new StepsDecoupler())->makeSteps($cycleCode));
+
 				$steps[] = $cycle;
+				$skipHereCauseCycle = $nextCloseBracket;
 			}else {
 				continue;
 			}
@@ -138,13 +154,23 @@ class Cycle
 {
 	private array $childrens;
 	private int $times;
+
+	public function setTimes(int $times): void
+	{
+		$this->times = $times;
+	}
+
+	public function setChildren(array $steps): void
+	{
+		$this->childrens = $steps;
+	}
 }
 
 class RoboScript3 extends TestCase {
 
 	public function testMy(): void
 	{
-		$this->assertSame("*", execute("F2S(D(DD(D(D)S)S)S)SD(S)"));
+		$this->assertSame("*", execute("(R)22(R(L(R)2)45)1RRF"));
 	}
 	public function testRS1Compatibility(): void {
 		$this->assertSame("******\r\n*    *\r\n*    *\r\n*    *\r\n*    *\r\n******", execute("FFFFFLFFFFFLFFFFFLFFFFFL"));
@@ -153,6 +179,24 @@ class RoboScript3 extends TestCase {
 		$this->assertSame("******\r\n*    *\r\n*    *\r\n*    *\r\n*    *\r\n******", execute("FFFFFLFFFFFLFFFFFLFFFFFL"));
 		$this->assertSame("    ****\r\n    *  *\r\n    *  *\r\n********\r\n    *   \r\n    *   ", execute("LFFFFFRFFFRFFFRFFFFFFF"));
 		$this->assertSame("    ****\r\n    *  *\r\n    *  *\r\n********\r\n    *   \r\n    *   ", execute("LF5RF3RF3RF7"));
+	}
+
+	public function testStepsDecouplerBugs(): void
+	{
+		// Bug 1: dva cykly vedle sebe — druhý má $index > 0,
+		// takže substr($code, $index+1, $nextCloseBracket-1) dá špatnou délku
+		// (F2)2 = F2F2 = FFFF = "****"
+		//$this->assertSame("****", execute("(F2)2"));
+
+		// (F)2(R)2F = FFRRF = FF FF (R jen točí) = "**\r\n *"
+		//$this->assertSame("**\r\n *", execute("(F)2(R)2F"));
+
+		// tři cykly za sebou: (F)2(R)2(F)2 = FFRRFF
+		//$this->assertSame("****", execute("(F)2(R)2(F)2"));
+
+		// Bug 2: $skipHereCauseCycle by měl přeskočit i číslice násobitele za )
+		// (F2)2R(F2)2 — test že číslice za cyklem nepřekáží dalšímu parsování
+		$this->assertSame("****\r\n*  *", execute("(F2)2R(F2)2"));
 	}
 
 	public function testDescriptionExamples() {
