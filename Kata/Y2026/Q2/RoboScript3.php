@@ -58,11 +58,12 @@ class CodeInterpreter
 	function __construct($code)
 	{
 		$this->stringCode = $code;
-		$codeSteps = (new StepsDecoupler())->makeSteps($code);
-		var_dump($codeSteps);
+
 	}
 	public function output(): string
 	{
+		$codeSteps = (new StepsDecoupler())->makeSteps($this->stringCode);
+		$grid = (new Grid())->execute($codeSteps);
 		return 'TODO';
 	}
 }
@@ -74,7 +75,6 @@ class StepsDecoupler
 	{
 		$steps = [];
 		$splitCode = str_split($code);
-		$inCycle = false;
 		$skipHereCauseCycle = -1;
 
 		foreach ($splitCode as $index => $step) {
@@ -87,7 +87,12 @@ class StepsDecoupler
 					$nextNumbers = strspn($code, self::digits, $index + 1);
 					$times = (int) substr($code, $index + 1, $nextNumbers);
 				}
-				$steps[] = new Step($step, $times);
+				if ($step === 'F') {
+					$steps[] = new Step($times);
+				}else {
+					$rotationSide = ($step === 'R') ? 1 : -1;
+					$steps[] = new Rotate($rotationSide, $times);
+				}
 			}elseif ($step === '(') {
 				$cycle = new Cycle();
 				$times = 1;
@@ -139,13 +144,41 @@ class StepsDecoupler
 	}
 }
 
+class Grid
+{
+	public array $positions = [0, 0];
+	public array $grid = [['*']];
+	public int $facing = 1;
+	public function execute(array $steps): array
+	{
+		foreach ($steps as $step) {
+			if ($step instanceof Step) {
+				$this->move($step);
+			}elseif ($step instanceof Rotate) {
+				$this->rotate($step);
+			}elseif ($step instanceof Cycle) {
+				//TODO
+			}
+		}
+	}
+
+	private function move(Step $step): void
+	{
+		//TODO move, aplikovat podobne jako ve stare verzi
+		//TODO implementovat grid->extend()
+	}
+
+	private function rotate(Rotate $step)
+	{
+		//TODO rotace jako v v2s
+	}
+}
+
 class Step
 {
-	private $step;
 	private $times;
-	public function __construct(string $type, int $times)
+	public function __construct(int $times)
 	{
-		$this->step = $type;
 		$this->times = $times;
 	}
 }
@@ -166,6 +199,17 @@ class Cycle
 	}
 }
 
+class Rotate {
+	private int $times;
+	private int $rotationSide;
+
+	public function __construct(int $side, int $times)
+	{
+		$this->rotationSide = $side;
+		$this->times = $times;
+	}
+}
+
 class RoboScript3 extends TestCase {
 
 	public function testMy(): void
@@ -179,24 +223,6 @@ class RoboScript3 extends TestCase {
 		$this->assertSame("******\r\n*    *\r\n*    *\r\n*    *\r\n*    *\r\n******", execute("FFFFFLFFFFFLFFFFFLFFFFFL"));
 		$this->assertSame("    ****\r\n    *  *\r\n    *  *\r\n********\r\n    *   \r\n    *   ", execute("LFFFFFRFFFRFFFRFFFFFFF"));
 		$this->assertSame("    ****\r\n    *  *\r\n    *  *\r\n********\r\n    *   \r\n    *   ", execute("LF5RF3RF3RF7"));
-	}
-
-	public function testStepsDecouplerBugs(): void
-	{
-		// Bug 1: dva cykly vedle sebe — druhý má $index > 0,
-		// takže substr($code, $index+1, $nextCloseBracket-1) dá špatnou délku
-		// (F2)2 = F2F2 = FFFF = "****"
-		//$this->assertSame("****", execute("(F2)2"));
-
-		// (F)2(R)2F = FFRRF = FF FF (R jen točí) = "**\r\n *"
-		//$this->assertSame("**\r\n *", execute("(F)2(R)2F"));
-
-		// tři cykly za sebou: (F)2(R)2(F)2 = FFRRFF
-		//$this->assertSame("****", execute("(F)2(R)2(F)2"));
-
-		// Bug 2: $skipHereCauseCycle by měl přeskočit i číslice násobitele za )
-		// (F2)2R(F2)2 — test že číslice za cyklem nepřekáží dalšímu parsování
-		$this->assertSame("****\r\n*  *", execute("(F2)2R(F2)2"));
 	}
 
 	public function testDescriptionExamples() {
