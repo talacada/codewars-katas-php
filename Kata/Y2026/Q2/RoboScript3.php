@@ -146,7 +146,13 @@ class StepsDecoupler
 
 class Grid
 {
-	public array $positions = [0, 0];
+	const moveMap = [
+		0 => [-1, 0],
+		1 => [0, 1],
+		2 => [1, 0],
+		3 => [0, -1],
+	];
+	public array $position = [0, 0];
 	public array $grid = [['*']];
 	public int $facing = 1;
 	public function execute(array $steps): array
@@ -160,17 +166,62 @@ class Grid
 				//TODO
 			}
 		}
+
+		return $this->grid;
 	}
 
 	private function move(Step $step): void
 	{
-		//TODO move, aplikovat podobne jako ve stare verzi
-		//TODO implementovat grid->extend()
+		for ($i = 0; $i < $step->getTimes(); $i++) {
+			if (!isset($this->grid[$this->position[0] + self::moveMap[$this->facing][0]][$this->position[1] + self::moveMap[$this->facing][1]])) {
+				$this->extendGrid();
+			}
+			$this->grid[$this->position[0] + self::moveMap[$this->facing][0]][$this->position[1] + self::moveMap[$this->facing][1]] = '*';
+			$this->position = [$this->position[0] + self::moveMap[$this->facing][0], $this->position[1] + self::moveMap[$this->facing][1]];
+		}
 	}
 
-	private function rotate(Rotate $step)
+	private function rotate(Rotate $rotate):void
 	{
-		//TODO rotace jako v v2s
+		if ($rotate->getRotationSide() === 1) {
+			$this->facing = ($this->facing + $rotate->getTimes()) % 4;
+		}elseif ($rotate->getRotationSide() === -1) {
+			$this->facing = ($this->facing - $rotate->getTimes()) % 4;
+			if ($this->facing < 0) {
+				$this->facing = abs($this->facing);
+				if ($this->facing === 1) {
+					$this->facing = 3;
+				}elseif ($this->facing === 3) {
+					$this->facing = 1;
+				}
+			}
+		}
+	}
+
+	private function extendGrid(): void
+	{
+		if ($this->facing === 0 || $this->facing === 2) {
+			$empty = array_fill(0, count($this->grid[0]), ' ');
+			if ($this->facing === 0) {
+				array_unshift($this->grid, $empty);
+				$this->position[0] += 1;
+			}else {
+				$this->grid[] = $empty;
+			}
+		}elseif ($this->facing === 1 || $this->facing === 3) {
+			foreach ($this->grid as $index => $row) {
+				if ($this->facing === 1) {
+					$row[] = ' ';
+				}else {
+					array_unshift($row, ' ');
+				}
+				$this->grid[$index] = $row;
+			}
+			if ($this->facing === 3) {
+				$this->position[1] += 1;
+			}
+		}
+		$this->grid = array_values($this->grid);
 	}
 }
 
@@ -180,6 +231,11 @@ class Step
 	public function __construct(int $times)
 	{
 		$this->times = $times;
+	}
+
+	public function getTimes(): int
+	{
+		return $this->times;
 	}
 }
 
@@ -208,13 +264,22 @@ class Rotate {
 		$this->rotationSide = $side;
 		$this->times = $times;
 	}
+
+	public function getTimes(): int
+	{
+		return $this->times;
+	}
+	public function getRotationSide(): int
+	{
+		return $this->rotationSide;
+	}
 }
 
 class RoboScript3 extends TestCase {
 
 	public function testMy(): void
 	{
-		$this->assertSame("*", execute("(R)22(R(L(R)2)45)1RRF"));
+		$this->assertSame("******\r\n*    *\r\n*    *\r\n*    *\r\n*    *\r\n******", execute("FFFFFLFFFFFLFFFFFLFFFFFL"));
 	}
 	public function testRS1Compatibility(): void {
 		$this->assertSame("******\r\n*    *\r\n*    *\r\n*    *\r\n*    *\r\n******", execute("FFFFFLFFFFFLFFFFFLFFFFFL"));
