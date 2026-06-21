@@ -11,3 +11,4 @@ coverage/
 *.tmp
 *.swp
 /.idea
+package.xml

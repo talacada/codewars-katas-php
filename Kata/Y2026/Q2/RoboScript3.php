@@ -55,7 +55,7 @@ function execute(string $code): string {
 class CodeInterpreter
 {
 	private string $stringCode;
-	function __construct($code)
+	function __construct(string $code)
 	{
 		$this->stringCode = $code;
 
@@ -63,8 +63,9 @@ class CodeInterpreter
 	public function output(): string
 	{
 		$codeSteps = (new StepsDecoupler())->makeSteps($this->stringCode);
-		$grid = (new Grid())->execute($codeSteps);
-		return 'TODO';
+		$grid = new Grid();
+		$grid->execute($codeSteps);
+		return $grid->makeOutputGrid();
 	}
 }
 
@@ -116,7 +117,7 @@ class StepsDecoupler
 		return $steps;
 	}
 
-	private function findClosingBracket(string $code, $index): int
+	private function findClosingBracket(string $code, int $index): int
 	{
 		$found = false;
 		$nested = 0;
@@ -155,7 +156,7 @@ class Grid
 	public array $position = [0, 0];
 	public array $grid = [['*']];
 	public int $facing = 1;
-	public function execute(array $steps): array
+	public function execute(array $steps): void
 	{
 		foreach ($steps as $step) {
 			if ($step instanceof Step) {
@@ -163,11 +164,11 @@ class Grid
 			}elseif ($step instanceof Rotate) {
 				$this->rotate($step);
 			}elseif ($step instanceof Cycle) {
-				//TODO
+				for ($i = 0; $i < $step->getTimes(); $i++) {
+					$this->execute($step->getChildren());
+				}
 			}
 		}
-
-		return $this->grid;
 	}
 
 	private function move(Step $step): void
@@ -223,11 +224,23 @@ class Grid
 		}
 		$this->grid = array_values($this->grid);
 	}
+
+	public function makeOutputGrid(): string
+	{
+		$returnString = "";
+		foreach ($this->grid as $index => $row) {
+			$returnString .= implode('', $row);
+			if ($index < count($this->grid) - 1) {
+				$returnString .= "\r\n";
+			}
+		}
+		return $returnString;
+	}
 }
 
 class Step
 {
-	private $times;
+	private int $times;
 	public function __construct(int $times)
 	{
 		$this->times = $times;
@@ -241,7 +254,7 @@ class Step
 
 class Cycle
 {
-	private array $childrens;
+	private array $children;
 	private int $times;
 
 	public function setTimes(int $times): void
@@ -251,7 +264,17 @@ class Cycle
 
 	public function setChildren(array $steps): void
 	{
-		$this->childrens = $steps;
+		$this->children = $steps;
+	}
+
+	public function getChildren(): array
+	{
+		return $this->children;
+	}
+
+	public function getTimes(): int
+	{
+		return $this->times;
 	}
 }
 
@@ -279,7 +302,7 @@ class RoboScript3 extends TestCase {
 
 	public function testMy(): void
 	{
-		$this->assertSame("******\r\n*    *\r\n*    *\r\n*    *\r\n*    *\r\n******", execute("FFFFFLFFFFFLFFFFFLFFFFFL"));
+		$this->assertSame("******\r\n*    *\r\n*    *\r\n*    *\r\n*    *\r\n******", execute("(F)5(L)1(F)5L(F)5LFFFFFL"));
 	}
 	public function testRS1Compatibility(): void {
 		$this->assertSame("******\r\n*    *\r\n*    *\r\n*    *\r\n*    *\r\n******", execute("FFFFFLFFFFFLFFFFFLFFFFFL"));
@@ -291,9 +314,9 @@ class RoboScript3 extends TestCase {
 	}
 
 	public function testDescriptionExamples() {
+		$this->assertSame("    *****   *****   *****\r\n    *   *   *   *   *   *\r\n    *   *   *   *   *   *\r\n    *   *   *   *   *   *\r\n*****   *****   *****   *", execute("F4L((F4R)2(F4L)2)2(F4R)2F4"));
 		$this->assertSame("    ****\r\n    *  *\r\n    *  *\r\n********\r\n    *   \r\n    *   ", execute("LF5(RF3)(RF3R)F7"));
 		$this->assertSame("    ****\r\n    *  *\r\n    *  *\r\n********\r\n    *   \r\n    *   ", execute("(L(F5(RF3))(((R(F3R)F7))))"));
 		$this->assertSame("    *****   *****   *****\r\n    *   *   *   *   *   *\r\n    *   *   *   *   *   *\r\n    *   *   *   *   *   *\r\n*****   *****   *****   *", execute("F4L(F4RF4RF4LF4L)2F4RF4RF4"));
-		$this->assertSame("    *****   *****   *****\r\n    *   *   *   *   *   *\r\n    *   *   *   *   *   *\r\n    *   *   *   *   *   *\r\n*****   *****   *****   *", execute("F4L((F4R)2(F4L)2)2(F4R)2F4"));
 	}
 }
