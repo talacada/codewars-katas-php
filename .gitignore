@@ -12,3 +12,4 @@ coverage/
 *.swp
 /.idea
 package.xml
+/.claude/settings.local.json

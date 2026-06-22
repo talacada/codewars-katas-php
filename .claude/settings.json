@@ -34,7 +34,8 @@
       "Bash(mkdir:*)",
       "Bash(ls:*)",
       "Bash(git restore:*)",
-      "Bash(vendor/bin/phpunit *)"
+      "Bash(vendor/bin/phpunit *)",
+      "WebFetch(domain:www.codewars.com)"
     ],
     "deny": [
       "Read(*credentials*)",
