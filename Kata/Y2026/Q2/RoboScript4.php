@@ -94,12 +94,6 @@ function execute(string $code): string {
 	return $roboScriptInterpreter->output();
 }
 
-/*
-PLAN
-- Extract all patterns into array [name => PatternObject]
-- When making steps enqueue patterns if they had definition, else throw ParseError
-- Execute them like cyclec
-*/
 class CodeInterpreter
 {
 	private string $stringCode;
@@ -113,7 +107,8 @@ class CodeInterpreter
 	{
 		['steps' => $codeSteps, 'patterns' => $this->patterns] = (new StepsDecoupler())->makeSteps($this->stringCode);
 		$grid = new Grid();
-		$grid->execute($codeSteps);
+		$grid->detectRecursion($this->patterns);
+		$grid->execute($codeSteps, $this->patterns);
 		return $grid->makeOutputGrid();
 	}
 }
@@ -175,7 +170,7 @@ class StepsDecoupler
 
 				$patternCode = substr($code, $patternStartIndex, $patternEndIndex - $patternStartIndex);
 
-				if (isset($patterns[$patternCode])) {
+				if (isset($patterns[$patternName])) {
 					throw new ParseError('ERROR');
 				}
 
@@ -226,7 +221,7 @@ class Grid
 	public array $position = [0, 0];
 	public array $grid = [['*']];
 	public int $facing = 1;
-	public function execute(array $steps): void
+	public function execute(array $steps, array $patternsDefinition): void
 	{
 		foreach ($steps as $step) {
 			if ($step instanceof Step) {
@@ -235,8 +230,15 @@ class Grid
 				$this->rotate($step);
 			}elseif ($step instanceof Cycle) {
 				for ($i = 0; $i < $step->getTimes(); $i++) {
-					$this->execute($step->getChildren());
+					$this->execute($step->getChildren(), $patternsDefinition);
 				}
+			}elseif ($step instanceof Pattern) {
+				if (!isset($patternsDefinition[$step->getName()])) {
+					throw new ParseError('ERROR');
+				}
+				$patternCode = $patternsDefinition[$step->getName()];
+
+				$this->execute($patternCode, $patternsDefinition);
 			}
 		}
 	}
@@ -306,6 +308,20 @@ class Grid
 		}
 		return $returnString;
 	}
+
+	public function detectRecursion($patternsDefinition): void
+	{
+		//TODO last test, multiple recursions
+		foreach ($patternsDefinition as $patternName => $pattern) {
+			foreach ($pattern as $step) {
+				if ($step instanceof Pattern) {
+					if ($step->getName() === $patternName) {
+						throw new ParseError('ERROR');
+					}
+				}
+			}
+		}
+	}
 }
 
 class Step
@@ -373,6 +389,11 @@ class Pattern {
 
 	public function __construct(string $name) {
 		$this->name = $name;
+	}
+
+	public function getName(): int
+	{
+		return $this->name;
 	}
 }
 
@@ -443,22 +464,19 @@ class RoboScript4 extends TestCase {
 			}
 		]) as $assertion) $assertion();
 	}
-	/**
-	 * @expectedException ParseError
-	 */
+
 	public function testInvalidInvocation1() {
+		$this->expectException(ParseError::class);
 		execute('p0(F2LF2R)2qP1');
 	}
-	/**
-	 * @expectedException ParseError
-	 */
+
 	public function testInvalidInvocation2() {
+		$this->expectException(ParseError::class);
 		execute('P0p312(F2LF2R)2q');
 	}
-	/**
-	 * @expectedException ParseError
-	 */
+
 	public function testInvalidInvocation3() {
+		$this->expectException(ParseError::class);
 		execute('P312');
 	}
 	public function testMultiplePatternDefinitions() {
@@ -471,16 +489,14 @@ class RoboScript4 extends TestCase {
 			}
 		]) as $assertion) $assertion();
 	}
-	/**
-	 * @expectedException ParseError
-	 */
+
 	public function testInvalidDefinitionOverwrite() {
+		$this->expectException(ParseError::class);
 		execute('p1F2Lqp1(F3LF4R)5qp2F2Rqp3P1(P2)2P1q(P3)3');
 	}
-	/**
-	 * @expectedException ParseError
-	 */
+
 	public function testInfiniteRecursion() {
+		$this->expectException(ParseError::class);
 		execute('p1F2RP1F2LqP1');
 	}
 	/**
