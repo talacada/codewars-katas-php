@@ -79,6 +79,9 @@ execute("p1F2RP1F2Lq");        # does not throw
 For the sake of simplicity, you may assume that all programs passed into your interpreter contains valid syntax. Furthermore, nesting pattern definitions is not allowed either (it is considered a syntax error) so your interpreter will not need to account for these.
 
 https://www.codewars.com/kata/594b898169c1d644f900002e
+
+
+THIS KATA MUST BE COMPLETED IN PHP 7.0
 */
 
 
@@ -107,6 +110,7 @@ class CodeInterpreter
 	{
 		['steps' => $codeSteps, 'patterns' => $this->patterns] = (new StepsDecoupler())->makeSteps($this->stringCode);
 		$grid = new Grid();
+		$grid->validatePatternsExist($codeSteps, $this->patterns);
 		$grid->detectRecursion($this->patterns);
 		$grid->execute($codeSteps, $this->patterns);
 		return $grid->makeOutputGrid();
@@ -311,14 +315,43 @@ class Grid
 
 	public function detectRecursion($patternsDefinition): void
 	{
-		//TODO last test, multiple recursions
 		foreach ($patternsDefinition as $patternName => $pattern) {
 			foreach ($pattern as $step) {
 				if ($step instanceof Pattern) {
 					if ($step->getName() === $patternName) {
 						throw new ParseError('ERROR');
+					}else {
+						$this->detectMultiRecursion($step->getName(), $patternsDefinition, [$patternName]);
 					}
 				}
+			}
+		}
+	}
+
+	private function detectMultiRecursion(int $nextCheckPattern, array $patternsDefinition, array $usedPatterns): void
+	{
+		foreach ($patternsDefinition[$nextCheckPattern] as $step) {
+			if ($step instanceof Pattern) {
+				if (in_array($step->getName(), $usedPatterns)) {
+					throw new ParseError('ERROR');
+				}else {
+					$usedPatterns[] = $step->getName();
+					$this->detectMultiRecursion($step->getName(), $patternsDefinition, $usedPatterns);
+				}
+			}
+		}
+	}
+
+	public function validatePatternsExist($codeSteps, $patterns): void
+	{
+		foreach ($codeSteps as $step) {
+			if ($step instanceof Pattern) {
+				if (!isset($patterns[$step->getName()])) {
+					throw new ParseError('ERROR');
+				}
+			}
+			if ($step instanceof Cycle) {
+				$this->validatePatternsExist($step->getChildren(), $patterns);
 			}
 		}
 	}
@@ -499,10 +532,19 @@ class RoboScript4 extends TestCase {
 		$this->expectException(ParseError::class);
 		execute('p1F2RP1F2LqP1');
 	}
-	/**
-	 * @expectedException ParseError
-	 */
+
 	public function testInfiniteMutualRecursion() {
+		$this->expectException(ParseError::class);
 		execute('p1F2LP2qp2F2RP1qP1');
+	}
+
+	public function testMultipleRecursionMinimal() {
+		$this->expectException(ParseError::class);
+		execute('p1F3R2F6L3FFFRq(P1)1024P11');
+	}
+
+	public function testDd() {
+		$this->expectException(ParseError::class);
+		execute('p2Fqp3FP2qp4FP3qP2P3P4');
 	}
 }

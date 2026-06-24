@@ -25,7 +25,7 @@ Work on Kata every day.
 
 | #  | Kata                                      | Dificulty | Solution                                                       | Completed  |
 |----|-------------------------------------------|-----------|----------------------------------------------------------------|------------|
-| 35 | RoboScript 4                              | 3 kyu     | [Kata](Kata/Y2026/Q2/RoboScript4.php)                          | 22.06.2026 |
+| 35 | RoboScript 4                              | 3 kyu     | [Kata](Kata/Y2026/Q2/RoboScript4.php)                          | 24.06.2026 |
 | 34 | RoboScript 3                              | 4 kyu     | [Kata](Kata/Y2026/Q2/RoboScript3.php)                          | 21.06.2026 |
 | 33 | RoboScript 2                              | 5 kyu     | [Kata](Kata/Y2026/Q2/RoboScript2.php)                          | 17.06.2026 |
 | 32 | RoboScript 1                              | 6 kyu     | [Kata](Kata/Y2026/Q2/RoboScript1.php)                          | 10.06.2026 |
