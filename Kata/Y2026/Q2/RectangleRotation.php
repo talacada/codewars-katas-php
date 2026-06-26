@@ -42,12 +42,18 @@ use PHPUnit\Framework\TestCase;
 function rectangle_rotation($a, $b): int
 {
 
+	$rotatedA = (int) floor($a / sqrt(2));
+	$rotatedB = (int) floor($b / sqrt(2));
+
+	return $rotatedA + $rotatedB;
+
 }
 
 class RectangleRotation extends TestCase
 {
 	public function testBasic()
 	{
+		$this->assertSame(13, rectangle_rotation(3, 3));
 		$this->assertSame(23, rectangle_rotation(6, 4));
 		$this->assertSame(65, rectangle_rotation(30, 2));
 		$this->assertSame(49, rectangle_rotation(8, 6));
