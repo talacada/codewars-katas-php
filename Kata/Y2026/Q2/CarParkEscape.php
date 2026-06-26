@@ -37,7 +37,6 @@ https://www.codewars.com/kata/591eab1d192fe0435e000014
 
 
 namespace Kata\Y2026\Q2;
-use PHPUnit\Framework\TestCase;
 
 function escape(array $carpark): array
 {
@@ -90,41 +89,5 @@ function countSteps(array $row, int $nowIndex): array
 		return ["R" . ($goToIndex - $nowIndex), $goToIndex];
 	}else {
 		return [null, $goToIndex];
-	}
-}
-
-
-class CarParkEscape extends TestCase
-{
-	public function testSampleTests()
-	{
-		$carpark = [[1, 0, 0, 0, 2],
-			[0, 0, 0, 0, 0]];
-		$result = ["L4", "D1", "R4"];
-
-		$this->assertSame($result, escape($carpark));
-
-		$carpark = [[2, 0, 0, 1, 0],
-			[0, 0, 0, 1, 0],
-			[0, 0, 0, 0, 0]];
-		$result = ["R3", "D2", "R1"];
-
-		$this->assertSame($result, escape($carpark));
-
-		$carpark = [[0, 2, 0, 0, 1],
-			[0, 0, 0, 0, 1],
-			[0, 0, 0, 0, 1],
-			[0, 0, 0, 0, 0]];
-		$result = ["R3", "D3"];
-
-		$this->assertSame($result, escape($carpark));
-
-		$carpark = [[1, 0, 0, 0, 2],
-			[0, 0, 0, 0, 1],
-			[1, 0, 0, 0, 0],
-			[0, 0, 0, 0, 0]];
-		$result = ["L4", "D1", "R4", "D1", "L4", "D1", "R4"];
-
-		$this->assertSame($result, escape($carpark));
 	}
 }

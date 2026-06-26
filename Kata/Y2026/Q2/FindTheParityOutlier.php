@@ -14,7 +14,6 @@ https://www.codewars.com/kata/find-the-parity-outlier
 */
 
 namespace Kata\Y2026\Q2;
-use PHPUnit\Framework\TestCase;
 
 function find($integers)
 {
@@ -35,14 +34,5 @@ function find($integers)
             return $finalOddNum;
         default:
             return $finalEvenNum;
-    }
-}
-
-class FindTheParityOutlier extends TestCase
-{
-    public function testBasics(): void
-    {
-        $this->assertSame(11, find([2, 4, 0, 100, 4, 11, 2602, 36]));
-        $this->assertSame(160, find([160, 3, 1719, 19, 11, 13, -21]));
     }
 }

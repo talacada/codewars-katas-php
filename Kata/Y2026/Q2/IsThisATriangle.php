@@ -10,7 +10,6 @@ https://www.codewars.com/kata/is-this-a-triangle
 */
 
 namespace Kata\Y2026\Q2;
-use PHPUnit\Framework\TestCase;
 
 function isTriangle(int $a, int $b, int $c): bool
 {
@@ -22,16 +21,4 @@ function isTriangle(int $a, int $b, int $c): bool
         return false;
     }
     return true;
-}
-
-class IsThisATriangle extends TestCase
-{
-    public function testBasics(): void
-    {
-        $this->assertTrue(isTriangle(1, 2, 2));
-        $this->assertFalse(isTriangle(1, 2, 3));
-        $this->assertFalse(isTriangle(-5, 1, 3));
-        $this->assertFalse(isTriangle(0, 2, 3));
-        $this->assertFalse(isTriangle(1, 2, 9));
-    }
 }

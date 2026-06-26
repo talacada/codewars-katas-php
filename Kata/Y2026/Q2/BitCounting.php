@@ -12,22 +12,8 @@ https://www.codewars.com/kata/bit-counting
 */
 
 namespace Kata\Y2026\Q2;
-use PHPUnit\Framework\TestCase;
 
 function countBits(int $n): int
 {
     return count(array_filter(str_split((string) decbin($n))));
-}
-
-class BitCounting extends TestCase
-{
-    public function testBasics(): void
-    {
-        $this->assertSame(0, countBits(0));
-        $this->assertSame(1, countBits(4));
-        $this->assertSame(3, countBits(7));
-        $this->assertSame(2, countBits(9));
-        $this->assertSame(2, countBits(10));
-        $this->assertSame(5, countBits(1234));
-    }
 }

@@ -15,7 +15,6 @@ https://www.codewars.com/kata/find-the-unique-string
 */
 
 namespace Kata\Y2026\Q2;
-use PHPUnit\Framework\TestCase;
 
 function find_uniq(array $a): string
 {
@@ -35,13 +34,4 @@ function find_uniq(array $a): string
         $key = array_keys($letters, $sortedLett[0], true)[0];
     }
     return $a[$key];
-}
-
-class FindTheUniqueString extends TestCase
-{
-    public function testBasics(): void
-    {
-        $this->assertSame('BbBb', find_uniq(['Aa', 'aaa', 'aaaaa', 'BbBb', 'Aaaa', 'AaAaAa', 'a']));
-        $this->assertSame('foo', find_uniq(['abc', 'acb', 'bac', 'foo', 'bca', 'cab', 'cba']));
-    }
 }

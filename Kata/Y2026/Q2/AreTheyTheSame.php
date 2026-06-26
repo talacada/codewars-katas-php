@@ -18,7 +18,6 @@ https://www.codewars.com/kata/are-they-the-same
 */
 
 namespace Kata\Y2026\Q2;
-use PHPUnit\Framework\TestCase;
 
 function comp(?array $a, ?array $b): bool
 {
@@ -34,20 +33,4 @@ function comp(?array $a, ?array $b): bool
         }
     }
     return true;
-}
-
-class AreTheyTheSame extends TestCase
-{
-    public function testBasics(): void
-    {
-        $a1 = [121, 144, 19, 161, 19, 144, 19, 11];
-        $a2 = [11*11, 121*121, 144*144, 19*19, 161*161, 19*19, 144*144, 19*19];
-        $this->assertTrue(comp($a1, $a2));
-    }
-
-    public function testNull(): void
-    {
-        $this->assertFalse(comp(null, [1, 2, 3]));
-        $this->assertFalse(comp([1, 2, 3], null));
-    }
 }

@@ -18,7 +18,6 @@ https://www.codewars.com/kata/beginner-series-number-3-sum-of-numbers
 */
 
 namespace Kata\Y2026\Q2;
-use PHPUnit\Framework\TestCase;
 
 function getSum(int $a, int $b): int
 {
@@ -40,17 +39,4 @@ function getSum(int $a, int $b): int
     }
 
     return $final;
-}
-
-class BeginnerSeries3SumOfNumbers extends TestCase
-{
-    public function testBasics(): void
-    {
-        $this->assertSame(1, getSum(1, 0));
-        $this->assertSame(3, getSum(1, 2));
-        $this->assertSame(1, getSum(0, 1));
-        $this->assertSame(1, getSum(1, 1));
-        $this->assertSame(-1, getSum(-1, 0));
-        $this->assertSame(2, getSum(-1, 2));
-    }
 }

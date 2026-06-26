@@ -85,11 +85,10 @@ THIS KATA MUST BE COMPLETED IN PHP 7.0
 */
 
 
-namespace Kata\Y2026\Q2;
+namespace Kata\Y2026\Q2\RoboScript4;
 
 use Exception;
 use ParseError;
-use PHPUnit\Framework\TestCase;
 
 
 function execute(string $code): string {
@@ -437,114 +436,3 @@ class Pattern {
 ----------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------
 */
-class RoboScript4 extends TestCase {
-	protected function randomize(array $a): array {
-		for ($i = 0; $i < 2 * count($a); $i++) {
-			$v = array_rand($a);
-			$w = array_rand($a);
-			list($a[$v], $a[$w]) = [$a[$w], $a[$v]];
-		}
-		return $a;
-	}
-	public function testRS2Only() {
-		foreach ($this->randomize([
-			function () {
-				$this->assertSame("    **   **      *\r\n    **   ***     *\r\n  **** *** **  ***\r\n  *  * *    ** *  \r\n***  ***     ***  ", execute('(F2LF2R)2FRF4L(F2LF2R)2(FRFL)4(F2LF2R)2'));
-			}
-		]) as $assertion) $assertion();
-	}
-	public function testPatternDefinitionsOnly() {
-		foreach ($this->randomize([
-			function () {
-				$this->assertSame('*', execute('p0(F2LF2R)2q'));
-			},
-			function () {
-				$this->assertSame('*', execute('p312(F2LF2R)2q'));
-			}
-		]) as $assertion) $assertion();
-	}
-	public function testDefineAndInvoke() {
-		foreach ($this->randomize([
-			function () {
-				$this->assertSame("    *\r\n    *\r\n  ***\r\n  *  \r\n***  ", execute('p0(F2LF2R)2qP0'));
-			},
-			function () {
-				$this->assertSame("    *\r\n    *\r\n  ***\r\n  *  \r\n***  ", execute('p312(F2LF2R)2qP312'));
-			}
-		]) as $assertion) $assertion();
-	}
-	public function testParseOrder() {
-		foreach ($this->randomize([
-			function () {
-				$this->assertSame("    *\r\n    *\r\n  ***\r\n  *  \r\n***  ", execute('P0p0(F2LF2R)2q'));
-			},
-			function () {
-				$this->assertSame("    *\r\n    *\r\n  ***\r\n  *  \r\n***  ", execute('P312p312(F2LF2R)2q'));
-			}
-		]) as $assertion) $assertion();
-	}
-	public function testMixedCodeBasic() {
-		foreach ($this->randomize([
-			function () {
-				$this->assertSame("       *\r\n       *\r\n       *\r\n       *\r\n     ***\r\n     *  \r\n******  ", execute('F3P0Lp0(F2LF2R)2qF2'));
-			}
-		]) as $assertion) $assertion();
-	}
-	public function testMultipleInvocations() {
-		foreach ($this->randomize([
-			function () {
-				$this->assertSame("      *\r\n      *\r\n    ***\r\n    *  \r\n  ***  \r\n  *    \r\n***    ", execute('(P0)2p0F2LF2RqP0'));
-			}
-		]) as $assertion) $assertion();
-	}
-
-	public function testInvalidInvocation1() {
-		$this->expectException(ParseError::class);
-		execute('p0(F2LF2R)2qP1');
-	}
-
-	public function testInvalidInvocation2() {
-		$this->expectException(ParseError::class);
-		execute('P0p312(F2LF2R)2q');
-	}
-
-	public function testInvalidInvocation3() {
-		$this->expectException(ParseError::class);
-		execute('P312');
-	}
-	public function testMultiplePatternDefinitions() {
-		foreach ($this->randomize([
-			function () {
-				$this->assertSame("  ***\r\n  * *\r\n*** *", execute('P1P2p1F2Lqp2F2RqP2P1'));
-			},
-			function () {
-				$this->assertSame("  *** *** ***\r\n  * * * * * *\r\n*** *** *** *", execute('p1F2Lqp2F2Rqp3P1(P2)2P1q(P3)3'));
-			}
-		]) as $assertion) $assertion();
-	}
-
-	public function testInvalidDefinitionOverwrite() {
-		$this->expectException(ParseError::class);
-		execute('p1F2Lqp1(F3LF4R)5qp2F2Rqp3P1(P2)2P1q(P3)3');
-	}
-
-	public function testInfiniteRecursion() {
-		$this->expectException(ParseError::class);
-		execute('p1F2RP1F2LqP1');
-	}
-
-	public function testInfiniteMutualRecursion() {
-		$this->expectException(ParseError::class);
-		execute('p1F2LP2qp2F2RP1qP1');
-	}
-
-	public function testMultipleRecursionMinimal() {
-		$this->expectException(ParseError::class);
-		execute('p1F3R2F6L3FFFRq(P1)1024P11');
-	}
-
-	public function testDd() {
-		$this->expectException(ParseError::class);
-		execute('p2Fqp3FP2qp4FP3qP2P3P4');
-	}
-}

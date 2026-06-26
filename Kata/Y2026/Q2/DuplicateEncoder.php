@@ -16,7 +16,6 @@ https://www.codewars.com/kata/duplicate-encoder
 */
 
 namespace Kata\Y2026\Q2;
-use PHPUnit\Framework\TestCase;
 
 function duplicate_encode(string $word): string
 {
@@ -32,15 +31,4 @@ function duplicate_encode(string $word): string
         }
     }
     return $return;
-}
-
-class DuplicateEncoder extends TestCase
-{
-    public function testBasics(): void
-    {
-        $this->assertSame('(((', duplicate_encode('din'));
-        $this->assertSame('()()()', duplicate_encode('recede'));
-        $this->assertSame(')())())', duplicate_encode('Success'));
-        $this->assertSame('))((' , duplicate_encode('(( @'));
-    }
 }

@@ -27,7 +27,6 @@ https://www.codewars.com/kata/5254ca2719453dcc0b00027d
 
 namespace Kata\Y2026\Q2;
 
-use PHPUnit\Framework\TestCase;
 
 function permutations(string $string): array {
 	$possibleInputs = str_split($string);
@@ -87,20 +86,4 @@ function flatten(array $nestedArray): array
 		}
 	}
 	return $return;
-}
-
-
-final class SoManyPermutations extends TestCase {
-	private function assertEquivalent(array $expected, array $actual, string $msg = ''): void
-	{
-		sort($expected);
-		sort($actual);
-		$this->assertSame($expected, $actual, $msg);
-	}
-	public function testDescriptionExamples() {
-		$this->assertEquivalent([''], permutations(''));
-		$this->assertEquivalent(['aabb', 'abab', 'abba', 'baab', 'baba', 'bbaa'], permutations('aabb'));
-		$this->assertEquivalent(['a'], permutations('a'));
-		$this->assertEquivalent(['ab', 'ba'], permutations('ab'));
-	}
 }

@@ -34,8 +34,6 @@ https://www.codewars.com/kata/5296bc77afba8baa690002d7
 
 namespace Kata\Y2026\Q2;
 
-use PHPUnit\Framework\TestCase;
-
 class SudokuSolver {
 
 	private array $grid;

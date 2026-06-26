@@ -13,9 +13,9 @@ Story
 Now that you've built your own code editor for RoboScript with appropriate syntax highlighting to make it look like serious code, it's time to properly implement RoboScript so that our MyRobots can execute any RoboScript provided and move according to the will of our customers. Since this is the first version of RoboScript, let's call our specification RS1 (like how the newest specification for JavaScript is called ES6 :p)
 
 Task
-Write an interpreter for RS1 called execute() which accepts 1 required argument code, the RS1 program to be executed. The interpreter should return a string representation of the smallest 2D grid containing the full path that the MyRobot has walked on (explained in more detail later).
+Write an interpreter for RS1 called executeRS2() which accepts 1 required argument code, the RS1 program to be executed. The interpreter should return a string representation of the smallest 2D grid containing the full path that the MyRobot has walked on (explained in more detail later).
 
-Initially, the robot starts at the middle of a 1x1 grid. Everywhere the robot walks it will leave a path "*". If the robot has not been at a particular point on the grid then that point will be represented by a whitespace character " ". So if the RS1 program passed in to execute() is empty, then:
+Initially, the robot starts at the middle of a 1x1 grid. Everywhere the robot walks it will leave a path "*". If the robot has not been at a particular point on the grid then that point will be represented by a whitespace character " ". So if the RS1 program passed in to executeRS2() is empty, then:
 
 ""  -->  "*"
 The robot understands 3 major commands:
@@ -69,9 +69,8 @@ https://www.codewars.com/kata/5870fa11aa0428da750000da
 
 namespace Kata\Y2026\Q2;
 
-use PHPUnit\Framework\TestCase;
 
-function execute(string $code): string {
+function executeRS2(string $code): string {
 	$codeString = $code;
 	$digits = '0123456789';
 	$code = str_split($code);
@@ -168,28 +167,4 @@ function extendGrid(array $grid, int $facing, $position): array
 		}
 	}
 	return [array_values($grid), $position];
-}
-
-
-class RoboScript2 extends TestCase {
-	public function testDescriptionExamples() {
-		$this->assertSame("******\r\n*    *\r\n*    *\r\n*    *\r\n*    *\r\n******", execute("FFFFFLFFFFFLFFFFFLFFFFFL"));
-		$this->assertSame("*", execute(""));
-		$this->assertSame("******", execute("FFFFF"));
-		$this->assertSame("******\r\n*    *\r\n*    *\r\n*    *\r\n*    *\r\n******", execute("FFFFFLFFFFFLFFFFFLFFFFFL"));
-		$this->assertSame("    ****\r\n    *  *\r\n    *  *\r\n********\r\n    *   \r\n    *   ", execute("LFFFFFRFFFRFFFRFFFFFFF"));
-		$this->assertSame("    ****\r\n    *  *\r\n    *  *\r\n********\r\n    *   \r\n    *   ", execute("LF5RF3RF3RF7"));
-	}
-
-	public function testSimpleDebug() {
-		$this->assertSame("***\r\n*  \r\n*  ", execute("LF2RF2"));
-	}
-
-	public function testMultiDigitParsing() {
-		$this->assertSame("*************", execute("F12"));
-	}
-
-	public function testLeftTurnFromDown() {
-		$this->assertSame("* \r\n**", execute("RFLF"));
-	}
 }

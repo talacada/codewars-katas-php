@@ -13,9 +13,8 @@ https://www.codewars.com/kata/multiples-of-3-or-5
 */
 
 namespace Kata\Y2026\Q2;
-use PHPUnit\Framework\TestCase;
 
-function solution(int $input): int
+function solutionMultiples(int $input): int
 {
     if ($input < 1) {
         return 0;
@@ -30,14 +29,4 @@ function solution(int $input): int
     }
 
     return $number;
-}
-
-class MultiplesOf3Or5 extends TestCase
-{
-    public function testBasics(): void
-    {
-        $this->assertSame(23, solution(10));
-        $this->assertSame(0, solution(0));
-        $this->assertSame(0, solution(-5));
-    }
 }

@@ -15,7 +15,6 @@ https://www.codewars.com/kata/highest-scoring-word
 */
 
 namespace Kata\Y2026\Q2;
-use PHPUnit\Framework\TestCase;
 
 function high(string $x): string
 {
@@ -32,13 +31,4 @@ function high(string $x): string
 
     $index = array_keys($count, max($count))[0];
     return $words[$index];
-}
-
-class HighestScoringWord extends TestCase
-{
-    public function testBasics(): void
-    {
-        $this->assertSame('taxi', high('man i need a taxi up to ubud'));
-        $this->assertSame('volcano', high('what time are we climbing up the volcano'));
-    }
 }

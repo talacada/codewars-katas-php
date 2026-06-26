@@ -5,9 +5,10 @@ namespace Y2026\Q2;
 use Kata\Y2026\Q2\ScreenLockingPatterns;
 use PHPUnit\Framework\TestCase;
 
-function countPatternsFrom(string $f, int $l) : int {
-	$lock = new ScreenLockingPatterns($f, $l);
-	return $lock->calculateFinalLength();
+function countPatternsFrom(string $f, int $l): int
+{
+    $lock = new ScreenLockingPatterns($f, $l);
+    return $lock->calculateFinalLength();
 }
 class ScreenLockingPatternsTest extends TestCase {
 	public function testBasicTests() {

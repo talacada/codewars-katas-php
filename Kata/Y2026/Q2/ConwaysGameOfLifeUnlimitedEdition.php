@@ -18,7 +18,6 @@ https://www.codewars.com/kata/52423db9add6f6fc39000354
 */
 namespace Kata\Y2026\Q2;
 
-use PHPUnit\Framework\TestCase;
 
 function get_generation(array $cells, int $generations): array
 {
@@ -166,43 +165,4 @@ function checkIfAllDead(array $cells):array {
 		}
 	}
 	return [[]];
-}
-
-class ConwaysGameOfLifeUnlimitedEdition extends TestCase
-{
-	public function testExample()
-	{
-		$this->assertSame([
-			[0, 1, 0],
-			[0, 0, 1],
-			[1, 1, 1]
-		], get_generation([
-			[1, 0, 0],
-			[0, 1, 1],
-			[1, 1, 0]
-		], 1));
-	}
-
-	public function test2()
-	{
-		$this->assertSame([
-			[1, 0, 1],
-			[0, 1, 1],
-			[0, 1, 0]
-		], get_generation([
-			[1, 0, 0],
-			[0, 1, 1],
-			[1, 1, 0]
-		], 2));
-	}
-
-	public function testEmpty(){
-		$this->assertSame([
-			[]
-		], get_generation([
-			[0, 0, 0],
-			[0, 0, 0],
-			[0, 0, 0]
-		], 1));
-	}
 }

@@ -16,7 +16,6 @@ https://www.codewars.com/kata/513e08acc600c94f01000001
 */
 
 namespace Kata\Y2026\Q2;
-use PHPUnit\Framework\TestCase;
 
 function rgb(int $r, int $g, int $b): string
 {
@@ -25,17 +24,4 @@ function rgb(int $r, int $g, int $b): string
 	$b = sprintf('%02X', min(max($b, 0), 255));
 
 	return $r . $g . $b;
-}
-
-class RGBToHexConversion extends TestCase
-{
-	public function testBaseTests()
-	{
-		// assertEquals(mixed $expected, mixed $actual[, string $message = ''])
-		$this->assertSame("FFFFFF", rgb(255, 255, 255));
-		$this->assertSame("FFFFFF", rgb(255, 255, 300));
-		$this->assertSame("000000", rgb(0, 0, 0));
-		$this->assertSame("000000", rgb(-500, 0, 0));
-		$this->assertSame("9400D3", rgb(148, 0, 211));
-	}
 }

@@ -4,6 +4,22 @@ Daily practice on Codewars.
 
 Profile: https://www.codewars.com/users/Rukla
 
+## Setup
+
+```
+composer install
+```
+
+## Commands
+
+| Command           | What it does                       |
+|-------------------|------------------------------------|
+| `composer unit`   | Run PHPUnit tests                  |
+| `composer cs`     | PHP-CS-Fixer (dry-run)             |
+| `composer cs fix` | PHP-CS-Fixer (apply fixes)         |
+| `composer stan`   | PHPStan static analysis            |
+| `composer ready`  | Run all checks (cs + stan + unit)  |
+
 ## Structure
 
 ```

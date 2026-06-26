@@ -1,5 +1,4 @@
 <?php
-
 namespace Y2026\Q2;
 
 use Kata\Y2026\Q2\TheObservedPin;

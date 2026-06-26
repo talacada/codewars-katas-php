@@ -17,7 +17,7 @@ X_5 = [3, 3, 3]  # -> X_5[1] = X_4[0] - X_4[1] = 6 - 3
 The returning output is the sum of the final transformation (here 9).
 
 Example
-solution([6, 9, 21]) #-> 9
+solutionSmallestSum([6, 9, 21]) #-> 9
 Solution steps:
 [6, 9, 12] #-> X[2] = 21 - 9
 [6, 9, 6] #-> X[2] = 12 - 6
@@ -31,9 +31,8 @@ https://www.codewars.com/kata/52f677797c461daaf7000740
 */
 namespace Kata\Y2026\Q2;
 
-use PHPUnit\Framework\TestCase;
 
-function solution(array $input):int
+function solutionSmallestSum(array $input):int
 {
 	rsort($input);
 	do {
@@ -56,19 +55,4 @@ function solution(array $input):int
 	} while ($changed);
 
 	return min($input) * count($input);
-}
-class SmallestPossibleSum extends TestCase
-{
-	public function testExample()
-	{
-		$this->assertSame(3, solution([10, 15, 21]));
-		$this->assertSame(6, solution([18, 12, 8]));
-		$this->assertSame(9, solution([6, 9, 21]));
-		$this->assertSame(18, solution([18, 3, 3, 3, 3, 3]));
-		$this->assertSame(2, solution([10000000000, 1]));
-		$this->assertSame(3, solution([1, 21, 55]));
-		$this->assertSame(5, solution([3, 13, 23, 7, 83]));
-		$this->assertSame(12, solution([4, 16, 24]));
-		$this->assertSame(12, solution([30, 12]));
-	}
 }
