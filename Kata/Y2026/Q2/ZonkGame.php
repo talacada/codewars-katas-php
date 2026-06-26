@@ -48,68 +48,67 @@ declare(strict_types=1);
 
 namespace Kata\Y2026\Q2;
 
-
 class ZonkGame
 {
-	private array $rolled;
+    private array $rolled;
 
-	const THREEOFKIND = [
-		1 => 1000,
-		2 => 200,
-		3 => 300,
-		4 => 400,
-		5 => 500,
-		6 => 600,
-	];
+    public const THREEOFKIND = [
+        1 => 1000,
+        2 => 200,
+        3 => 300,
+        4 => 400,
+        5 => 500,
+        6 => 600,
+    ];
 
-	function __construct(array $dice)
-	{
-		$this->rolled = $dice;
-	}
+    public function __construct(array $dice)
+    {
+        $this->rolled = $dice;
+    }
 
-	public function getScore():int
-	{
-		$bestCombination = $this->bestCombination();
-		return $bestCombination[1];
-	}
+    public function getScore(): int
+    {
+        $bestCombination = $this->bestCombination();
+        return $bestCombination[1];
+    }
 
-	private function bestCombination():array
-	{
-		$dice_occurrence = array_count_values($this->rolled);
-		$dice_occurrence_without_indexes = array_values($dice_occurrence);
-		$perfectCombination = [];
-		$thisRunScore = 0;
+    private function bestCombination(): array
+    {
+        $dice_occurrence = array_count_values($this->rolled);
+        $dice_occurrence_without_indexes = array_values($dice_occurrence);
+        $perfectCombination = [];
+        $thisRunScore = 0;
 
-		if (count($dice_occurrence) === 6) {
-			$thisRunScore += 1000;
-			$perfectCombination[] = $dice_occurrence;
-			$dice_occurrence = [];
-		}
-		if (count($dice_occurrence) === 3 && $dice_occurrence_without_indexes[0] === 2 && $dice_occurrence_without_indexes[1] === 2 && $dice_occurrence_without_indexes[2] === 2) {
-			$thisRunScore += 750;
-			$perfectCombination[] = $dice_occurrence;
-			$dice_occurrence = [];
-		}
+        if (count($dice_occurrence) === 6) {
+            $thisRunScore += 1000;
+            $perfectCombination[] = $dice_occurrence;
+            $dice_occurrence = [];
+        }
+        if (count($dice_occurrence) === 3 && $dice_occurrence_without_indexes[0] === 2 && $dice_occurrence_without_indexes[1] === 2 && $dice_occurrence_without_indexes[2] === 2) {
+            $thisRunScore += 750;
+            $perfectCombination[] = $dice_occurrence;
+            $dice_occurrence = [];
+        }
 
-		foreach ($dice_occurrence as $key => $value) {
-			if ($value >= 3) {
-				$multiplier = $value - 2;
-				$thisRunScore += self::THREEOFKIND[$key] * $multiplier;
-				$perfectCombination[] = [$key, $value];
-				unset($dice_occurrence[$key]);
-			}
-		}
+        foreach ($dice_occurrence as $key => $value) {
+            if ($value >= 3) {
+                $multiplier = $value - 2;
+                $thisRunScore += self::THREEOFKIND[$key] * $multiplier;
+                $perfectCombination[] = [$key, $value];
+                unset($dice_occurrence[$key]);
+            }
+        }
 
-		if (isset($dice_occurrence[1])) {
-			$thisRunScore += $dice_occurrence[1] * 100;
-			$perfectCombination[] = [1, $dice_occurrence[1]];
-		}
-		if (isset($dice_occurrence[5])) {
-			$thisRunScore += $dice_occurrence[5] * 50;
-			$perfectCombination[] = [5, $dice_occurrence[5]];
-		}
+        if (isset($dice_occurrence[1])) {
+            $thisRunScore += $dice_occurrence[1] * 100;
+            $perfectCombination[] = [1, $dice_occurrence[1]];
+        }
+        if (isset($dice_occurrence[5])) {
+            $thisRunScore += $dice_occurrence[5] * 50;
+            $perfectCombination[] = [5, $dice_occurrence[5]];
+        }
 
-		return [$perfectCombination, $thisRunScore];
-	}
+        return [$perfectCombination, $thisRunScore];
+    }
 
 }

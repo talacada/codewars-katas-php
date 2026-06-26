@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
 DATE 17.04.2026
 
@@ -19,9 +22,9 @@ namespace Kata\Y2026\Q2;
 
 function rgb(int $r, int $g, int $b): string
 {
-	$r = sprintf('%02X', min(max($r, 0), 255));
-	$g = sprintf('%02X', min(max($g, 0), 255));
-	$b = sprintf('%02X', min(max($b, 0), 255));
+    $r = sprintf('%02X', min(max($r, 0), 255));
+    $g = sprintf('%02X', min(max($g, 0), 255));
+    $b = sprintf('%02X', min(max($b, 0), 255));
 
-	return $r . $g . $b;
+    return $r . $g . $b;
 }

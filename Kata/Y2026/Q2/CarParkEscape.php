@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 Task
 Your task is to escape from the carpark using only the staircases provided to reach the exit. You may not jump over the edge of the levels (you’re not Superman!) and the exit is always on the far right of the ground floor.
@@ -35,59 +37,58 @@ Good luck and enjoy!
 https://www.codewars.com/kata/591eab1d192fe0435e000014
 */
 
-
 namespace Kata\Y2026\Q2;
 
 function escape(array $carpark): array
 {
-	$return = [];
-	$hasStart = false;
-	$nowOnIndex = 0;
-	$arrayCount = count($carpark);
-	foreach ($carpark as $index => $row) {
-		if (!$hasStart) {
-			if (in_array(2, $row, true)) {
-				$nowOnIndex = array_search(2, $row, true);
-				[$move, $nowOnIndex] = countSteps($row, $nowOnIndex);
-				if ($move != null) {
-					$return[] = $move;
-				}
-				if ($arrayCount != $index + 1) {
-					$return[] = 'D1';
-				}
-				$hasStart = true;
-			}
-		}else {
-			[$move, $nowOnIndex] = countSteps($row, $nowOnIndex);
-			if ($move != null) {
-				$return[] = $move;
-				if ($arrayCount != $index + 1) {
-					$return[] = 'D1';
-				}
-			}else {
-				if ($arrayCount != $index + 1) {
-					$return[array_key_last($return)] = "D" . (str_split($return[array_key_last($return)])[1] + 1);
-				}
-			}
+    $return = [];
+    $hasStart = false;
+    $nowOnIndex = 0;
+    $arrayCount = count($carpark);
+    foreach ($carpark as $index => $row) {
+        if (!$hasStart) {
+            if (in_array(2, $row, true)) {
+                $nowOnIndex = array_search(2, $row, true);
+                [$move, $nowOnIndex] = countSteps($row, $nowOnIndex);
+                if ($move != null) {
+                    $return[] = $move;
+                }
+                if ($arrayCount != $index + 1) {
+                    $return[] = 'D1';
+                }
+                $hasStart = true;
+            }
+        } else {
+            [$move, $nowOnIndex] = countSteps($row, $nowOnIndex);
+            if ($move != null) {
+                $return[] = $move;
+                if ($arrayCount != $index + 1) {
+                    $return[] = 'D1';
+                }
+            } else {
+                if ($arrayCount != $index + 1) {
+                    $return[array_key_last($return)] = "D" . (str_split($return[array_key_last($return)])[1] + 1);
+                }
+            }
 
-		}
-	}
-	return $return;
+        }
+    }
+    return $return;
 }
 
 function countSteps(array $row, int $nowIndex): array
 {
-	if (in_array(1, $row, true)) {
-		$goToIndex = array_search(1, $row, true);
-	}else {
-		$goToIndex = array_key_last($row);
-	}
+    if (in_array(1, $row, true)) {
+        $goToIndex = array_search(1, $row, true);
+    } else {
+        $goToIndex = array_key_last($row);
+    }
 
-	if ($nowIndex > $goToIndex) {
-		return ["L" . ($nowIndex - $goToIndex), $goToIndex];
-	}elseif ($nowIndex < $goToIndex) {
-		return ["R" . ($goToIndex - $nowIndex), $goToIndex];
-	}else {
-		return [null, $goToIndex];
-	}
+    if ($nowIndex > $goToIndex) {
+        return ["L" . ($nowIndex - $goToIndex), $goToIndex];
+    } elseif ($nowIndex < $goToIndex) {
+        return ["R" . ($goToIndex - $nowIndex), $goToIndex];
+    } else {
+        return [null, $goToIndex];
+    }
 }

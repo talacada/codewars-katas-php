@@ -1,7 +1,8 @@
 <?php
 
-namespace Kata\Y2026\Q2;
+declare(strict_types=1);
 
+namespace Kata\Y2026\Q2;
 
 /*
 
@@ -19,24 +20,24 @@ If the digits can't be rearranged to form a bigger number, return -1 (or nil in 
 https://www.codewars.com/kata/55983863da40caa2c900004e
 */
 
-function nextBigger(int $n):int
+function nextBigger(int $n): int
 {
-	$digits = str_split( (string)($n));
-	$digitsCount = count($digits);
+    $digits = str_split((string)($n));
+    $digitsCount = count($digits);
 
-	for ($pivotIndex = $digitsCount - 2; $pivotIndex > -1; $pivotIndex--) {
-		for ($swapIndex = $digitsCount - 1; $swapIndex > $pivotIndex; $swapIndex--) {
-			if ($digits[$swapIndex] > $digits[$pivotIndex]) {
-				$biggerNumber = $digits;
-				$biggerNumber[$pivotIndex] =  $digits[$swapIndex];
-				$biggerNumber[$swapIndex] = $digits[$pivotIndex];
-				$left = array_slice($biggerNumber, 0, $pivotIndex + 1);
-				$right = array_slice($biggerNumber, $pivotIndex + 1);
-				sort($right);
-				$final = array_merge($left, $right);
-				return (int) implode('', $final);
-			}
-		}
-	}
-	return -1;
+    for ($pivotIndex = $digitsCount - 2; $pivotIndex > -1; $pivotIndex--) {
+        for ($swapIndex = $digitsCount - 1; $swapIndex > $pivotIndex; $swapIndex--) {
+            if ($digits[$swapIndex] > $digits[$pivotIndex]) {
+                $biggerNumber = $digits;
+                $biggerNumber[$pivotIndex] =  $digits[$swapIndex];
+                $biggerNumber[$swapIndex] = $digits[$pivotIndex];
+                $left = array_slice($biggerNumber, 0, $pivotIndex + 1);
+                $right = array_slice($biggerNumber, $pivotIndex + 1);
+                sort($right);
+                $final = array_merge($left, $right);
+                return (int) implode('', $final);
+            }
+        }
+    }
+    return -1;
 }

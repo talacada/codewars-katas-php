@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 The goal of this exercise is to convert a string to a new string where each character in
 the new string is "(" if that character appears only once in the original string, or ")"

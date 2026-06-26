@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 
 Your task in order to complete this Kata is to write a function which formats a duration, given as a number of seconds,
@@ -42,119 +44,118 @@ https://www.codewars.com/kata/52742f58faf5485cae000b9a
 
 namespace Kata\Y2026\Q2;
 
-
 class FormatDuration
 {
-	private int $inputSeconds;
-	private int $seconds = 0;
-	private int $minutes = 0;
-	private int $hours = 0;
-	private int $days = 0;
-	private int $years = 0;
-	private string $stringWithNoSeparators = '';
-	private string $returnString = '';
-	const int SECONDINSECOND = 1;
-	const int SECONDSINMINUTE = 60;
-	const int SECONDSINDHOUR = 3600;
-	const int SECONDSINDDAY = 86400;
-	const int SECONDSINDYEAR = 31536000;
+    private int $inputSeconds;
+    private int $seconds = 0;
+    private int $minutes = 0;
+    private int $hours = 0;
+    private int $days = 0;
+    private int $years = 0;
+    private string $stringWithNoSeparators = '';
+    private string $returnString = '';
+    public const int SECONDINSECOND = 1;
+    public const int SECONDSINMINUTE = 60;
+    public const int SECONDSINDHOUR = 3600;
+    public const int SECONDSINDDAY = 86400;
+    public const int SECONDSINDYEAR = 31536000;
 
-	function __construct(int $seconds)
-	{
-		$this->inputSeconds = $seconds;
-	}
+    public function __construct(int $seconds)
+    {
+        $this->inputSeconds = $seconds;
+    }
 
-	public function getHumanReadableFormat(): string
-	{
-		$this->splitSecondsIntoComponents();
-		$this->formatComponentsIntoStrings();
-		$this->addConnectors();
-		return $this->returnString;
-	}
+    public function getHumanReadableFormat(): string
+    {
+        $this->splitSecondsIntoComponents();
+        $this->formatComponentsIntoStrings();
+        $this->addConnectors();
+        return $this->returnString;
+    }
 
-	private function splitSecondsIntoComponents(): void
-	{
-		if ($this->inputSeconds / self::SECONDSINDYEAR >= 1) {
-			$this->years = floor($this->inputSeconds / self::SECONDSINDYEAR);
-			$this->inputSeconds = $this->inputSeconds - $this->years  * self::SECONDSINDYEAR;
-		}
-		if ($this->inputSeconds / self::SECONDSINDDAY >= 1) {
-			$this->days = floor($this->inputSeconds / self::SECONDSINDDAY);
-			$this->inputSeconds = $this->inputSeconds - $this->days * self::SECONDSINDDAY;
-		}
-		if ($this->inputSeconds / self::SECONDSINDHOUR >= 1) {
-			$this->hours = floor($this->inputSeconds / self::SECONDSINDHOUR);
-			$this->inputSeconds = $this->inputSeconds - $this->hours * self::SECONDSINDHOUR;
-		}
-		if ($this->inputSeconds / self::SECONDSINMINUTE >= 1) {
-			$this->minutes = floor($this->inputSeconds / self::SECONDSINMINUTE);
-			$this->inputSeconds = $this->inputSeconds - $this->minutes * self::SECONDSINMINUTE;
-		}
-		if ($this->inputSeconds / self::SECONDINSECOND >= 1) {
-			$this->seconds = floor($this->inputSeconds / self::SECONDINSECOND);
-			$this->inputSeconds = $this->inputSeconds - $this->seconds * self::SECONDINSECOND;
-		}
+    private function splitSecondsIntoComponents(): void
+    {
+        if ($this->inputSeconds / self::SECONDSINDYEAR >= 1) {
+            $this->years = floor($this->inputSeconds / self::SECONDSINDYEAR);
+            $this->inputSeconds = $this->inputSeconds - $this->years  * self::SECONDSINDYEAR;
+        }
+        if ($this->inputSeconds / self::SECONDSINDDAY >= 1) {
+            $this->days = floor($this->inputSeconds / self::SECONDSINDDAY);
+            $this->inputSeconds = $this->inputSeconds - $this->days * self::SECONDSINDDAY;
+        }
+        if ($this->inputSeconds / self::SECONDSINDHOUR >= 1) {
+            $this->hours = floor($this->inputSeconds / self::SECONDSINDHOUR);
+            $this->inputSeconds = $this->inputSeconds - $this->hours * self::SECONDSINDHOUR;
+        }
+        if ($this->inputSeconds / self::SECONDSINMINUTE >= 1) {
+            $this->minutes = floor($this->inputSeconds / self::SECONDSINMINUTE);
+            $this->inputSeconds = $this->inputSeconds - $this->minutes * self::SECONDSINMINUTE;
+        }
+        if ($this->inputSeconds / self::SECONDINSECOND >= 1) {
+            $this->seconds = floor($this->inputSeconds / self::SECONDINSECOND);
+            $this->inputSeconds = $this->inputSeconds - $this->seconds * self::SECONDINSECOND;
+        }
 
-	}
+    }
 
-	private function formatComponentsIntoStrings(): void
-	{
-		if ($this->years > 0) {
-			if ($this->years === 1) {
-				$this->stringWithNoSeparators .= $this->years . ' year|';
-			}else {
-				$this->stringWithNoSeparators .= $this->years . ' years|';
-			}
-		}
-		if ($this->days > 0) {
-			if ($this->days === 1) {
-				$this->stringWithNoSeparators .= $this->days . ' day|';
-			}else {
-				$this->stringWithNoSeparators .= $this->days . ' days|';
-			}
-		}
-		if ($this->hours > 0) {
-			if ($this->hours === 1) {
-				$this->stringWithNoSeparators .= $this->hours . ' hour|';
-			}else {
-				$this->stringWithNoSeparators .= $this->hours . ' hours|';
-			}
-		}
-		if ($this->minutes > 0) {
-			if ($this->minutes === 1) {
-				$this->stringWithNoSeparators .= $this->minutes . ' minute|';
-			}else {
-				$this->stringWithNoSeparators .= $this->minutes . ' minutes|';
-			}
-		}
-		if ($this->seconds > 0) {
-			if ($this->seconds === 1) {
-				$this->stringWithNoSeparators .= $this->seconds . ' second|';
-			}else {
-				$this->stringWithNoSeparators .= $this->seconds . ' seconds|';
-			}
-		}
-	}
+    private function formatComponentsIntoStrings(): void
+    {
+        if ($this->years > 0) {
+            if ($this->years === 1) {
+                $this->stringWithNoSeparators .= $this->years . ' year|';
+            } else {
+                $this->stringWithNoSeparators .= $this->years . ' years|';
+            }
+        }
+        if ($this->days > 0) {
+            if ($this->days === 1) {
+                $this->stringWithNoSeparators .= $this->days . ' day|';
+            } else {
+                $this->stringWithNoSeparators .= $this->days . ' days|';
+            }
+        }
+        if ($this->hours > 0) {
+            if ($this->hours === 1) {
+                $this->stringWithNoSeparators .= $this->hours . ' hour|';
+            } else {
+                $this->stringWithNoSeparators .= $this->hours . ' hours|';
+            }
+        }
+        if ($this->minutes > 0) {
+            if ($this->minutes === 1) {
+                $this->stringWithNoSeparators .= $this->minutes . ' minute|';
+            } else {
+                $this->stringWithNoSeparators .= $this->minutes . ' minutes|';
+            }
+        }
+        if ($this->seconds > 0) {
+            if ($this->seconds === 1) {
+                $this->stringWithNoSeparators .= $this->seconds . ' second|';
+            } else {
+                $this->stringWithNoSeparators .= $this->seconds . ' seconds|';
+            }
+        }
+    }
 
-	private function addConnectors(): void
-	{
-		$components = explode('|', $this->stringWithNoSeparators);
-		$count =  count($components) - 1;
+    private function addConnectors(): void
+    {
+        $components = explode('|', $this->stringWithNoSeparators);
+        $count =  count($components) - 1;
 
-		for ($i = 0; $i < $count; $i++) {
-			if ($i === $count - 1) {
-				continue;
-			}elseif ($i === $count - 2) {
-				$components[$i] = $components[$i] . ' and ';
-			}else {
-				$components[$i] = $components[$i] . ', ';
-			}
-		}
+        for ($i = 0; $i < $count; $i++) {
+            if ($i === $count - 1) {
+                continue;
+            } elseif ($i === $count - 2) {
+                $components[$i] = $components[$i] . ' and ';
+            } else {
+                $components[$i] = $components[$i] . ', ';
+            }
+        }
 
-		$this->returnString = str_replace('|', '', implode('|', $components));
+        $this->returnString = str_replace('|', '', implode('|', $components));
 
-		if ($this->stringWithNoSeparators === '') {
-			$this->returnString = 'now';
-		}
-	}
+        if ($this->stringWithNoSeparators === '') {
+            $this->returnString = 'now';
+        }
+    }
 }

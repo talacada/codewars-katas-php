@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Copy this file to Tests/Y2026/Q2/, rename, and adjust:
 // - namespace + class name
 // - require_once path to the kata file
@@ -9,10 +11,10 @@
 namespace Y2026\Q2;
 
 use PHPUnit\Framework\TestCase;
+
 require_once __DIR__ . '/../../../Kata/Y2026/Q2/NewKata.php';
-use function Kata\Y2026\Q2\new_function;
 
 class NovaKataTest extends TestCase
 {
-	//Codewars tests
+    //Codewars tests
 }

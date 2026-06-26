@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
 Description
 Given an array X of positive integers, its elements are to be transformed by running the following operation on them as many times as required:
@@ -29,30 +32,30 @@ There are performance tests consisted of very big numbers and arrays of size at 
 
 https://www.codewars.com/kata/52f677797c461daaf7000740
 */
+
 namespace Kata\Y2026\Q2;
 
-
-function solutionSmallestSum(array $input):int
+function solutionSmallestSum(array $input): int
 {
-	rsort($input);
-	do {
-		$changed = false;
-		for ($i = 1; $i < count($input); $i++) {
-			if ($input[$i - 1] % $input[$i] === 0) {
-				continue;
-			}elseif ($input[$i] % $input[$i - 1] === 0) {
-				$input[$i] = $input[$i - 1];
-				$changed = true;
-			}else {
-				if ($input[$i - 1] > $input[$i]) {
-					$input[$i] = $input[$i - 1] % $input[$i];
-				}else {
-					$input[$i] = $input[$i] % $input[$i - 1];
-				}
-				$changed = true;
-			}
-		}
-	} while ($changed);
+    rsort($input);
+    do {
+        $changed = false;
+        for ($i = 1; $i < count($input); $i++) {
+            if ($input[$i - 1] % $input[$i] === 0) {
+                continue;
+            } elseif ($input[$i] % $input[$i - 1] === 0) {
+                $input[$i] = $input[$i - 1];
+                $changed = true;
+            } else {
+                if ($input[$i - 1] > $input[$i]) {
+                    $input[$i] = $input[$i - 1] % $input[$i];
+                } else {
+                    $input[$i] = $input[$i] % $input[$i - 1];
+                }
+                $changed = true;
+            }
+        }
+    } while ($changed);
 
-	return min($input) * count($input);
+    return min($input) * count($input);
 }

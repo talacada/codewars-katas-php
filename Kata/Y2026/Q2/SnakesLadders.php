@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
 Introduction
 Snakes and Ladders is an ancient Indian board game regarded today as a worldwide classic. It is played by two or
@@ -36,81 +39,80 @@ namespace Kata\Y2026\Q2;
 
 class SnakesLadders
 {
-	const SNAKES =
-	[
-		16 => 6,
-		46 => 25,
-		49 => 11,
-		62 => 19,
-		64 => 60,
-		74 => 53,
-		89 => 68,
-		92 => 88,
-		95 => 75,
-		99 => 80
-	];
-	const LADDERS = [
-		2 => 38,
-		7 => 14,
-		8 => 31,
-		15 => 26,
-		21 => 42,
-		28 => 84,
-		36 => 44,
-		51 => 67,
-		71 => 91,
-		78 => 98,
-		87 => 94,
-	];
+    public const SNAKES =
+        [
+            16 => 6,
+            46 => 25,
+            49 => 11,
+            62 => 19,
+            64 => 60,
+            74 => 53,
+            89 => 68,
+            92 => 88,
+            95 => 75,
+            99 => 80
+        ];
+    public const LADDERS = [
+        2 => 38,
+        7 => 14,
+        8 => 31,
+        15 => 26,
+        21 => 42,
+        28 => 84,
+        36 => 44,
+        51 => 67,
+        71 => 91,
+        78 => 98,
+        87 => 94,
+    ];
 
-	private array $position = [1 => 0, 2 => 0];
-	private int $onTurn = 1;
-	private bool $gameOver = false;
-	function __construct()
-	{
-	}
+    private array $position = [1 => 0, 2 => 0];
+    private int $onTurn = 1;
+    private bool $gameOver = false;
+    public function __construct()
+    {
+    }
 
-	public function play(int $die1, int $die2): string
-	{
-		if ($this->gameOver) {
-			return "Game over!";
-		}
+    public function play(int $die1, int $die2): string
+    {
+        if ($this->gameOver) {
+            return "Game over!";
+        }
 
-		$sum = $die1 + $die2;
+        $sum = $die1 + $die2;
 
-		if (array_key_exists($this->position[$this->onTurn] + $sum, SnakesLadders::LADDERS)) {
-			$this->position[$this->onTurn] = SnakesLadders::LADDERS[$this->position[$this->onTurn] + $sum];
-		}elseif (array_key_exists($this->position[$this->onTurn] + $sum, SnakesLadders::SNAKES)) {
-			$this->position[$this->onTurn] = SnakesLadders::SNAKES[$this->position[$this->onTurn] + $sum];
-		}else {
-			if ($this->position[$this->onTurn] + $sum > 100) {
-				$this->position[$this->onTurn] = 100 - ($this->position[$this->onTurn] + $sum - 100);
-				if (array_key_exists($this->position[$this->onTurn], SnakesLadders::LADDERS)) {
-					$this->position[$this->onTurn] = SnakesLadders::LADDERS[$this->position[$this->onTurn]];
-				}elseif (array_key_exists($this->position[$this->onTurn], SnakesLadders::SNAKES)) {
-					$this->position[$this->onTurn] = SnakesLadders::SNAKES[$this->position[$this->onTurn]];
-				}
-			}else {
-				$this->position[$this->onTurn] += $sum;
-			}
-		}
+        if (array_key_exists($this->position[$this->onTurn] + $sum, SnakesLadders::LADDERS)) {
+            $this->position[$this->onTurn] = SnakesLadders::LADDERS[$this->position[$this->onTurn] + $sum];
+        } elseif (array_key_exists($this->position[$this->onTurn] + $sum, SnakesLadders::SNAKES)) {
+            $this->position[$this->onTurn] = SnakesLadders::SNAKES[$this->position[$this->onTurn] + $sum];
+        } else {
+            if ($this->position[$this->onTurn] + $sum > 100) {
+                $this->position[$this->onTurn] = 100 - ($this->position[$this->onTurn] + $sum - 100);
+                if (array_key_exists($this->position[$this->onTurn], SnakesLadders::LADDERS)) {
+                    $this->position[$this->onTurn] = SnakesLadders::LADDERS[$this->position[$this->onTurn]];
+                } elseif (array_key_exists($this->position[$this->onTurn], SnakesLadders::SNAKES)) {
+                    $this->position[$this->onTurn] = SnakesLadders::SNAKES[$this->position[$this->onTurn]];
+                }
+            } else {
+                $this->position[$this->onTurn] += $sum;
+            }
+        }
 
-		if ($this->position[$this->onTurn] === 100) {
-			$this->gameOver = true;
-			return "Player " . $this->onTurn . " Wins!";
-		}
+        if ($this->position[$this->onTurn] === 100) {
+            $this->gameOver = true;
+            return "Player " . $this->onTurn . " Wins!";
+        }
 
-		$return = "Player " . $this->onTurn . " is on square " . $this->position[$this->onTurn];
+        $return = "Player " . $this->onTurn . " is on square " . $this->position[$this->onTurn];
 
-		if ($die1 != $die2) {
-			if ($this->onTurn === 1) {
-				$this->onTurn = 2;
-			}else {
-				$this->onTurn = 1;
-			}
-		}
+        if ($die1 != $die2) {
+            if ($this->onTurn === 1) {
+                $this->onTurn = 2;
+            } else {
+                $this->onTurn = 1;
+            }
+        }
 
-		return $return;
-	}
+        return $return;
+    }
 }
-

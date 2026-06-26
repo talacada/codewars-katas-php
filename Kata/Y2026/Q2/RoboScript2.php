@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 
 RoboScript #2 - Implement the RS1 Specification
@@ -69,102 +71,102 @@ https://www.codewars.com/kata/5870fa11aa0428da750000da
 
 namespace Kata\Y2026\Q2;
 
+function executeRS2(string $code): string
+{
+    $codeString = $code;
+    $digits = '0123456789';
+    $code = str_split($code);
+    $facing = 1;
+    $grid = [['*']];
+    $position = [0, 0];
 
-function executeRS2(string $code): string {
-	$codeString = $code;
-	$digits = '0123456789';
-	$code = str_split($code);
-	$facing = 1;
-	$grid = [['*']];
-	$position = [0, 0];
+    foreach ($code as $index => $step) {
+        $times = 1;
+        if (is_numeric($step)) {
+            continue;
+        }
+        if (isset($code[$index + 1]) && is_numeric($code[$index + 1])) {
+            $nextNumbers = strspn($codeString, $digits, $index + 1);
+            $times = (int) substr($codeString, $index + 1, $nextNumbers);
+        }
 
-	foreach ($code as $index => $step) {
-		$times = 1;
-		if (is_numeric($step)) {
-			continue;
-		}
-		if (isset($code[$index + 1]) && is_numeric($code[$index + 1])) {
-			$nextNumbers = strspn($codeString, $digits, $index +1);
-			$times = (int) substr($codeString, $index + 1, $nextNumbers);
-		}
+        if ($step === 'F') {
+            [$grid, $position] = move($grid, $facing, $times, $position);
+        } elseif ($step === 'L' || $step === 'R') {
+            $facing = turn($step, $facing, $times);
+        }
+    }
 
-		if ($step === 'F') {
-			[$grid, $position] = move($grid, $facing, $times, $position);
-		}elseif ($step === 'L' || $step === 'R') {
-			$facing = turn($step, $facing, $times);
-		}
-	}
+    $returnString = "";
+    foreach ($grid as $index => $row) {
+        $returnString .= implode('', $row);
+        if ($index < count($grid) - 1) {
+            $returnString .= "\r\n";
+        }
+    }
 
-	$returnString = "";
-	foreach ($grid as $index => $row) {
-		$returnString .= implode('', $row);
-		if ($index < count($grid) - 1) {
-			$returnString .= "\r\n";
-		}
-	}
-
-	return $returnString;
+    return $returnString;
 }
 
 function turn(string $rotationSide, int $facing, int $times): int
 {
-	if ($rotationSide === 'R') {
-		$facing = ($facing + $times) % 4;
-	}elseif ($rotationSide === 'L') {
-		$facing = ($facing - $times) % 4;
-		if ($facing < 0) {
-			$facing = abs($facing);
-			if ($facing === 1) {
-				$facing = 3;
-			}elseif ($facing === 3) {
-				$facing = 1;
-			}
-		}
-	}
-	return $facing;
+    if ($rotationSide === 'R') {
+        $facing = ($facing + $times) % 4;
+    } elseif ($rotationSide === 'L') {
+        $facing = ($facing - $times) % 4;
+        if ($facing < 0) {
+            $facing = abs($facing);
+            if ($facing === 1) {
+                $facing = 3;
+            } elseif ($facing === 3) {
+                $facing = 1;
+            }
+        }
+    }
+    return $facing;
 }
 
 function move(array $grid, int $facing, int $times, array $position): array
 {
-	$moveMap = [
-		0 => [-1, 0],
-		1 => [0, 1],
-		2 => [1, 0],
-		3 => [0, -1],
-	];
-	for ($i = 0; $i < $times; $i++) {
-		if (!isset($grid[$position[0] + $moveMap[$facing][0]][$position[1] + $moveMap[$facing][1]])) {
-			[$grid, $position] = extendGrid($grid, $facing, $position);
-		}
-		$grid[$position[0] + $moveMap[$facing][0]][$position[1] + $moveMap[$facing][1]] = '*';
-		$position = [$position[0] + $moveMap[$facing][0], $position[1] + $moveMap[$facing][1]];
-	}
+    $moveMap = [
+        0 => [-1, 0],
+        1 => [0, 1],
+        2 => [1, 0],
+        3 => [0, -1],
+    ];
+    for ($i = 0; $i < $times; $i++) {
+        if (!isset($grid[$position[0] + $moveMap[$facing][0]][$position[1] + $moveMap[$facing][1]])) {
+            [$grid, $position] = extendGrid($grid, $facing, $position);
+        }
+        $grid[$position[0] + $moveMap[$facing][0]][$position[1] + $moveMap[$facing][1]] = '*';
+        $position = [$position[0] + $moveMap[$facing][0], $position[1] + $moveMap[$facing][1]];
+    }
 
-	return [$grid, $position];
+    return [$grid, $position];
 }
 
 function extendGrid(array $grid, int $facing, $position): array
 {
-	if ($facing === 0 || $facing === 2) {
-		$empty = array_fill(0, count($grid[0]), ' ');
-		if ($facing === 0) {
-			array_unshift($grid, $empty);
-			$position[0] += 1;
-		}else {
-			$grid[] = $empty;
-		}
-	}elseif ($facing === 1 || $facing === 3) {
-		foreach ($grid as $index => $row) {
-			if ($facing === 1) {
-				$row[] = ' ';
-			}else {
-				array_unshift($row, ' ');
-			}
-			$grid[$index] = $row;
-		}
-		if ($facing === 3) {
-			$position[1] += 1;
-		}
-	}
-	return [array_values($grid), $position];
+    if ($facing === 0 || $facing === 2) {
+        $empty = array_fill(0, count($grid[0]), ' ');
+        if ($facing === 0) {
+            array_unshift($grid, $empty);
+            $position[0] += 1;
+        } else {
+            $grid[] = $empty;
+        }
+    } elseif ($facing === 1 || $facing === 3) {
+        foreach ($grid as $index => $row) {
+            if ($facing === 1) {
+                $row[] = ' ';
+            } else {
+                array_unshift($row, ' ');
+            }
+            $grid[$index] = $row;
+        }
+        if ($facing === 3) {
+            $position[1] += 1;
+        }
+    }
+    return [array_values($grid), $position];
 }

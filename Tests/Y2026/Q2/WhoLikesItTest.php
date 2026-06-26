@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Y2026\Q2;
 
 use PHPUnit\Framework\TestCase;
+
 require_once __DIR__ . '/../../../Kata/Y2026/Q2/WhoLikesIt.php';
 use function Kata\Y2026\Q2\likes;
 
@@ -17,4 +20,3 @@ class WhoLikesItTest extends TestCase
         $this->assertSame('Alex, Jacob and 2 others like this', likes(['Alex', 'Jacob', 'Mark', 'Max']));
     }
 }
-

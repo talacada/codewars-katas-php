@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 There is an array of strings. All strings contain similar letters except one. Try to find it!
 

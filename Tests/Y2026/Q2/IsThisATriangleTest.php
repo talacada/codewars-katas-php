@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Y2026\Q2;
 
 use PHPUnit\Framework\TestCase;
+
 require_once __DIR__ . '/../../../Kata/Y2026/Q2/IsThisATriangle.php';
 use function Kata\Y2026\Q2\isTriangle;
 
@@ -17,4 +20,3 @@ class IsThisATriangleTest extends TestCase
         $this->assertFalse(isTriangle(1, 2, 9));
     }
 }
-

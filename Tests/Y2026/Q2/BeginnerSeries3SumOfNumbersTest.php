@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Y2026\Q2;
 
 use PHPUnit\Framework\TestCase;
+
 require_once __DIR__ . '/../../../Kata/Y2026/Q2/BeginnerSeries3SumOfNumbers.php';
 use function Kata\Y2026\Q2\getSum;
 
@@ -18,4 +21,3 @@ class BeginnerSeries3SumOfNumbersTest extends TestCase
         $this->assertSame(2, getSum(-1, 2));
     }
 }
-
