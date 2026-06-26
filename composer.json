@@ -22,9 +22,9 @@
     },
     "scripts": {
         "unit": "phpunit --colors=always",
-        "cs": "php-cs-fixer fix --dry-run --diff",
-        "stan": "phpstan analyse",
-        "cs-fix": "php-cs-fixer fix",
+        "cs": "php-cs-fixer fix --dry-run --diff --ansi",
+        "stan": "phpstan analyse --ansi",
+        "cs-fix": "php-cs-fixer fix --ansi",
         "ready": [
             "@cs",
             "@stan",

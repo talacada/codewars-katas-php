@@ -21,6 +21,8 @@ function find($integers)
 {
     $even = 0;
     $odd = 0;
+    $finalEvenNum = 0;
+    $finalOddNum = 0;
     foreach ($integers as $inte) {
         if ($inte % 2 === 0) {
             $even++;

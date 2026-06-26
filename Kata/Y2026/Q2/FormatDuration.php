@@ -54,11 +54,11 @@ class FormatDuration
     private int $years = 0;
     private string $stringWithNoSeparators = '';
     private string $returnString = '';
-    public const int SECONDINSECOND = 1;
-    public const int SECONDSINMINUTE = 60;
-    public const int SECONDSINDHOUR = 3600;
-    public const int SECONDSINDDAY = 86400;
-    public const int SECONDSINDYEAR = 31536000;
+    public const  SECONDINSECOND = 1;
+    public const SECONDSINMINUTE = 60;
+    public const SECONDSINDHOUR = 3600;
+    public const SECONDSINDDAY = 86400;
+    public const SECONDSINDYEAR = 31536000;
 
     public function __construct(int $seconds)
     {
@@ -76,23 +76,23 @@ class FormatDuration
     private function splitSecondsIntoComponents(): void
     {
         if ($this->inputSeconds / self::SECONDSINDYEAR >= 1) {
-            $this->years = floor($this->inputSeconds / self::SECONDSINDYEAR);
+            $this->years = (int) floor($this->inputSeconds / self::SECONDSINDYEAR);
             $this->inputSeconds = $this->inputSeconds - $this->years  * self::SECONDSINDYEAR;
         }
         if ($this->inputSeconds / self::SECONDSINDDAY >= 1) {
-            $this->days = floor($this->inputSeconds / self::SECONDSINDDAY);
+            $this->days = (int) floor($this->inputSeconds / self::SECONDSINDDAY);
             $this->inputSeconds = $this->inputSeconds - $this->days * self::SECONDSINDDAY;
         }
         if ($this->inputSeconds / self::SECONDSINDHOUR >= 1) {
-            $this->hours = floor($this->inputSeconds / self::SECONDSINDHOUR);
+            $this->hours = (int) floor($this->inputSeconds / self::SECONDSINDHOUR);
             $this->inputSeconds = $this->inputSeconds - $this->hours * self::SECONDSINDHOUR;
         }
         if ($this->inputSeconds / self::SECONDSINMINUTE >= 1) {
-            $this->minutes = floor($this->inputSeconds / self::SECONDSINMINUTE);
+            $this->minutes = (int) floor($this->inputSeconds / self::SECONDSINMINUTE);
             $this->inputSeconds = $this->inputSeconds - $this->minutes * self::SECONDSINMINUTE;
         }
         if ($this->inputSeconds / self::SECONDINSECOND >= 1) {
-            $this->seconds = floor($this->inputSeconds / self::SECONDINSECOND);
+            $this->seconds = (int) floor($this->inputSeconds / self::SECONDINSECOND);
             $this->inputSeconds = $this->inputSeconds - $this->seconds * self::SECONDINSECOND;
         }
 

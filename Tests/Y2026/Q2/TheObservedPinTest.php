@@ -25,7 +25,7 @@ class TheObservedPinTest extends TestCase
             "369" => ["339","366","399","658","636","258","268","669","668","266","369","398","256","296","259","368","638","396","238","356","659","639","666","359","336","299","338","696","269","358","656","698","699","298","236","239"],
         ];
         foreach ($expectations as $pin => $expect) {
-            $actual = getPINs($pin);
+            $actual = getPINs((string) $pin);
             sort($actual);
             sort($expect);
             $this->assertSame($expect, $actual);

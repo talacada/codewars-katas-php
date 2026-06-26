@@ -1,6 +1,9 @@
 parameters:
     level: 1
+    phpVersion: 80100
     paths:
         - Kata/
         - Tests/
+    scanFiles:
+        - _codewars_stubs.php
     tmpDir: .phpstan-cache

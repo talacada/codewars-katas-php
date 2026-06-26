@@ -51,6 +51,7 @@ class TheObservedPin
     public function getAllCombinations(): array
     {
         $possiblePressed = [];
+        $possibleCombinations = [];
         foreach ($this->originalySeen as $seenNumber) {
             $possibleCombinations[] = $this->getNeighbours((int)$seenNumber);
         }
@@ -89,5 +90,6 @@ class TheObservedPin
                 return [$keypadrowIndex, array_search($seenNumber, $keypadrow, true)];
             }
         }
+        return [];
     }
 }

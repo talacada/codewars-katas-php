@@ -422,7 +422,7 @@ class Pattern
 {
     private int $name;
 
-    public function __construct(string $name)
+    public function __construct(int $name)
     {
         $this->name = $name;
     }
