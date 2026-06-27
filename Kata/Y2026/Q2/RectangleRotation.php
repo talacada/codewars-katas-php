@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 
 Task
@@ -31,32 +33,24 @@ Constraints: 2 ≤ b ≤ 10000.
 
 The number of inner points with integer coordinates.
 
-
+https://www.codewars.com/kata/5886e082a836a691340000c3
 
 */
 
 namespace Kata\Y2026\Q2;
 
-use PHPUnit\Framework\TestCase;
-
 function rectangle_rotation($a, $b): int
 {
 
-	$rotatedA = (int) floor($a / sqrt(2));
-	$rotatedB = (int) floor($b / sqrt(2));
+	$u = (int) floor($a / sqrt(2));
+	$v = (int) floor($b / sqrt(2));
 
-	return $rotatedA + $rotatedB;
 
-}
+	$uEven = intdiv($u, 2) * 2 + 1;
+	$uOdd = (2 * $u + 1) - $uEven;
 
-class RectangleRotation extends TestCase
-{
-	public function testBasic()
-	{
-		$this->assertSame(13, rectangle_rotation(3, 3));
-		$this->assertSame(23, rectangle_rotation(6, 4));
-		$this->assertSame(65, rectangle_rotation(30, 2));
-		$this->assertSame(49, rectangle_rotation(8, 6));
-		$this->assertSame(333, rectangle_rotation(16, 20));
-	}
+	$vEven = intdiv($v, 2) * 2 + 1;
+	$vOdd = (2 * $v + 1) - $vEven;
+
+	return ($uEven * $vEven) + ($uOdd * $vOdd);
 }

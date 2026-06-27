@@ -90,6 +90,8 @@ When the user shares broken code: read it carefully, identify the smallest likel
 
 When the user requests a review, is finishing a kata, or is otherwise nearing completion, remind them that you can update `README.md` with the completed kata entry (name, kyu, solution link, completion date).
 
+When updating the README, always determine the kata's difficulty (kyu) from the Codewars API. Each kata file contains a Codewars URL in its header comment. Use that URL's kata ID to query `https://www.codewars.com/api/v1/code-challenges/{id}` and extract the rank name. Never guess the difficulty.
+
 ### Review behavior
 
 When reviewing code, use this structure and prioritize: **bugs → readability → optimization**.
