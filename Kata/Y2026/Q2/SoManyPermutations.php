@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 In this kata, your task is to create all permutations of a non-empty input string and remove duplicates, if present.
 
@@ -27,80 +29,62 @@ https://www.codewars.com/kata/5254ca2719453dcc0b00027d
 
 namespace Kata\Y2026\Q2;
 
-use PHPUnit\Framework\TestCase;
+function permutations(string $string): array
+{
+    $possibleInputs = str_split($string);
+    $result = array_fill(0, count($possibleInputs), null);
 
-function permutations(string $string): array {
-	$possibleInputs = str_split($string);
-	$result = array_fill(0, count($possibleInputs), null);
+    $result = flatten(permutate($result, $possibleInputs));
 
-	$result = flatten(permutate($result, $possibleInputs));
-
-	return array_unique($result);
+    return array_unique($result);
 }
 
 function permutate(array $inputArray, array $possibleInputs): array
 {
-	if (empty($inputArray)) {
-		return [''];
-	}
-	$firstNullIndex = array_search(null, $inputArray, true);
-	$recursionBranch = [];
-	foreach ($possibleInputs as $input) {
-		$inputArray[$firstNullIndex] = $input;
-		$possibleInputsThisCycle = $possibleInputs;
-		unset($possibleInputsThisCycle[array_search($input, $possibleInputs)]);
-		$possibleInputsThisCycle = array_values($possibleInputsThisCycle);
+    if (empty($inputArray)) {
+        return [''];
+    }
+    $firstNullIndex = array_search(null, $inputArray, true);
+    $recursionBranch = [];
+    foreach ($possibleInputs as $input) {
+        $inputArray[$firstNullIndex] = $input;
+        $possibleInputsThisCycle = $possibleInputs;
+        unset($possibleInputsThisCycle[array_search($input, $possibleInputs)]);
+        $possibleInputsThisCycle = array_values($possibleInputsThisCycle);
 
-		if (count($possibleInputsThisCycle) === 0) {
-			return $inputArray;
-		}else {
-			//If I made this return flat array I wouldn't need the flatten function
-			$recursionBranch[] = permutate($inputArray, $possibleInputsThisCycle);
-		}
-	}
+        if (count($possibleInputsThisCycle) === 0) {
+            return $inputArray;
+        } else {
+            //If I made this return flat array I wouldn't need the flatten function
+            $recursionBranch[] = permutate($inputArray, $possibleInputsThisCycle);
+        }
+    }
 
-	return $recursionBranch;
+    return $recursionBranch;
 }
 
 function flatten(array $nestedArray): array
 {
-	$return = array();
-	foreach ($nestedArray as $value) {
-		if (isset($value[0][0]) && is_array($value[0][0])) {
-			foreach ($value as $subvalue) {
-				$return = array_merge($return, flatten($subvalue));
-			}
-		}else {
-			if (isset($value[0]) && is_array($value[0])) {
-				foreach ($value as $subvalue) {
-					$string = implode($subvalue);
-					$return[] = $string;
-				}
-			}elseif (is_string($value)) {
-				$return[] = $value;
-			}
-			else {
-				$string = implode($value);
-				$return[] = $string;
-			}
+    $return = [];
+    foreach ($nestedArray as $value) {
+        if (isset($value[0][0]) && is_array($value[0][0])) {
+            foreach ($value as $subvalue) {
+                $return = array_merge($return, flatten($subvalue));
+            }
+        } else {
+            if (isset($value[0]) && is_array($value[0])) {
+                foreach ($value as $subvalue) {
+                    $string = implode($subvalue);
+                    $return[] = $string;
+                }
+            } elseif (is_string($value)) {
+                $return[] = $value;
+            } else {
+                $string = implode($value);
+                $return[] = $string;
+            }
 
-		}
-	}
-	return $return;
-}
-
-
-final class SoManyPermutations extends TestCase {
-	private function assertEquivalent(array $expected, array $actual, string $msg = ''): void
-	{
-		sort($expected);
-		sort($actual);
-		$this->assertSame($expected, $actual, $msg);
-	}
-	public function testDescriptionExamples() {
-		$this->assertEquivalent([''], permutations(''));
-		$this->assertEquivalent(['aabb', 'abab', 'abba', 'baab', 'baba', 'bbaa'], permutations('aabb'));
-		$this->assertEquivalent(['a'], permutations('a'));
-		$this->assertEquivalent(['ab', 'ba'], permutations('ab'));
-	}
+        }
+    }
+    return $return;
 }

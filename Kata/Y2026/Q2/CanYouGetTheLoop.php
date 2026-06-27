@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 You are given a node that is the beginning of a linked list. This list contains a dangling piece
 and a loop. Your objective is to determine the length of the loop.
@@ -15,7 +17,6 @@ https://www.codewars.com/kata/can-you-get-the-loop
 */
 
 namespace Kata\Y2026\Q2;
-use PHPUnit\Framework\TestCase;
 
 function loop_size(Node $node): int
 {

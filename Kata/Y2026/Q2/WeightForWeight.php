@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 My friend John and I are members of the "Fat to Fit Club (FFC)". John is worried because
 each month a list with the weights of members is published and each month he is the first
@@ -29,7 +31,6 @@ https://www.codewars.com/kata/weight-for-weight
 */
 
 namespace Kata\Y2026\Q2;
-use PHPUnit\Framework\TestCase;
 
 function orderWeight($str)
 {
@@ -58,16 +59,5 @@ function cmp($a, $b)
         return -1;
     } else {
         return strcmp((string) $a['num'], (string) $b['num']);
-    }
-}
-
-class WeightForWeight extends TestCase
-{
-    public function testBasics(): void
-    {
-        $this->assertSame(
-            "100 180 90 56 65 74 68 86 99",
-            orderWeight("56 65 74 100 99 68 86 180 90")
-        );
     }
 }

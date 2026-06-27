@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 Screen Locking Patterns
 You might already be familiar with many smartphones that allow you to use a geometric pattern as a security measure. To unlock the device, you need to connect a sequence of dots/points in a grid by swiping your finger without lifting it as you trace the pattern through the screen.
@@ -41,72 +43,74 @@ namespace Kata\Y2026\Q2;
 
 class ScreenLockingPatterns
 {
-	private array $grid;
-	private array $startIndex;
-	private mixed $finalLength;
+    private array $grid;
+    private array $startIndex;
+    private mixed $finalLength;
 
-	function __construct($start, $length) {
-		$startLetter = ord(($start)) - ord('A');
-		$this->startIndex[0] = intdiv($startLetter, 3);
-		$this->startIndex[1] = $startLetter % 3;
-		$this->grid = $this->createGrid();
-		$this->finalLength = $length;
-	}
+    public function __construct($start, $length)
+    {
+        $startLetter = ord(($start)) - ord('A');
+        $this->startIndex[0] = intdiv($startLetter, 3);
+        $this->startIndex[1] = $startLetter % 3;
+        $this->grid = $this->createGrid();
+        $this->finalLength = $length;
+    }
 
-	private function createGrid()
-	{
-		$grid = [
-			[0, 0, 0],	// 	A  B  C
-			[0, 0, 0],  //	D  E  F
-			[0, 0, 0]	// 	G  H  I
-		];
+    private function createGrid()
+    {
+        $grid = [
+            [0, 0, 0],	// 	A  B  C
+            [0, 0, 0],  //	D  E  F
+            [0, 0, 0]	// 	G  H  I
+        ];
 
-		$grid[$this->startIndex[0]][$this->startIndex[1]] = 1;
-		return $grid;
-	}
+        $grid[$this->startIndex[0]][$this->startIndex[1]] = 1;
+        return $grid;
+    }
 
-	public function calculateFinalLength():int {
-		if ($this->finalLength < 1 || $this->finalLength > 9) {
-			return 0;
-		}else if ($this->finalLength === 1) {
-			return 1;
-		}
-		$count = $this->calculate($this->grid, $this->startIndex);
+    public function calculateFinalLength(): int
+    {
+        if ($this->finalLength < 1 || $this->finalLength > 9) {
+            return 0;
+        } elseif ($this->finalLength === 1) {
+            return 1;
+        }
+        $count = $this->calculate($this->grid, $this->startIndex);
 
-		return $count;
-	}
-	private function calculate(array $grid, array $on, $nowOnLength = 1): int
-	{
-		$combinations = 0;
-		$neighbours = [[1, 0], [-1, 0], [0, 1], [0, -1], [-1, -1], [-1, 1], [1, -1], [1, 1]];
-		$cornerSuperDiagonals = [[-1, +2], [-2, +1], [-2, -1], [-1, -2], [+1, -2], [+1, +2], [+2, +1], [+2, -1]];
-		$overCompleted = [[0, +2], [0, -2], [2, 0], [-2, 0], [2,2], [2,-2], [-2,2], [-2,-2]];
-		$availableMoves = array_merge($neighbours, $cornerSuperDiagonals, $overCompleted);
+        return $count;
+    }
+    private function calculate(array $grid, array $on, $nowOnLength = 1): int
+    {
+        $combinations = 0;
+        $neighbours = [[1, 0], [-1, 0], [0, 1], [0, -1], [-1, -1], [-1, 1], [1, -1], [1, 1]];
+        $cornerSuperDiagonals = [[-1, +2], [-2, +1], [-2, -1], [-1, -2], [+1, -2], [+1, +2], [+2, +1], [+2, -1]];
+        $overCompleted = [[0, +2], [0, -2], [2, 0], [-2, 0], [2,2], [2,-2], [-2,2], [-2,-2]];
+        $availableMoves = array_merge($neighbours, $cornerSuperDiagonals, $overCompleted);
 
 
-		foreach ($availableMoves as $move) {
-			$possibleFinalPosition = [$on[0] + $move[0], $on[1] + $move[1]];
-			if (isset($grid[$possibleFinalPosition[0]][$possibleFinalPosition[1]])) {
-				if ($grid[$possibleFinalPosition[0]][$possibleFinalPosition[1]] === 0) {
-					$possibleGridAfterMove = $grid;
-					$possibleGridAfterMove[$possibleFinalPosition[0]][$possibleFinalPosition[1]] = 1;
-					if (in_array($move, $overCompleted)) {
-						$betweenMove = [$move[0] / 2, $move[1] / 2];
-						$betweenMovePosition = [$on[0] + $betweenMove[0], $on[1] + $betweenMove[1]];
-						if ($possibleGridAfterMove[$betweenMovePosition[0]][$betweenMovePosition[1]] === 0) {
-							continue;
-						}
-					}
+        foreach ($availableMoves as $move) {
+            $possibleFinalPosition = [$on[0] + $move[0], $on[1] + $move[1]];
+            if (isset($grid[$possibleFinalPosition[0]][$possibleFinalPosition[1]])) {
+                if ($grid[$possibleFinalPosition[0]][$possibleFinalPosition[1]] === 0) {
+                    $possibleGridAfterMove = $grid;
+                    $possibleGridAfterMove[$possibleFinalPosition[0]][$possibleFinalPosition[1]] = 1;
+                    if (in_array($move, $overCompleted)) {
+                        $betweenMove = [$move[0] / 2, $move[1] / 2];
+                        $betweenMovePosition = [$on[0] + $betweenMove[0], $on[1] + $betweenMove[1]];
+                        if ($possibleGridAfterMove[$betweenMovePosition[0]][$betweenMovePosition[1]] === 0) {
+                            continue;
+                        }
+                    }
 
-					if ($nowOnLength < $this->finalLength - 1) {
-						$combinations += $this->calculate($possibleGridAfterMove, $possibleFinalPosition, $nowOnLength + 1);
-					}else {
-						$combinations ++;
-					}
-				}
-			}
-		}
+                    if ($nowOnLength < $this->finalLength - 1) {
+                        $combinations += $this->calculate($possibleGridAfterMove, $possibleFinalPosition, $nowOnLength + 1);
+                    } else {
+                        $combinations++;
+                    }
+                }
+            }
+        }
 
-		return $combinations;
-	}
+        return $combinations;
+    }
 }

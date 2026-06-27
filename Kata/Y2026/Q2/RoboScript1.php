@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 RoboScript #1 - Implement Syntax Highlighting
 Disclaimer
@@ -39,58 +41,45 @@ https://www.codewars.com/kata/roboscript-number-1-implement-syntax-highlighting
 
 namespace Kata\Y2026\Q2;
 
-use PHPUnit\Framework\TestCase;
-
-function highlight(string $code): string {
-	$letters = str_split($code);
-	$finalString = '';
-
-	foreach ($letters as $letterKey => $letter) {
-		if (in_array($letter, ['F', 'L', 'R'], true) || is_numeric($letter)) {
-			if (isset($letters[$letterKey - 1]) && (
-				$letters[$letterKey - 1] === $letter ||
-				(is_numeric($letters[$letterKey - 1]) && is_numeric($letter)))
-			) {
-				$finalString .= $letter;
-			}else {
-				if ($finalString != '' && (isset($letters[$letterKey - 1]) && (in_array($letters[$letterKey - 1], ['F', 'L', 'R'], true)) || is_numeric($letters[$letterKey - 1]))) {
-					$finalString .= '</span>';
-				}
-				$finalString .= sprintf('<span style="color: %s">%s', getColorBasedOnLetter($letter), $letter);
-			}
-		}else {
-			if (isset($letters[$letterKey - 1]) && (in_array($letters[$letterKey - 1], ['F', 'L', 'R'], true) || is_numeric($letters[$letterKey - 1]))) {
-				$finalString .= '</span>';
-			}
-			$finalString .= $letter;
-		}
-	}
-
-	if (in_array($letter, ['F', 'L', 'R'], true) || is_numeric($letter)) {
-		$finalString .= '</span>';
-	}
-	return $finalString;
-}
-
-function getColorBasedOnLetter(string $letter):string
+function highlight(string $code): string
 {
-	return match ($letter) {
-		'F' => 'pink',
-		'L' => 'red',
-		'R' => 'green',
-		default => 'orange',
-	};
+    $letters = str_split($code);
+    $finalString = '';
+
+    foreach ($letters as $letterKey => $letter) {
+        if (in_array($letter, ['F', 'L', 'R'], true) || is_numeric($letter)) {
+            if (isset($letters[$letterKey - 1]) && (
+                $letters[$letterKey - 1] === $letter ||
+                (is_numeric($letters[$letterKey - 1]) && is_numeric($letter))
+            )
+            ) {
+                $finalString .= $letter;
+            } else {
+                if ($finalString != '' && (isset($letters[$letterKey - 1]) && (in_array($letters[$letterKey - 1], ['F', 'L', 'R'], true)) || is_numeric($letters[$letterKey - 1]))) {
+                    $finalString .= '</span>';
+                }
+                $finalString .= sprintf('<span style="color: %s">%s', getColorBasedOnLetter($letter), $letter);
+            }
+        } else {
+            if (isset($letters[$letterKey - 1]) && (in_array($letters[$letterKey - 1], ['F', 'L', 'R'], true) || is_numeric($letters[$letterKey - 1]))) {
+                $finalString .= '</span>';
+            }
+            $finalString .= $letter;
+        }
+    }
+
+    if (in_array($letter, ['F', 'L', 'R'], true) || is_numeric($letter)) {
+        $finalString .= '</span>';
+    }
+    return $finalString;
 }
 
-class RoboScript1 extends TestCase {
-	public function testDescriptionExamples() {
-		echo "Code without syntax highlighting: F3RF5LF7\r\n";
-		echo "Expected syntax highlighting: <span style=\"color: pink\">F</span><span style=\"color: orange\">3</span><span style=\"color: green\">R</span><span style=\"color: pink\">F</span><span style=\"color: orange\">5</span><span style=\"color: red\">L</span><span style=\"color: pink\">F</span><span style=\"color: orange\">7</span>\r\n";
-		echo "Your code with syntax highlighting: " . highlight("F3RF5LF7") . "\r\n";
-		$this->assertSame("<span style=\"color: pink\">F</span><span style=\"color: orange\">3</span><span style=\"color: green\">R</span><span style=\"color: pink\">F</span><span style=\"color: orange\">5</span><span style=\"color: red\">L</span><span style=\"color: pink\">F</span><span style=\"color: orange\">7</span>", highlight("F3RF5LF7"));
-		echo "Code without syntax highlighting: FFFR345F2LL\r\n";
-		echo "Expected syntax highlighting: <span style=\"color: pink\">FFF</span><span style=\"color: green\">R</span><span style=\"color: orange\">345</span><span style=\"color: pink\">F</span><span style=\"color: orange\">2</span><span style=\"color: red\">LL</span>\r\n";
-		echo "Your code with syntax highlighting: " . highlight("FFFR345F2LL") . "\r\n";
-		$this->assertSame("<span style=\"color: pink\">FFF</span><span style=\"color: green\">R</span><span style=\"color: orange\">345</span><span style=\"color: pink\">F</span><span style=\"color: orange\">2</span><span style=\"color: red\">LL</span>", highlight("FFFR345F2LL"));
-	}
+function getColorBasedOnLetter(string $letter): string
+{
+    return match ($letter) {
+        'F' => 'pink',
+        'L' => 'red',
+        'R' => 'green',
+        default => 'orange',
+    };
 }

@@ -13,3 +13,5 @@ coverage/
 /.idea
 package.xml
 /.claude
+.phpstan-cache/
+.php-cs-fixer.cache

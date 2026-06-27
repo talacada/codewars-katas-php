@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 In this kata you have to write a simple Morse code decoder. While the Morse code is now
 mostly superseded by voice and digital data communication channels, it still has its use
@@ -32,7 +34,6 @@ https://www.codewars.com/kata/decode-the-morse-code
 */
 
 namespace Kata\Y2026\Q2;
-use PHPUnit\Framework\TestCase;
 
 function remove_whitespace_elements($value)
 {

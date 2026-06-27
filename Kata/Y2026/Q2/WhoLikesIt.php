@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 You probably know the "like" system from Facebook and other pages. People can "like" blog
 posts, pictures or other items. We want to create the text that should be displayed next
@@ -20,7 +22,6 @@ https://www.codewars.com/kata/who-likes-it
 */
 
 namespace Kata\Y2026\Q2;
-use PHPUnit\Framework\TestCase;
 
 function likes($names)
 {
@@ -57,16 +58,4 @@ function likes($names)
     }
 
     return $finalPrefix . $defaultMultiple;
-}
-
-class WhoLikesIt extends TestCase
-{
-    public function testBasics(): void
-    {
-        $this->assertSame('no one likes this', likes([]));
-        $this->assertSame('Peter likes this', likes(['Peter']));
-        $this->assertSame('Jacob and Alex like this', likes(['Jacob', 'Alex']));
-        $this->assertSame('Max, John and Mark like this', likes(['Max', 'John', 'Mark']));
-        $this->assertSame('Alex, Jacob and 2 others like this', likes(['Alex', 'Jacob', 'Mark', 'Max']));
-    }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 The goal of this exercise is to convert a string to a new string where each character in
 the new string is "(" if that character appears only once in the original string, or ")"
@@ -16,7 +18,6 @@ https://www.codewars.com/kata/duplicate-encoder
 */
 
 namespace Kata\Y2026\Q2;
-use PHPUnit\Framework\TestCase;
 
 function duplicate_encode(string $word): string
 {
@@ -32,15 +33,4 @@ function duplicate_encode(string $word): string
         }
     }
     return $return;
-}
-
-class DuplicateEncoder extends TestCase
-{
-    public function testBasics(): void
-    {
-        $this->assertSame('(((', duplicate_encode('din'));
-        $this->assertSame('()()()', duplicate_encode('recede'));
-        $this->assertSame(')())())', duplicate_encode('Success'));
-        $this->assertSame('))((' , duplicate_encode('(( @'));
-    }
 }

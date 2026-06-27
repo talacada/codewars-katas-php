@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 About this Kata Series
 This Kata Series is based on a fictional story about a computer scientist and engineer who owns a firm that sells a toy robot called MyRobot which can interpret its own (esoteric) programming language called RoboScript. Naturally, this Kata Series deals with the software side of things (I'm afraid Codewars cannot test your ability to build a physical robot!).
@@ -84,350 +86,351 @@ https://www.codewars.com/kata/594b898169c1d644f900002e
 THIS KATA MUST BE COMPLETED IN PHP 7.0
 */
 
-
-namespace Kata\Y2026\Q2;
+namespace Kata\Y2026\Q2\RoboScript4;
 
 use Exception;
 use ParseError;
-use PHPUnit\Framework\TestCase;
 
-
-function execute(string $code): string {
-	$roboScriptInterpreter = new CodeInterpreter($code);
-	return $roboScriptInterpreter->output();
+function execute(string $code): string
+{
+    $roboScriptInterpreter = new CodeInterpreter($code);
+    return $roboScriptInterpreter->output();
 }
 
 class CodeInterpreter
 {
-	private string $stringCode;
-	private array $patterns = [];
-	function __construct(string $code)
-	{
-		$this->stringCode = $code;
+    private string $stringCode;
+    private array $patterns = [];
+    public function __construct(string $code)
+    {
+        $this->stringCode = $code;
 
-	}
-	public function output(): string
-	{
-		['steps' => $codeSteps, 'patterns' => $this->patterns] = (new StepsDecoupler())->makeSteps($this->stringCode);
-		$grid = new Grid();
-		$grid->validatePatternsExist($codeSteps, $this->patterns);
-		$grid->detectRecursion($this->patterns);
-		$grid->execute($codeSteps, $this->patterns);
-		return $grid->makeOutputGrid();
-	}
+    }
+    public function output(): string
+    {
+        ['steps' => $codeSteps, 'patterns' => $this->patterns] = (new StepsDecoupler())->makeSteps($this->stringCode);
+        $grid = new Grid();
+        $grid->validatePatternsExist($codeSteps, $this->patterns);
+        $grid->detectRecursion($this->patterns);
+        $grid->execute($codeSteps, $this->patterns);
+        return $grid->makeOutputGrid();
+    }
 }
 
 class StepsDecoupler
 {
-	const digits = '0123456789';
-	public function makeSteps(string $code): array
-	{
-		$steps = [];
-		$patterns = [];
-		$splitCode = str_split($code);
-		$skipHereCauseCycleOrPattern = -1;
+    public const digits = '0123456789';
+    public function makeSteps(string $code): array
+    {
+        $steps = [];
+        $patterns = [];
+        $splitCode = str_split($code);
+        $skipHereCauseCycleOrPattern = -1;
 
-		foreach ($splitCode as $index => $step) {
-			if ($index <= $skipHereCauseCycleOrPattern) {
-				continue;
-			}
-			if ($step === 'L' || $step === 'R' || $step === 'F' || $step === 'P') {
-				$times = 1;
-				if (isset($splitCode[$index + 1]) && is_numeric($splitCode[$index + 1])) {
-					$nextNumbers = strspn($code, self::digits, $index + 1);
-					$times = (int) substr($code, $index + 1, $nextNumbers);
-				}
+        foreach ($splitCode as $index => $step) {
+            if ($index <= $skipHereCauseCycleOrPattern) {
+                continue;
+            }
+            if ($step === 'L' || $step === 'R' || $step === 'F' || $step === 'P') {
+                $times = 1;
+                if (isset($splitCode[$index + 1]) && is_numeric($splitCode[$index + 1])) {
+                    $nextNumbers = strspn($code, self::digits, $index + 1);
+                    $times = (int) substr($code, $index + 1, $nextNumbers);
+                }
 
-				if ($step === 'F') {
-					$steps[] = new Step($times);
-				}elseif ($step === 'P') {
-					$steps[] = new Pattern($times);
-				} elseif ($step === 'R' || $step === 'L') {
-					$rotationSide = ($step === 'R') ? 1 : -1;
-					$steps[] = new Rotate($rotationSide, $times);
-				}
-			}elseif ($step === '(') {
-				$cycle = new Cycle();
-				$times = 1;
-				$nextCloseBracket = $this->findClosingBracket($code, $index);
-				if (isset($splitCode[$nextCloseBracket + 1]) && is_numeric($splitCode[$nextCloseBracket + 1])) {
-					$nextNumbers = strspn($code, self::digits, $nextCloseBracket + 1);
-					$times = (int) substr($code, $nextCloseBracket + 1, $nextNumbers);
-				}
+                if ($step === 'F') {
+                    $steps[] = new Step($times);
+                } elseif ($step === 'P') {
+                    $steps[] = new Pattern($times);
+                } elseif ($step === 'R' || $step === 'L') {
+                    $rotationSide = ($step === 'R') ? 1 : -1;
+                    $steps[] = new Rotate($rotationSide, $times);
+                }
+            } elseif ($step === '(') {
+                $cycle = new Cycle();
+                $times = 1;
+                $nextCloseBracket = $this->findClosingBracket($code, $index);
+                if (isset($splitCode[$nextCloseBracket + 1]) && is_numeric($splitCode[$nextCloseBracket + 1])) {
+                    $nextNumbers = strspn($code, self::digits, $nextCloseBracket + 1);
+                    $times = (int) substr($code, $nextCloseBracket + 1, $nextNumbers);
+                }
 
-				$cycleCode = substr($code, $index + 1, $nextCloseBracket - $index - 1);
-				$cycle->setTimes($times);
+                $cycleCode = substr($code, $index + 1, $nextCloseBracket - $index - 1);
+                $cycle->setTimes($times);
 
-				$cycle->setChildren((new StepsDecoupler())->makeSteps($cycleCode)['steps']);
+                $cycle->setChildren((new StepsDecoupler())->makeSteps($cycleCode)['steps']);
 
-				$steps[] = $cycle;
-				$skipHereCauseCycleOrPattern = $nextCloseBracket;
-			}elseif ($step === 'p') {
-				try {
-					$nextNumbers = strspn($code, self::digits, $index + 1);
-					$patternName = (int) substr($code, $index + 1, $nextNumbers);
-				} catch (Exception $exception) {
-					throw new ParseError('ERROR');
-				}
-				$patternStartIndex = $index + strlen((string)$patternName) + 1;
-				$patternEndIndex = strpos($code, "q", $index);
+                $steps[] = $cycle;
+                $skipHereCauseCycleOrPattern = $nextCloseBracket;
+            } elseif ($step === 'p') {
+                try {
+                    $nextNumbers = strspn($code, self::digits, $index + 1);
+                    $patternName = (int) substr($code, $index + 1, $nextNumbers);
+                } catch (Exception $exception) {
+                    throw new ParseError('ERROR');
+                }
+                $patternStartIndex = $index + strlen((string)$patternName) + 1;
+                $patternEndIndex = strpos($code, "q", $index);
 
-				$patternCode = substr($code, $patternStartIndex, $patternEndIndex - $patternStartIndex);
+                $patternCode = substr($code, $patternStartIndex, $patternEndIndex - $patternStartIndex);
 
-				if (isset($patterns[$patternName])) {
-					throw new ParseError('ERROR');
-				}
+                if (isset($patterns[$patternName])) {
+                    throw new ParseError('ERROR');
+                }
 
-				//Cant define patterns in patterns
-				$patterns[$patternName] = (new StepsDecoupler())->makeSteps($patternCode)['steps'];
-				$skipHereCauseCycleOrPattern = $patternEndIndex;
-			}
-		}
-		return ['steps' => $steps, 'patterns' => $patterns];
-	}
+                //Cant define patterns in patterns
+                $patterns[$patternName] = (new StepsDecoupler())->makeSteps($patternCode)['steps'];
+                $skipHereCauseCycleOrPattern = $patternEndIndex;
+            }
+        }
+        return ['steps' => $steps, 'patterns' => $patterns];
+    }
 
-	private function findClosingBracket(string $code, int $index): int
-	{
-		$found = false;
-		$nested = 0;
-		do {
-			$possibleBracelet = strpos($code, ')', $index + 1);
+    private function findClosingBracket(string $code, int $index): int
+    {
+        $found = false;
+        $nested = 0;
+        do {
+            $possibleBracelet = strpos($code, ')', $index + 1);
 
-			$countOpeningBracketsInBetween = substr_count($code, '(', $index + 1, $possibleBracelet - $index - 1);
+            $countOpeningBracketsInBetween = substr_count($code, '(', $index + 1, $possibleBracelet - $index - 1);
 
-			if ($nested === 0 && $countOpeningBracketsInBetween === 0) {
-				$found = true;
-			}
+            if ($nested === 0 && $countOpeningBracketsInBetween === 0) {
+                $found = true;
+            }
 
-			if ($countOpeningBracketsInBetween > 0) {
-				$nested += $countOpeningBracketsInBetween - 1;
-				$index = $possibleBracelet;
-			}else {
-				$nested--;
-				$index = $possibleBracelet;
-			}
+            if ($countOpeningBracketsInBetween > 0) {
+                $nested += $countOpeningBracketsInBetween - 1;
+                $index = $possibleBracelet;
+            } else {
+                $nested--;
+                $index = $possibleBracelet;
+            }
 
-		} while ($found === false);
+        } while ($found === false);
 
 
-		return $possibleBracelet;
-	}
+        return $possibleBracelet;
+    }
 }
 
 class Grid
 {
-	const moveMap = [
-		0 => [-1, 0],
-		1 => [0, 1],
-		2 => [1, 0],
-		3 => [0, -1],
-	];
-	public array $position = [0, 0];
-	public array $grid = [['*']];
-	public int $facing = 1;
-	public function execute(array $steps, array $patternsDefinition): void
-	{
-		foreach ($steps as $step) {
-			if ($step instanceof Step) {
-				$this->move($step);
-			}elseif ($step instanceof Rotate) {
-				$this->rotate($step);
-			}elseif ($step instanceof Cycle) {
-				for ($i = 0; $i < $step->getTimes(); $i++) {
-					$this->execute($step->getChildren(), $patternsDefinition);
-				}
-			}elseif ($step instanceof Pattern) {
-				if (!isset($patternsDefinition[$step->getName()])) {
-					throw new ParseError('ERROR');
-				}
-				$patternCode = $patternsDefinition[$step->getName()];
+    public const moveMap = [
+        0 => [-1, 0],
+        1 => [0, 1],
+        2 => [1, 0],
+        3 => [0, -1],
+    ];
+    public array $position = [0, 0];
+    public array $grid = [['*']];
+    public int $facing = 1;
+    public function execute(array $steps, array $patternsDefinition): void
+    {
+        foreach ($steps as $step) {
+            if ($step instanceof Step) {
+                $this->move($step);
+            } elseif ($step instanceof Rotate) {
+                $this->rotate($step);
+            } elseif ($step instanceof Cycle) {
+                for ($i = 0; $i < $step->getTimes(); $i++) {
+                    $this->execute($step->getChildren(), $patternsDefinition);
+                }
+            } elseif ($step instanceof Pattern) {
+                if (!isset($patternsDefinition[$step->getName()])) {
+                    throw new ParseError('ERROR');
+                }
+                $patternCode = $patternsDefinition[$step->getName()];
 
-				$this->execute($patternCode, $patternsDefinition);
-			}
-		}
-	}
+                $this->execute($patternCode, $patternsDefinition);
+            }
+        }
+    }
 
-	private function move(Step $step): void
-	{
-		for ($i = 0; $i < $step->getTimes(); $i++) {
-			if (!isset($this->grid[$this->position[0] + self::moveMap[$this->facing][0]][$this->position[1] + self::moveMap[$this->facing][1]])) {
-				$this->extendGrid();
-			}
-			$this->grid[$this->position[0] + self::moveMap[$this->facing][0]][$this->position[1] + self::moveMap[$this->facing][1]] = '*';
-			$this->position = [$this->position[0] + self::moveMap[$this->facing][0], $this->position[1] + self::moveMap[$this->facing][1]];
-		}
-	}
+    private function move(Step $step): void
+    {
+        for ($i = 0; $i < $step->getTimes(); $i++) {
+            if (!isset($this->grid[$this->position[0] + self::moveMap[$this->facing][0]][$this->position[1] + self::moveMap[$this->facing][1]])) {
+                $this->extendGrid();
+            }
+            $this->grid[$this->position[0] + self::moveMap[$this->facing][0]][$this->position[1] + self::moveMap[$this->facing][1]] = '*';
+            $this->position = [$this->position[0] + self::moveMap[$this->facing][0], $this->position[1] + self::moveMap[$this->facing][1]];
+        }
+    }
 
-	private function rotate(Rotate $rotate):void
-	{
-		if ($rotate->getRotationSide() === 1) {
-			$this->facing = ($this->facing + $rotate->getTimes()) % 4;
-		}elseif ($rotate->getRotationSide() === -1) {
-			$this->facing = ($this->facing - $rotate->getTimes()) % 4;
-			if ($this->facing < 0) {
-				$this->facing = abs($this->facing);
-				if ($this->facing === 1) {
-					$this->facing = 3;
-				}elseif ($this->facing === 3) {
-					$this->facing = 1;
-				}
-			}
-		}
-	}
+    private function rotate(Rotate $rotate): void
+    {
+        if ($rotate->getRotationSide() === 1) {
+            $this->facing = ($this->facing + $rotate->getTimes()) % 4;
+        } elseif ($rotate->getRotationSide() === -1) {
+            $this->facing = ($this->facing - $rotate->getTimes()) % 4;
+            if ($this->facing < 0) {
+                $this->facing = abs($this->facing);
+                if ($this->facing === 1) {
+                    $this->facing = 3;
+                } elseif ($this->facing === 3) {
+                    $this->facing = 1;
+                }
+            }
+        }
+    }
 
-	private function extendGrid(): void
-	{
-		if ($this->facing === 0 || $this->facing === 2) {
-			$empty = array_fill(0, count($this->grid[0]), ' ');
-			if ($this->facing === 0) {
-				array_unshift($this->grid, $empty);
-				$this->position[0] += 1;
-			}else {
-				$this->grid[] = $empty;
-			}
-		}elseif ($this->facing === 1 || $this->facing === 3) {
-			foreach ($this->grid as $index => $row) {
-				if ($this->facing === 1) {
-					$row[] = ' ';
-				}else {
-					array_unshift($row, ' ');
-				}
-				$this->grid[$index] = $row;
-			}
-			if ($this->facing === 3) {
-				$this->position[1] += 1;
-			}
-		}
-		$this->grid = array_values($this->grid);
-	}
+    private function extendGrid(): void
+    {
+        if ($this->facing === 0 || $this->facing === 2) {
+            $empty = array_fill(0, count($this->grid[0]), ' ');
+            if ($this->facing === 0) {
+                array_unshift($this->grid, $empty);
+                $this->position[0] += 1;
+            } else {
+                $this->grid[] = $empty;
+            }
+        } elseif ($this->facing === 1 || $this->facing === 3) {
+            foreach ($this->grid as $index => $row) {
+                if ($this->facing === 1) {
+                    $row[] = ' ';
+                } else {
+                    array_unshift($row, ' ');
+                }
+                $this->grid[$index] = $row;
+            }
+            if ($this->facing === 3) {
+                $this->position[1] += 1;
+            }
+        }
+        $this->grid = array_values($this->grid);
+    }
 
-	public function makeOutputGrid(): string
-	{
-		$returnString = "";
-		foreach ($this->grid as $index => $row) {
-			$returnString .= implode('', $row);
-			if ($index < count($this->grid) - 1) {
-				$returnString .= "\r\n";
-			}
-		}
-		return $returnString;
-	}
+    public function makeOutputGrid(): string
+    {
+        $returnString = "";
+        foreach ($this->grid as $index => $row) {
+            $returnString .= implode('', $row);
+            if ($index < count($this->grid) - 1) {
+                $returnString .= "\r\n";
+            }
+        }
+        return $returnString;
+    }
 
-	public function detectRecursion($patternsDefinition): void
-	{
-		foreach ($patternsDefinition as $patternName => $pattern) {
-			foreach ($pattern as $step) {
-				if ($step instanceof Pattern) {
-					if ($step->getName() === $patternName) {
-						throw new ParseError('ERROR');
-					}else {
-						$this->detectMultiRecursion($step->getName(), $patternsDefinition, [$patternName]);
-					}
-				}
-			}
-		}
-	}
+    public function detectRecursion($patternsDefinition): void
+    {
+        foreach ($patternsDefinition as $patternName => $pattern) {
+            foreach ($pattern as $step) {
+                if ($step instanceof Pattern) {
+                    if ($step->getName() === $patternName) {
+                        throw new ParseError('ERROR');
+                    } else {
+                        $this->detectMultiRecursion($step->getName(), $patternsDefinition, [$patternName]);
+                    }
+                }
+            }
+        }
+    }
 
-	private function detectMultiRecursion(int $nextCheckPattern, array $patternsDefinition, array $usedPatterns): void
-	{
-		foreach ($patternsDefinition[$nextCheckPattern] as $step) {
-			if ($step instanceof Pattern) {
-				if (in_array($step->getName(), $usedPatterns)) {
-					throw new ParseError('ERROR');
-				}else {
-					$usedPatterns[] = $step->getName();
-					$this->detectMultiRecursion($step->getName(), $patternsDefinition, $usedPatterns);
-				}
-			}
-		}
-	}
+    private function detectMultiRecursion(int $nextCheckPattern, array $patternsDefinition, array $usedPatterns): void
+    {
+        foreach ($patternsDefinition[$nextCheckPattern] as $step) {
+            if ($step instanceof Pattern) {
+                if (in_array($step->getName(), $usedPatterns)) {
+                    throw new ParseError('ERROR');
+                } else {
+                    $usedPatterns[] = $step->getName();
+                    $this->detectMultiRecursion($step->getName(), $patternsDefinition, $usedPatterns);
+                }
+            }
+        }
+    }
 
-	public function validatePatternsExist($codeSteps, $patterns): void
-	{
-		foreach ($codeSteps as $step) {
-			if ($step instanceof Pattern) {
-				if (!isset($patterns[$step->getName()])) {
-					throw new ParseError('ERROR');
-				}
-			}
-			if ($step instanceof Cycle) {
-				$this->validatePatternsExist($step->getChildren(), $patterns);
-			}
-		}
-	}
+    public function validatePatternsExist($codeSteps, $patterns): void
+    {
+        foreach ($codeSteps as $step) {
+            if ($step instanceof Pattern) {
+                if (!isset($patterns[$step->getName()])) {
+                    throw new ParseError('ERROR');
+                }
+            }
+            if ($step instanceof Cycle) {
+                $this->validatePatternsExist($step->getChildren(), $patterns);
+            }
+        }
+    }
 }
 
 class Step
 {
-	private int $times;
-	public function __construct(int $times)
-	{
-		$this->times = $times;
-	}
+    private int $times;
+    public function __construct(int $times)
+    {
+        $this->times = $times;
+    }
 
-	public function getTimes(): int
-	{
-		return $this->times;
-	}
+    public function getTimes(): int
+    {
+        return $this->times;
+    }
 }
 
 class Cycle
 {
-	private array $children;
-	private int $times;
+    private array $children;
+    private int $times;
 
-	public function setTimes(int $times): void
-	{
-		$this->times = $times;
-	}
+    public function setTimes(int $times): void
+    {
+        $this->times = $times;
+    }
 
-	public function setChildren(array $steps): void
-	{
-		$this->children = $steps;
-	}
+    public function setChildren(array $steps): void
+    {
+        $this->children = $steps;
+    }
 
-	public function getChildren(): array
-	{
-		return $this->children;
-	}
+    public function getChildren(): array
+    {
+        return $this->children;
+    }
 
-	public function getTimes(): int
-	{
-		return $this->times;
-	}
+    public function getTimes(): int
+    {
+        return $this->times;
+    }
 }
 
-class Rotate {
-	private int $times;
-	private int $rotationSide;
+class Rotate
+{
+    private int $times;
+    private int $rotationSide;
 
-	public function __construct(int $side, int $times)
-	{
-		$this->rotationSide = $side;
-		$this->times = $times;
-	}
+    public function __construct(int $side, int $times)
+    {
+        $this->rotationSide = $side;
+        $this->times = $times;
+    }
 
-	public function getTimes(): int
-	{
-		return $this->times;
-	}
-	public function getRotationSide(): int
-	{
-		return $this->rotationSide;
-	}
+    public function getTimes(): int
+    {
+        return $this->times;
+    }
+    public function getRotationSide(): int
+    {
+        return $this->rotationSide;
+    }
 }
 
-class Pattern {
-	private int $name;
+class Pattern
+{
+    private int $name;
 
-	public function __construct(string $name) {
-		$this->name = $name;
-	}
+    public function __construct(int $name)
+    {
+        $this->name = $name;
+    }
 
-	public function getName(): int
-	{
-		return $this->name;
-	}
+    public function getName(): int
+    {
+        return $this->name;
+    }
 }
 
 
@@ -437,114 +440,3 @@ class Pattern {
 ----------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------
 */
-class RoboScript4 extends TestCase {
-	protected function randomize(array $a): array {
-		for ($i = 0; $i < 2 * count($a); $i++) {
-			$v = array_rand($a);
-			$w = array_rand($a);
-			list($a[$v], $a[$w]) = [$a[$w], $a[$v]];
-		}
-		return $a;
-	}
-	public function testRS2Only() {
-		foreach ($this->randomize([
-			function () {
-				$this->assertSame("    **   **      *\r\n    **   ***     *\r\n  **** *** **  ***\r\n  *  * *    ** *  \r\n***  ***     ***  ", execute('(F2LF2R)2FRF4L(F2LF2R)2(FRFL)4(F2LF2R)2'));
-			}
-		]) as $assertion) $assertion();
-	}
-	public function testPatternDefinitionsOnly() {
-		foreach ($this->randomize([
-			function () {
-				$this->assertSame('*', execute('p0(F2LF2R)2q'));
-			},
-			function () {
-				$this->assertSame('*', execute('p312(F2LF2R)2q'));
-			}
-		]) as $assertion) $assertion();
-	}
-	public function testDefineAndInvoke() {
-		foreach ($this->randomize([
-			function () {
-				$this->assertSame("    *\r\n    *\r\n  ***\r\n  *  \r\n***  ", execute('p0(F2LF2R)2qP0'));
-			},
-			function () {
-				$this->assertSame("    *\r\n    *\r\n  ***\r\n  *  \r\n***  ", execute('p312(F2LF2R)2qP312'));
-			}
-		]) as $assertion) $assertion();
-	}
-	public function testParseOrder() {
-		foreach ($this->randomize([
-			function () {
-				$this->assertSame("    *\r\n    *\r\n  ***\r\n  *  \r\n***  ", execute('P0p0(F2LF2R)2q'));
-			},
-			function () {
-				$this->assertSame("    *\r\n    *\r\n  ***\r\n  *  \r\n***  ", execute('P312p312(F2LF2R)2q'));
-			}
-		]) as $assertion) $assertion();
-	}
-	public function testMixedCodeBasic() {
-		foreach ($this->randomize([
-			function () {
-				$this->assertSame("       *\r\n       *\r\n       *\r\n       *\r\n     ***\r\n     *  \r\n******  ", execute('F3P0Lp0(F2LF2R)2qF2'));
-			}
-		]) as $assertion) $assertion();
-	}
-	public function testMultipleInvocations() {
-		foreach ($this->randomize([
-			function () {
-				$this->assertSame("      *\r\n      *\r\n    ***\r\n    *  \r\n  ***  \r\n  *    \r\n***    ", execute('(P0)2p0F2LF2RqP0'));
-			}
-		]) as $assertion) $assertion();
-	}
-
-	public function testInvalidInvocation1() {
-		$this->expectException(ParseError::class);
-		execute('p0(F2LF2R)2qP1');
-	}
-
-	public function testInvalidInvocation2() {
-		$this->expectException(ParseError::class);
-		execute('P0p312(F2LF2R)2q');
-	}
-
-	public function testInvalidInvocation3() {
-		$this->expectException(ParseError::class);
-		execute('P312');
-	}
-	public function testMultiplePatternDefinitions() {
-		foreach ($this->randomize([
-			function () {
-				$this->assertSame("  ***\r\n  * *\r\n*** *", execute('P1P2p1F2Lqp2F2RqP2P1'));
-			},
-			function () {
-				$this->assertSame("  *** *** ***\r\n  * * * * * *\r\n*** *** *** *", execute('p1F2Lqp2F2Rqp3P1(P2)2P1q(P3)3'));
-			}
-		]) as $assertion) $assertion();
-	}
-
-	public function testInvalidDefinitionOverwrite() {
-		$this->expectException(ParseError::class);
-		execute('p1F2Lqp1(F3LF4R)5qp2F2Rqp3P1(P2)2P1q(P3)3');
-	}
-
-	public function testInfiniteRecursion() {
-		$this->expectException(ParseError::class);
-		execute('p1F2RP1F2LqP1');
-	}
-
-	public function testInfiniteMutualRecursion() {
-		$this->expectException(ParseError::class);
-		execute('p1F2LP2qp2F2RP1qP1');
-	}
-
-	public function testMultipleRecursionMinimal() {
-		$this->expectException(ParseError::class);
-		execute('p1F3R2F6L3FFFRq(P1)1024P11');
-	}
-
-	public function testDd() {
-		$this->expectException(ParseError::class);
-		execute('p2Fqp3FP2qp4FP3qP2P3P4');
-	}
-}

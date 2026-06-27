@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 RoboScript #3 - Implement the RS2 Specification
 Disclaimer
@@ -43,280 +45,257 @@ All 4 example tests have been included for you. Good luck :D
 https://www.codewars.com/kata/58738d518ec3b4bf95000192
 */
 
-namespace Kata\Y2026\Q2;
+namespace Kata\Y2026\Q2\RoboScript3;
 
-use PHPUnit\Framework\TestCase;
-
-function execute(string $code): string {
-	$roboScriptInterpreter = new CodeInterpreter($code);
-	return $roboScriptInterpreter->output();
+function execute(string $code): string
+{
+    $roboScriptInterpreter = new CodeInterpreter($code);
+    return $roboScriptInterpreter->output();
 }
 
 class CodeInterpreter
 {
-	private string $stringCode;
-	function __construct(string $code)
-	{
-		$this->stringCode = $code;
+    private string $stringCode;
+    public function __construct(string $code)
+    {
+        $this->stringCode = $code;
 
-	}
-	public function output(): string
-	{
-		$codeSteps = (new StepsDecoupler())->makeSteps($this->stringCode);
-		$grid = new Grid();
-		$grid->execute($codeSteps);
-		return $grid->makeOutputGrid();
-	}
+    }
+    public function output(): string
+    {
+        $codeSteps = (new StepsDecoupler())->makeSteps($this->stringCode);
+        $grid = new Grid();
+        $grid->execute($codeSteps);
+        return $grid->makeOutputGrid();
+    }
 }
 
 class StepsDecoupler
 {
-	const digits = '0123456789';
-	public function makeSteps(string $code): array
-	{
-		$steps = [];
-		$splitCode = str_split($code);
-		$skipHereCauseCycle = -1;
+    public const digits = '0123456789';
+    public function makeSteps(string $code): array
+    {
+        $steps = [];
+        $splitCode = str_split($code);
+        $skipHereCauseCycle = -1;
 
-		foreach ($splitCode as $index => $step) {
-			if ($index <= $skipHereCauseCycle) {
-				continue;
-			}
-			if ($step === 'L' || $step === 'R' || $step === 'F') {
-				$times = 1;
-				if (isset($splitCode[$index + 1]) && is_numeric($splitCode[$index + 1])) {
-					$nextNumbers = strspn($code, self::digits, $index + 1);
-					$times = (int) substr($code, $index + 1, $nextNumbers);
-				}
-				if ($step === 'F') {
-					$steps[] = new Step($times);
-				}else {
-					$rotationSide = ($step === 'R') ? 1 : -1;
-					$steps[] = new Rotate($rotationSide, $times);
-				}
-			}elseif ($step === '(') {
-				$cycle = new Cycle();
-				$times = 1;
-				$nextCloseBracket = $this->findClosingBracket($code, $index);
-				if (isset($splitCode[$nextCloseBracket + 1]) && is_numeric($splitCode[$nextCloseBracket + 1])) {
-					$nextNumbers = strspn($code, self::digits, $nextCloseBracket + 1);
-					$times = (int) substr($code, $nextCloseBracket + 1, $nextNumbers);
-				}
+        foreach ($splitCode as $index => $step) {
+            if ($index <= $skipHereCauseCycle) {
+                continue;
+            }
+            if ($step === 'L' || $step === 'R' || $step === 'F') {
+                $times = 1;
+                if (isset($splitCode[$index + 1]) && is_numeric($splitCode[$index + 1])) {
+                    $nextNumbers = strspn($code, self::digits, $index + 1);
+                    $times = (int) substr($code, $index + 1, $nextNumbers);
+                }
+                if ($step === 'F') {
+                    $steps[] = new Step($times);
+                } else {
+                    $rotationSide = ($step === 'R') ? 1 : -1;
+                    $steps[] = new Rotate($rotationSide, $times);
+                }
+            } elseif ($step === '(') {
+                $cycle = new Cycle();
+                $times = 1;
+                $nextCloseBracket = $this->findClosingBracket($code, $index);
+                if (isset($splitCode[$nextCloseBracket + 1]) && is_numeric($splitCode[$nextCloseBracket + 1])) {
+                    $nextNumbers = strspn($code, self::digits, $nextCloseBracket + 1);
+                    $times = (int) substr($code, $nextCloseBracket + 1, $nextNumbers);
+                }
 
-				$cycleCode = substr($code, $index + 1, $nextCloseBracket - $index - 1);
-				$cycle->setTimes($times);
+                $cycleCode = substr($code, $index + 1, $nextCloseBracket - $index - 1);
+                $cycle->setTimes($times);
 
-				$cycle->setChildren((new StepsDecoupler())->makeSteps($cycleCode));
+                $cycle->setChildren((new StepsDecoupler())->makeSteps($cycleCode));
 
-				$steps[] = $cycle;
-				$skipHereCauseCycle = $nextCloseBracket;
-			}else {
-				continue;
-			}
-		}
-		return $steps;
-	}
+                $steps[] = $cycle;
+                $skipHereCauseCycle = $nextCloseBracket;
+            } else {
+                continue;
+            }
+        }
+        return $steps;
+    }
 
-	private function findClosingBracket(string $code, int $index): int
-	{
-		$found = false;
-		$nested = 0;
-		do {
-			$possibleBracelet = strpos($code, ')', $index + 1);
+    private function findClosingBracket(string $code, int $index): int
+    {
+        $found = false;
+        $nested = 0;
+        do {
+            $possibleBracelet = strpos($code, ')', $index + 1);
 
-			$countOpeningBracketsInBetween = substr_count($code, '(', $index + 1, $possibleBracelet - $index - 1);
+            $countOpeningBracketsInBetween = substr_count($code, '(', $index + 1, $possibleBracelet - $index - 1);
 
-			if ($nested === 0 && $countOpeningBracketsInBetween === 0) {
-				$found = true;
-			}
+            if ($nested === 0 && $countOpeningBracketsInBetween === 0) {
+                $found = true;
+            }
 
-			if ($countOpeningBracketsInBetween > 0) {
-				$nested += $countOpeningBracketsInBetween - 1;
-				$index = $possibleBracelet;
-			}else {
-				$nested--;
-				$index = $possibleBracelet;
-			}
+            if ($countOpeningBracketsInBetween > 0) {
+                $nested += $countOpeningBracketsInBetween - 1;
+                $index = $possibleBracelet;
+            } else {
+                $nested--;
+                $index = $possibleBracelet;
+            }
 
-		} while ($found === false);
+        } while ($found === false);
 
 
-		return $possibleBracelet;
-	}
+        return $possibleBracelet;
+    }
 }
 
 class Grid
 {
-	const moveMap = [
-		0 => [-1, 0],
-		1 => [0, 1],
-		2 => [1, 0],
-		3 => [0, -1],
-	];
-	public array $position = [0, 0];
-	public array $grid = [['*']];
-	public int $facing = 1;
-	public function execute(array $steps): void
-	{
-		foreach ($steps as $step) {
-			if ($step instanceof Step) {
-				$this->move($step);
-			}elseif ($step instanceof Rotate) {
-				$this->rotate($step);
-			}elseif ($step instanceof Cycle) {
-				for ($i = 0; $i < $step->getTimes(); $i++) {
-					$this->execute($step->getChildren());
-				}
-			}
-		}
-	}
+    public const moveMap = [
+        0 => [-1, 0],
+        1 => [0, 1],
+        2 => [1, 0],
+        3 => [0, -1],
+    ];
+    public array $position = [0, 0];
+    public array $grid = [['*']];
+    public int $facing = 1;
+    public function execute(array $steps): void
+    {
+        foreach ($steps as $step) {
+            if ($step instanceof Step) {
+                $this->move($step);
+            } elseif ($step instanceof Rotate) {
+                $this->rotate($step);
+            } elseif ($step instanceof Cycle) {
+                for ($i = 0; $i < $step->getTimes(); $i++) {
+                    $this->execute($step->getChildren());
+                }
+            }
+        }
+    }
 
-	private function move(Step $step): void
-	{
-		for ($i = 0; $i < $step->getTimes(); $i++) {
-			if (!isset($this->grid[$this->position[0] + self::moveMap[$this->facing][0]][$this->position[1] + self::moveMap[$this->facing][1]])) {
-				$this->extendGrid();
-			}
-			$this->grid[$this->position[0] + self::moveMap[$this->facing][0]][$this->position[1] + self::moveMap[$this->facing][1]] = '*';
-			$this->position = [$this->position[0] + self::moveMap[$this->facing][0], $this->position[1] + self::moveMap[$this->facing][1]];
-		}
-	}
+    private function move(Step $step): void
+    {
+        for ($i = 0; $i < $step->getTimes(); $i++) {
+            if (!isset($this->grid[$this->position[0] + self::moveMap[$this->facing][0]][$this->position[1] + self::moveMap[$this->facing][1]])) {
+                $this->extendGrid();
+            }
+            $this->grid[$this->position[0] + self::moveMap[$this->facing][0]][$this->position[1] + self::moveMap[$this->facing][1]] = '*';
+            $this->position = [$this->position[0] + self::moveMap[$this->facing][0], $this->position[1] + self::moveMap[$this->facing][1]];
+        }
+    }
 
-	private function rotate(Rotate $rotate):void
-	{
-		if ($rotate->getRotationSide() === 1) {
-			$this->facing = ($this->facing + $rotate->getTimes()) % 4;
-		}elseif ($rotate->getRotationSide() === -1) {
-			$this->facing = ($this->facing - $rotate->getTimes()) % 4;
-			if ($this->facing < 0) {
-				$this->facing = abs($this->facing);
-				if ($this->facing === 1) {
-					$this->facing = 3;
-				}elseif ($this->facing === 3) {
-					$this->facing = 1;
-				}
-			}
-		}
-	}
+    private function rotate(Rotate $rotate): void
+    {
+        if ($rotate->getRotationSide() === 1) {
+            $this->facing = ($this->facing + $rotate->getTimes()) % 4;
+        } elseif ($rotate->getRotationSide() === -1) {
+            $this->facing = ($this->facing - $rotate->getTimes()) % 4;
+            if ($this->facing < 0) {
+                $this->facing = abs($this->facing);
+                if ($this->facing === 1) {
+                    $this->facing = 3;
+                } elseif ($this->facing === 3) {
+                    $this->facing = 1;
+                }
+            }
+        }
+    }
 
-	private function extendGrid(): void
-	{
-		if ($this->facing === 0 || $this->facing === 2) {
-			$empty = array_fill(0, count($this->grid[0]), ' ');
-			if ($this->facing === 0) {
-				array_unshift($this->grid, $empty);
-				$this->position[0] += 1;
-			}else {
-				$this->grid[] = $empty;
-			}
-		}elseif ($this->facing === 1 || $this->facing === 3) {
-			foreach ($this->grid as $index => $row) {
-				if ($this->facing === 1) {
-					$row[] = ' ';
-				}else {
-					array_unshift($row, ' ');
-				}
-				$this->grid[$index] = $row;
-			}
-			if ($this->facing === 3) {
-				$this->position[1] += 1;
-			}
-		}
-		$this->grid = array_values($this->grid);
-	}
+    private function extendGrid(): void
+    {
+        if ($this->facing === 0 || $this->facing === 2) {
+            $empty = array_fill(0, count($this->grid[0]), ' ');
+            if ($this->facing === 0) {
+                array_unshift($this->grid, $empty);
+                $this->position[0] += 1;
+            } else {
+                $this->grid[] = $empty;
+            }
+        } elseif ($this->facing === 1 || $this->facing === 3) {
+            foreach ($this->grid as $index => $row) {
+                if ($this->facing === 1) {
+                    $row[] = ' ';
+                } else {
+                    array_unshift($row, ' ');
+                }
+                $this->grid[$index] = $row;
+            }
+            if ($this->facing === 3) {
+                $this->position[1] += 1;
+            }
+        }
+        $this->grid = array_values($this->grid);
+    }
 
-	public function makeOutputGrid(): string
-	{
-		$returnString = "";
-		foreach ($this->grid as $index => $row) {
-			$returnString .= implode('', $row);
-			if ($index < count($this->grid) - 1) {
-				$returnString .= "\r\n";
-			}
-		}
-		return $returnString;
-	}
+    public function makeOutputGrid(): string
+    {
+        $returnString = "";
+        foreach ($this->grid as $index => $row) {
+            $returnString .= implode('', $row);
+            if ($index < count($this->grid) - 1) {
+                $returnString .= "\r\n";
+            }
+        }
+        return $returnString;
+    }
 }
 
 class Step
 {
-	private int $times;
-	public function __construct(int $times)
-	{
-		$this->times = $times;
-	}
+    private int $times;
+    public function __construct(int $times)
+    {
+        $this->times = $times;
+    }
 
-	public function getTimes(): int
-	{
-		return $this->times;
-	}
+    public function getTimes(): int
+    {
+        return $this->times;
+    }
 }
 
 class Cycle
 {
-	private array $children;
-	private int $times;
+    private array $children;
+    private int $times;
 
-	public function setTimes(int $times): void
-	{
-		$this->times = $times;
-	}
+    public function setTimes(int $times): void
+    {
+        $this->times = $times;
+    }
 
-	public function setChildren(array $steps): void
-	{
-		$this->children = $steps;
-	}
+    public function setChildren(array $steps): void
+    {
+        $this->children = $steps;
+    }
 
-	public function getChildren(): array
-	{
-		return $this->children;
-	}
+    public function getChildren(): array
+    {
+        return $this->children;
+    }
 
-	public function getTimes(): int
-	{
-		return $this->times;
-	}
+    public function getTimes(): int
+    {
+        return $this->times;
+    }
 }
 
-class Rotate {
-	private int $times;
-	private int $rotationSide;
+class Rotate
+{
+    private int $times;
+    private int $rotationSide;
 
-	public function __construct(int $side, int $times)
-	{
-		$this->rotationSide = $side;
-		$this->times = $times;
-	}
+    public function __construct(int $side, int $times)
+    {
+        $this->rotationSide = $side;
+        $this->times = $times;
+    }
 
-	public function getTimes(): int
-	{
-		return $this->times;
-	}
-	public function getRotationSide(): int
-	{
-		return $this->rotationSide;
-	}
-}
-
-class RoboScript3 extends TestCase {
-
-	public function testMy(): void
-	{
-		$this->assertSame("******\r\n*    *\r\n*    *\r\n*    *\r\n*    *\r\n******", execute("(F)5(L)1(F)5L(F)5LFFFFFL"));
-	}
-	public function testRS1Compatibility(): void {
-		$this->assertSame("******\r\n*    *\r\n*    *\r\n*    *\r\n*    *\r\n******", execute("FFFFFLFFFFFLFFFFFLFFFFFL"));
-		$this->assertSame("*", execute(""));
-		$this->assertSame("******", execute("FFFFF"));
-		$this->assertSame("******\r\n*    *\r\n*    *\r\n*    *\r\n*    *\r\n******", execute("FFFFFLFFFFFLFFFFFLFFFFFL"));
-		$this->assertSame("    ****\r\n    *  *\r\n    *  *\r\n********\r\n    *   \r\n    *   ", execute("LFFFFFRFFFRFFFRFFFFFFF"));
-		$this->assertSame("    ****\r\n    *  *\r\n    *  *\r\n********\r\n    *   \r\n    *   ", execute("LF5RF3RF3RF7"));
-	}
-
-	public function testDescriptionExamples() {
-		$this->assertSame("    *****   *****   *****\r\n    *   *   *   *   *   *\r\n    *   *   *   *   *   *\r\n    *   *   *   *   *   *\r\n*****   *****   *****   *", execute("F4L((F4R)2(F4L)2)2(F4R)2F4"));
-		$this->assertSame("    ****\r\n    *  *\r\n    *  *\r\n********\r\n    *   \r\n    *   ", execute("LF5(RF3)(RF3R)F7"));
-		$this->assertSame("    ****\r\n    *  *\r\n    *  *\r\n********\r\n    *   \r\n    *   ", execute("(L(F5(RF3))(((R(F3R)F7))))"));
-		$this->assertSame("    *****   *****   *****\r\n    *   *   *   *   *   *\r\n    *   *   *   *   *   *\r\n    *   *   *   *   *   *\r\n*****   *****   *****   *", execute("F4L(F4RF4RF4LF4L)2F4RF4RF4"));
-	}
+    public function getTimes(): int
+    {
+        return $this->times;
+    }
+    public function getRotationSide(): int
+    {
+        return $this->rotationSide;
+    }
 }

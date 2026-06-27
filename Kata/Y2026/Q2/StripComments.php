@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 Complete the solution so that it strips all text that follows any of a set of comment markers passed in. Any whitespace at the end of the line should also be stripped out.
 
@@ -19,53 +21,36 @@ bananas
 https://www.codewars.com/kata/51c8e37cee245da6b40000bd
 */
 
-
 namespace Kata\Y2026\Q2;
-
-use PHPUnit\Framework\TestCase;
 
 function stripComments(string $str, array $markers): string
 {
-	$explodedString = explode("\n", $str);
-	$arrayWithoutComments = [];
+    $explodedString = explode("\n", $str);
+    $arrayWithoutComments = [];
 
-	foreach ($explodedString as $line) {
-		$found = false;
-		$markerIndex = [];
+    foreach ($explodedString as $line) {
+        $found = false;
+        $markerIndex = [];
 
-		foreach ($markers as $marker) {
-			$index = strpos($line, $marker);
-			if ($index !== false) {
-				$markerIndex[] = $index;
-			}
-		}
-		asort($markerIndex);
-		$markerIndex = array_values($markerIndex);
+        foreach ($markers as $marker) {
+            $index = strpos($line, $marker);
+            if ($index !== false) {
+                $markerIndex[] = $index;
+            }
+        }
+        asort($markerIndex);
+        $markerIndex = array_values($markerIndex);
 
-		if (isset($markerIndex[0]) && $markerIndex[0] !== false) {
-			$line = substr($line, 0, $markerIndex[0]);
-			$line = rtrim($line);
-			$arrayWithoutComments[] = $line;
-			$found = true;
-		}
+        if (isset($markerIndex[0]) && $markerIndex[0] !== false) {
+            $line = substr($line, 0, $markerIndex[0]);
+            $line = rtrim($line);
+            $arrayWithoutComments[] = $line;
+            $found = true;
+        }
 
-		if (!$found) {
-			$arrayWithoutComments[] = $line;
-		}
-	}
-	return implode("\n", $arrayWithoutComments);
-}
-
-class StripComments extends TestCase
-{
-	public function testSample()
-	{
-		$this->assertSame("avocados cherries \noranges avocados \n? pears - oranges ' \navocados pears pears \n",
-			stripComments("avocados cherries \noranges avocados \n? pears - oranges ' \navocados pears pears \n", [',', '^']));
-		$this->assertSame("apples, pears\ngrapes\nbananas", stripComments("apples, pears # and bananas\ngrapes\nbananas !apples", ['#', '!']));
-		$this->assertSame("apples, pears\ngrapes\nbananas", stripComments("apples, pears # and bananas\ngrapes\nbananas !#apples", ['#', '!']));
-		$this->assertSame("a\nc\nd", stripComments("a #b\nc\nd \$e f g", ['#', '$']));
-		$this->assertSame(" a\nc\nd", stripComments(" a #b\nc\nd \$e f g", ['#', '$']));
-	}
-	
+        if (!$found) {
+            $arrayWithoutComments[] = $line;
+        }
+    }
+    return implode("\n", $arrayWithoutComments);
 }

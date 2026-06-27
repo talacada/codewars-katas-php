@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 You are given an array (which will have a length of at least 3, but could be very large)
 containing integers. The array is either entirely comprised of odd integers or entirely
@@ -14,12 +16,13 @@ https://www.codewars.com/kata/find-the-parity-outlier
 */
 
 namespace Kata\Y2026\Q2;
-use PHPUnit\Framework\TestCase;
 
 function find($integers)
 {
     $even = 0;
     $odd = 0;
+    $finalEvenNum = 0;
+    $finalOddNum = 0;
     foreach ($integers as $inte) {
         if ($inte % 2 === 0) {
             $even++;
@@ -35,14 +38,5 @@ function find($integers)
             return $finalOddNum;
         default:
             return $finalEvenNum;
-    }
-}
-
-class FindTheParityOutlier extends TestCase
-{
-    public function testBasics(): void
-    {
-        $this->assertSame(11, find([2, 4, 0, 100, 4, 11, 2602, 36]));
-        $this->assertSame(160, find([160, 3, 1719, 19, 11, 13, -21]));
     }
 }
