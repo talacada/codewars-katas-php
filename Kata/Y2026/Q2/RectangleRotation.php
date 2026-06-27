@@ -42,15 +42,15 @@ namespace Kata\Y2026\Q2;
 function rectangle_rotation($a, $b): int
 {
 
-	$u = (int) floor($a / sqrt(2));
-	$v = (int) floor($b / sqrt(2));
+    $u = (int) floor($a / sqrt(2));
+    $v = (int) floor($b / sqrt(2));
 
 
-	$uEven = intdiv($u, 2) * 2 + 1;
-	$uOdd = (2 * $u + 1) - $uEven;
+    $uEven = intdiv($u, 2) * 2 + 1;
+    $uOdd = (2 * $u + 1) - $uEven;
 
-	$vEven = intdiv($v, 2) * 2 + 1;
-	$vOdd = (2 * $v + 1) - $vEven;
+    $vEven = intdiv($v, 2) * 2 + 1;
+    $vOdd = (2 * $v + 1) - $vEven;
 
-	return ($uEven * $vEven) + ($uOdd * $vOdd);
+    return ($uEven * $vEven) + ($uOdd * $vOdd);
 }
