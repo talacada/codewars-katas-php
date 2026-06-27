@@ -27,8 +27,8 @@ function ips_between(string $start, string $end): int
     $largerNum = 0;
 
     for ($i = 0; $i < 4; $i++) {
-        $smallerNum += $smaller[$i] * 256 ** $i;
-        $largerNum += $larger[$i] * 256 ** $i;
+        $smallerNum += (int)$smaller[$i] * 256 ** $i;
+        $largerNum += (int)$larger[$i] * 256 ** $i;
     }
 
     return $largerNum - $smallerNum;
