@@ -16,7 +16,7 @@ composer install
 |-------------------|------------------------------------|
 | `composer unit`   | Run PHPUnit tests                  |
 | `composer cs`     | PHP-CS-Fixer (dry-run)             |
-| `composer cs fix` | PHP-CS-Fixer (apply fixes)         |
+| `composer cs-fix` | PHP-CS-Fixer (apply fixes)         |
 | `composer stan`   | PHPStan static analysis            |
 | `composer ready`  | Run all checks (cs + stan + unit)  |
 
