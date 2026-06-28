@@ -100,7 +100,7 @@ function execute(string $code): string
 class CodeInterpreter
 {
     private string $stringCode;
-    private array $patterns = [];
+
     public function __construct(string $code)
     {
         $this->stringCode = $code;
@@ -108,11 +108,12 @@ class CodeInterpreter
     }
     public function output(): string
     {
-        ['steps' => $codeSteps, 'patterns' => $this->patterns] = (new StepsDecoupler())->makeSteps($this->stringCode);
+        $patterns = [];
+        ['steps' => $codeSteps, 'patterns' => $patterns] = (new StepsDecoupler())->makeSteps($this->stringCode);
         $grid = new Grid();
-        $grid->validatePatternsExist($codeSteps, $this->patterns);
-        $grid->detectRecursion($this->patterns);
-        $grid->execute($codeSteps, $this->patterns);
+        $grid->validatePatternsExist($codeSteps, $patterns);
+        $grid->detectRecursion($patterns);
+        $grid->execute($codeSteps, $patterns);
         return $grid->makeOutputGrid();
     }
 }
@@ -142,7 +143,7 @@ class StepsDecoupler
                     $steps[] = new Step($times);
                 } elseif ($step === 'P') {
                     $steps[] = new Pattern($times);
-                } elseif ($step === 'R' || $step === 'L') {
+                } else {
                     $rotationSide = ($step === 'R') ? 1 : -1;
                     $steps[] = new Rotate($rotationSide, $times);
                 }

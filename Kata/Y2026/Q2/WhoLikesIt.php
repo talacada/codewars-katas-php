@@ -42,7 +42,7 @@ function likes($names)
             if ($i === 0) {
                 $finalPrefix .= ' and ';
             }
-        } elseif (count($names) >= 3) {
+        } else {
             $finalPrefix .= $name;
             if ($i === 0) {
                 $finalPrefix .= ', ';
