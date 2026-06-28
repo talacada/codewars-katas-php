@@ -35,7 +35,7 @@ https://www.codewars.com/kata/decode-the-morse-code
 
 namespace Kata\Y2026\Q2;
 
-function remove_whitespace_elements($value)
+function remove_whitespace_elements(string $value): bool
 {
     return !preg_match('/^\s*$/', $value);
 }
@@ -43,7 +43,7 @@ function remove_whitespace_elements($value)
 function decode_morse(string $code): string
 {
     $words = explode('   ', $code);
-    $words = array_filter($words, 'remove_whitespace_elements');
+    $words = array_filter($words, remove_whitespace_elements(...));
     $letters = [];
     $final = '';
 
