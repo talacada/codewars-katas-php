@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../../../Kata/Y2026/Q2/NewKata.php';
 
-class NovaKataTest extends TestCase
+class NewKataTest extends TestCase
 {
     //Codewars tests
 }
