@@ -15,5 +15,5 @@ class Node
     }
 }
 
-define('MORSE_CODE', []);
+define('MORSE_CODE', ['s', 't', 'u', 'b', 's']);
 

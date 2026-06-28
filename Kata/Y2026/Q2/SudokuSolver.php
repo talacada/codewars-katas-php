@@ -90,8 +90,8 @@ class SudokuSolver
         }
 
         $square = [];
-        $squareRow = floor($rowIndex / 3);
-        $squareColumn = floor($columnIndex / 3);
+        $squareRow = (int)floor($rowIndex / 3);
+        $squareColumn = (int)floor($columnIndex / 3);
         for ($sqRow = 0; $sqRow < 3; $sqRow++) {
             for ($sqColumn = 0; $sqColumn < 3; $sqColumn++) {
                 $square[] = $this->grid[$squareRow * 3 + $sqRow][$squareColumn * 3 + $sqColumn];
