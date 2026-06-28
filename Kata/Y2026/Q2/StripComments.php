@@ -41,7 +41,7 @@ function stripComments(string $str, array $markers): string
         asort($markerIndex);
         $markerIndex = array_values($markerIndex);
 
-        if (isset($markerIndex[0]) && $markerIndex[0] !== false) {
+        if (isset($markerIndex[0])) {
             $line = substr($line, 0, $markerIndex[0]);
             $line = rtrim($line);
             $arrayWithoutComments[] = $line;
