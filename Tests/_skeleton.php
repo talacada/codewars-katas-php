@@ -2,12 +2,6 @@
 
 declare(strict_types=1);
 
-// Copy this file to Tests/Y2026/Q2/, rename, and adjust:
-// - namespace + class name
-// - require_once path to the kata file
-// - use function import
-// - test methods with assertions
-
 namespace Y2026\Q2;
 
 use PHPUnit\Framework\TestCase;
