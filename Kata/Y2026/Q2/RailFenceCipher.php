@@ -78,7 +78,18 @@ class RailFenceCipherDecoder
 	}
 	public function decode()
 	{
-		//TODO same logic as encode but backwards?
+		$blocks = [];
+		$lineLength = (int)ceil(strlen($this->stringCode) / ($this->numberRails + 1));
+		$missing = ($lineLength * ($this->numberRails + 1)) - strlen($this->stringCode);
+
+		for ($i = 0; $i < $this->numberRails; $i++) {
+			for ($j = 0; $j < $lineLength; $j++) {
+				//TODO here, calculate position better
+				$blocks[$i][$j] = substr($this->stringCode, ($i + $j * $lineLength), 1);
+			}
+		}
+
+		return $blocks;
 	}
 
 }
