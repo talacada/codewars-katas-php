@@ -79,17 +79,34 @@ class RailFenceCipherDecoder
 	public function decode()
 	{
 		$blocks = [];
-		$lineLength = (int)ceil(strlen($this->stringCode) / ($this->numberRails + 1));
-		$missing = ($lineLength * ($this->numberRails + 1)) - strlen($this->stringCode);
+		$rows = [];
+		$blocksCount = (int)ceil(strlen($this->stringCode) / ($this->numberRails + 1));
+		$arrayString = str_split($this->stringCode);
+		$middleRow = ($this->numberRails - 1) / 2;
+		$missingAll = ($blocksCount * ($this->numberRails + 1)) - strlen($this->stringCode);
 
-		for ($i = 0; $i < $this->numberRails; $i++) {
-			for ($j = 0; $j < $lineLength; $j++) {
-				//TODO here, calculate position better
-				$blocks[$i][$j] = substr($this->stringCode, ($i + $j * $lineLength), 1);
+
+		$used = 0;
+		for ($blocksRow = 0; $blocksRow < $this->numberRails; $blocksRow++) {
+			$missingThisRow = 0;
+			if ($missingAll > 1 && $missingAll + $blocksRow === $this->numberRails + 1) {
+				$missingThisRow = 1;
 			}
+			if($blocksRow !== $middleRow){
+				$rows[$blocksRow] = substr($this->stringCode, $used, $blocksCount);
+			}else {
+				if ($missingAll >  1) {
+					$missingThisRow += 1;
+				}
+				$rows[$blocksRow] = substr($this->stringCode, $used, $blocksCount * 2 - $missingThisRow);
+			}
+			$used += strlen($rows[$blocksRow]);
 		}
 
-		return $blocks;
+		//TODO i think we have rails right
+
+
+		return [$blocks, $rows];
 	}
 
 }
