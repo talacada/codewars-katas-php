@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 Create two functions to encode and then decode a string using the Rail Fence Cipher. This cipher is used to encode a string by placing each character successively in a diagonal along a set of "rails". First start off moving diagonally and down. When you reach the bottom, reverse direction and move diagonally and up until you reach the top rail. Continue until you reach the end of the string. Each "rail" is then read left to right to derive the encoded string.
 
@@ -28,85 +30,107 @@ use ParseError;
 
 class RailFenceCipherEncoder
 {
-	private string $stringCode;
-	private int $numberRails;
+    private string $stringCode;
+    private int $numberRails;
 
-	public function __construct(string $stringCode, int $numberRails)
-	{
-		$this->stringCode = $stringCode;
-		if ($numberRails >= 2) {
-			$this->numberRails = $numberRails;
-		}else{
-			throw new ParseError("Number Rails should be greater than 2");
-		}
-	}
-	public function encode(): string
-	{
-		$result = [];
+    public function __construct(string $stringCode, int $numberRails)
+    {
+        $this->stringCode = $stringCode;
+        if ($numberRails >= 2) {
+            $this->numberRails = $numberRails;
+        } else {
+            throw new ParseError("Number Rails should be greater than 2");
+        }
+    }
+    public function encode(): string
+    {
+        $result = [];
 
-		$blocks = str_split($this->stringCode, $this->numberRails + 1);
+        $blocks = str_split($this->stringCode, $this->numberRails + 1);
+        //TODO numberRails can be 2....
 
-		foreach ($blocks as $block) {
-			$block = str_split($block);
-			for ($i = 0; $i <= $this->numberRails; $i++) {
-				if ($i === $this->numberRails) {
-					$result[(int)floor($this->numberRails / 2)][] = $block[$i];
-				}else {
-					$result[$i][] = $block[$i];
-				}
+        foreach ($blocks as $block) {
+            $block = str_split($block);
+            for ($i = 0; $i <= $this->numberRails; $i++) {
+                if ($i === $this->numberRails) {
+                    if (isset($block[$i])) {
+                        $result[(int)floor($this->numberRails / 2)][] = $block[$i];
+                    }
+                } else {
+                    if (isset($block[$i])) {
+                        $result[$i][] = $block[$i];
+                    }
+                }
 
-			}
-		}
+            }
+        }
 
-		$merge = array_merge(...$result);
-		return implode("", $merge);
-	}
+        $merge = array_merge(...$result);
+        return implode("", $merge);
+    }
 }
 
 class RailFenceCipherDecoder
 {
-	private string $stringCode;
-	private int $numberRails;
-	public function __construct(string $stringCode, int $numberRails)
-	{
-		$this->stringCode = $stringCode;
-		if ($numberRails >= 2) {
-			$this->numberRails = $numberRails;
-		}else{
-			throw new ParseError("Number Rails should be greater than 2");
-		}
-	}
-	public function decode()
-	{
-		$blocks = [];
-		$rows = [];
-		$blocksCount = (int)ceil(strlen($this->stringCode) / ($this->numberRails + 1));
-		$arrayString = str_split($this->stringCode);
-		$middleRow = ($this->numberRails - 1) / 2;
-		$missingAll = ($blocksCount * ($this->numberRails + 1)) - strlen($this->stringCode);
+    private string $stringCode;
+    private int $numberRails;
+    public function __construct(string $stringCode, int $numberRails)
+    {
+        $this->stringCode = $stringCode;
+        if ($numberRails >= 2) {
+            $this->numberRails = $numberRails;
+        } else {
+            throw new ParseError("Number Rails should be greater than 2");
+        }
+    }
+    public function decode()
+    {
+        $blocks = [];
+        $rows = [];
+        $blocksCount = (int)ceil(strlen($this->stringCode) / ($this->numberRails + 1));
+        $middleRow = ($this->numberRails - 1) / 2;
+        $missingAll = ($blocksCount * ($this->numberRails + 1)) - strlen($this->stringCode);
 
 
-		$used = 0;
-		for ($blocksRow = 0; $blocksRow < $this->numberRails; $blocksRow++) {
-			$missingThisRow = 0;
-			if ($missingAll > 1 && $missingAll + $blocksRow === $this->numberRails + 1) {
-				$missingThisRow = 1;
-			}
-			if($blocksRow !== $middleRow){
-				$rows[$blocksRow] = substr($this->stringCode, $used, $blocksCount);
-			}else {
-				if ($missingAll >  1) {
-					$missingThisRow += 1;
-				}
-				$rows[$blocksRow] = substr($this->stringCode, $used, $blocksCount * 2 - $missingThisRow);
-			}
-			$used += strlen($rows[$blocksRow]);
-		}
+        $used = 0;
+        for ($blocksRow = 0; $blocksRow < $this->numberRails; $blocksRow++) {
+            $missingThisRow = 0;
+            if ($missingAll > 1 && $missingAll + $blocksRow === $this->numberRails + 1) {
+                $missingThisRow = 1;
+            }
+            if ($blocksRow !== $middleRow) {
+                $rows[$blocksRow] = substr($this->stringCode, $used, $blocksCount);
+            } else {
+                if ($missingAll >  1) {
+                    $missingThisRow += 1;
+                }
+                $rows[$blocksRow] = substr($this->stringCode, $used, $blocksCount * 2 - $missingThisRow);
+            }
+            $used += strlen($rows[$blocksRow]);
+        }
 
-		//TODO i think we have rails right
+        $final = '';
+        for ($block = 0; $block < $blocksCount; $block++) {
+            foreach ($rows as $rowIndex => $row) {
+                if ($rowIndex === $middleRow) {
+                    if (substr($row, $block * 2, 1) !== '') {
+                        $final .= substr($row, $block * 2, 1);
+                    }
+                } else {
+                    if (substr($row, $block) !== '') {
+                        $final .= substr($row, $block, 1);
+                    }
+                }
 
+                if (count($rows) === $rowIndex + 1) {
+                    if (substr($rows[$middleRow], $block * 2 + 1, 1) !== '') {
+                        $final .= substr($rows[$middleRow], $block * 2 + 1, 1);
+                    }
+                }
+            }
+        }
 
-		return [$blocks, $rows];
-	}
+        return $final;
+    }
 
 }
