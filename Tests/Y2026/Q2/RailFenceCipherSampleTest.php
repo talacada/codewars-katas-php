@@ -36,4 +36,10 @@ class RailFenceCipherSampleTest extends TestCase
         $this->assertSame(encodeRailFenceCipher("WEAREDISCOVEREDFLEEATONCE", 3), "WECRLTEERDSOEEFEAOCAIVDEN");
         $this->assertSame(decodeRailFenceCipher("WECRLTEERDSOEEFEAOCAIVDEN", 3), "WEAREDISCOVEREDFLEEATONCE");
     }
+
+    public function testTwoRails()
+    {
+        $this->assertSame(encodeRailFenceCipher("Hello, World!", 2), "Hlo ol!el,Wrd");
+        $this->assertSame(decodeRailFenceCipher("Hlo ol!el,Wrd", 2), "Hello, World!");
+    }
 }

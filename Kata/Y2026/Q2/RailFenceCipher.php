@@ -46,19 +46,19 @@ class RailFenceCipherEncoder
     {
         $result = [];
 
-        $blocks = str_split($this->stringCode, $this->numberRails + 1);
-        //TODO numberRails can be 2....
+        $blocks = str_split($this->stringCode,2 * ($this->numberRails - 1));
 
         foreach ($blocks as $block) {
             $block = str_split($block);
-            for ($i = 0; $i <= $this->numberRails; $i++) {
-                if ($i === $this->numberRails) {
-                    if (isset($block[$i])) {
-                        $result[(int)floor($this->numberRails / 2)][] = $block[$i];
-                    }
+			$blockSize = 2 * ($this->numberRails - 1);
+			for ($i = 0; $i < $blockSize; $i++) {
+                if ($i < $this->numberRails) {
+					if (isset($block[$i])) {
+						$result[$i][] = $block[$i];
+					}
                 } else {
-                    if (isset($block[$i])) {
-                        $result[$i][] = $block[$i];
+                    if (isset($block[2 * ($this->numberRails - 1) - $i])) {
+                        $result[2 * ($this->numberRails - 1) - $i][] = $block[2 * ($this->numberRails - 1) - $i];
                     }
                 }
 
