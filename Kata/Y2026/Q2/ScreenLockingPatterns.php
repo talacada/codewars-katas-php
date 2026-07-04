@@ -47,7 +47,7 @@ class ScreenLockingPatterns
     private array $startIndex;
     private mixed $finalLength;
 
-    public function __construct($start, $length)
+    public function __construct(string $start, int $length)
     {
         $startLetter = ord(($start)) - ord('A');
         $this->startIndex[0] = intdiv($startLetter, 3);
@@ -56,7 +56,7 @@ class ScreenLockingPatterns
         $this->finalLength = $length;
     }
 
-    private function createGrid()
+    private function createGrid(): array
     {
         $grid = [
             [0, 0, 0],	// 	A  B  C
@@ -79,7 +79,7 @@ class ScreenLockingPatterns
 
         return $count;
     }
-    private function calculate(array $grid, array $on, $nowOnLength = 1): int
+    private function calculate(array $grid, array $on, int $nowOnLength = 1): int
     {
         $combinations = 0;
         $neighbours = [[1, 0], [-1, 0], [0, 1], [0, -1], [-1, -1], [-1, 1], [1, -1], [1, 1]];

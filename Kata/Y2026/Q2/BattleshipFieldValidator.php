@@ -51,7 +51,7 @@ class BattleshipFieldValidator
         [0, 1]
     ];
 
-    public function __construct($field)
+    public function __construct(array $field)
     {
         $this->field = $field;
         $this->fieldWithoutFoundShips = $field;

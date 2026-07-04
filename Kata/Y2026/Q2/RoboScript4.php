@@ -314,7 +314,7 @@ class Grid
         return $returnString;
     }
 
-    public function detectRecursion($patternsDefinition): void
+    public function detectRecursion(array $patternsDefinition): void
     {
         foreach ($patternsDefinition as $patternName => $pattern) {
             foreach ($pattern as $step) {
@@ -343,7 +343,7 @@ class Grid
         }
     }
 
-    public function validatePatternsExist($codeSteps, $patterns): void
+    public function validatePatternsExist(array $codeSteps, array $patterns): void
     {
         foreach ($codeSteps as $step) {
             if ($step instanceof Pattern) {

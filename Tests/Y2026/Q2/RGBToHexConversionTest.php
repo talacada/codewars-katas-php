@@ -11,7 +11,7 @@ use function Kata\Y2026\Q2\rgb;
 
 class RGBToHexConversionTest extends TestCase
 {
-    public function testBaseTests()
+    public function testBaseTests(): void
     {
         // assertEquals(mixed $expected, mixed $actual[, string $message = ''])
         $this->assertSame("FFFFFF", rgb(255, 255, 255));

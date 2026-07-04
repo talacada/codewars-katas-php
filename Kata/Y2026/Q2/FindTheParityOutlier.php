@@ -17,7 +17,7 @@ https://www.codewars.com/kata/find-the-parity-outlier
 
 namespace Kata\Y2026\Q2;
 
-function find($integers)
+function find(array $integers): int
 {
     $even = 0;
     $odd = 0;

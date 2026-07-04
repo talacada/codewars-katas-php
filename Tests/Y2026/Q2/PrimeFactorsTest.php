@@ -11,12 +11,12 @@ use function Kata\Y2026\Q2\primeFactors;
 
 class PrimeFactorsTest extends TestCase
 {
-    private function revTest($actual, $expected): void
+    private function revTest(mixed $actual, mixed $expected): void
     {
         $this->assertSame($expected, $actual);
     }
 
-    public function testBasics()
+    public function testBasics(): void
     {
         $this->revTest(primeFactors(7775460), "(2**2)(3**3)(5)(7)(11**2)(17)");
         $this->revTest(primeFactors(7919), "(7919)");

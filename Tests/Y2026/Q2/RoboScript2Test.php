@@ -11,7 +11,7 @@ use function Kata\Y2026\Q2\executeRS2;
 
 class RoboScript2Test extends TestCase
 {
-    public function testDescriptionExamples()
+    public function testDescriptionExamples(): void
     {
         $this->assertSame("******\r\n*    *\r\n*    *\r\n*    *\r\n*    *\r\n******", executeRS2("FFFFFLFFFFFLFFFFFLFFFFFL"));
         $this->assertSame("*", executeRS2(""));
@@ -21,17 +21,17 @@ class RoboScript2Test extends TestCase
         $this->assertSame("    ****\r\n    *  *\r\n    *  *\r\n********\r\n    *   \r\n    *   ", executeRS2("LF5RF3RF3RF7"));
     }
 
-    public function testSimpleDebug()
+    public function testSimpleDebug(): void
     {
         $this->assertSame("***\r\n*  \r\n*  ", executeRS2("LF2RF2"));
     }
 
-    public function testMultiDigitParsing()
+    public function testMultiDigitParsing(): void
     {
         $this->assertSame("*************", executeRS2("F12"));
     }
 
-    public function testLeftTurnFromDown()
+    public function testLeftTurnFromDown(): void
     {
         $this->assertSame("* \r\n**", executeRS2("RFLF"));
     }

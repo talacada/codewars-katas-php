@@ -14,7 +14,7 @@ function countPatternsFrom(string $f, int $l): int
 }
 class ScreenLockingPatternsTest extends TestCase
 {
-    public function testBasicTests()
+    public function testBasicTests(): void
     {
         $this->assertSame(0, countPatternsFrom('A', 0));
         $this->assertSame(0, countPatternsFrom('A', 10));

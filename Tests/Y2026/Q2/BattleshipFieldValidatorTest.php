@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class BattleshipFieldValidatorTest extends TestCase
 {
-    public function testExample()
+    public function testExample(): void
     {
         $this->assertTrue($this->validate_battlefield([
             [1, 0, 0, 0, 0, 1, 1, 0, 0, 0],

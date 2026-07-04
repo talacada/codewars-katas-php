@@ -11,7 +11,7 @@ use function Kata\Y2026\Q2\sum_intervals;
 
 class SumOfIntervalsTest extends TestCase
 {
-    public function testExamples()
+    public function testExamples(): void
     {
         // Non-overlapping intervals
         $this->assertSame(4, sum_intervals([[1, 5]]));
@@ -31,7 +31,7 @@ class SumOfIntervalsTest extends TestCase
         ]));
     }
 
-    public function testLargeIntervals()
+    public function testLargeIntervals(): void
     {
         $this->assertSame((int)2e9, sum_intervals([[(int)-1e9, (int)1e9]]));
         $this->assertSame((int)1e8 + 30, sum_intervals([
@@ -41,7 +41,7 @@ class SumOfIntervalsTest extends TestCase
         ]));
     }
 
-    public function testMultipleSameStart()
+    public function testMultipleSameStart(): void
     {
         // Všechny intervaly začínají na 2, nejdelší končí na 9 => [2,9] => 7
         $this->assertSame(7, sum_intervals([
@@ -53,7 +53,7 @@ class SumOfIntervalsTest extends TestCase
         ]));
     }
 
-    public function testNestedIntervals()
+    public function testNestedIntervals(): void
     {
         // [1,10] překryje vše => délka 9
         $this->assertSame(9, sum_intervals([
@@ -63,7 +63,7 @@ class SumOfIntervalsTest extends TestCase
         ]));
     }
 
-    public function testTouchingIntervals()
+    public function testTouchingIntervals(): void
     {
         // Dotýkající se, ale nepřekrývající se: [1,5] + [5,10] = 4 + 5 = 9
         $this->assertSame(9, sum_intervals([
@@ -72,7 +72,7 @@ class SumOfIntervalsTest extends TestCase
         ]));
     }
 
-    public function testMixedOverlapping()
+    public function testMixedOverlapping(): void
     {
         // Složitější mix z Codewars testů
         $this->assertSame(157, sum_intervals([
@@ -96,7 +96,7 @@ class SumOfIntervalsTest extends TestCase
         ]));
     }
 
-    public function testManyIntervals()
+    public function testManyIntervals(): void
     {
         // 100 intervalů s velkými čísly (stejná struktura jako Codewars test)
         $intervals = [

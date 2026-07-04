@@ -16,7 +16,7 @@ function getPINs(string $pin): array
 class TheObservedPinTest extends TestCase
 {
     // test function names should start with "test"
-    public function testSample()
+    public function testSample(): void
     {
         $expectations = [
             "0" => ["0", "8"],

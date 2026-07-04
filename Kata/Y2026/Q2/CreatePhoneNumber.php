@@ -17,7 +17,7 @@ https://www.codewars.com/kata/create-phone-number
 
 namespace Kata\Y2026\Q2;
 
-function createPhoneNumber($numbersArray)
+function createPhoneNumber(array $numbersArray): string
 {
     return "(" . $numbersArray[0] . $numbersArray[1] . $numbersArray[2] . ") "
         . $numbersArray[3] . $numbersArray[4] . $numbersArray[5] . "-"

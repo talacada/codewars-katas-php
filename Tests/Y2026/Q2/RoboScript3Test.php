@@ -25,7 +25,7 @@ class RoboScript3Test extends TestCase
         $this->assertSame("    ****\r\n    *  *\r\n    *  *\r\n********\r\n    *   \r\n    *   ", execute("LF5RF3RF3RF7"));
     }
 
-    public function testDescriptionExamples()
+    public function testDescriptionExamples(): void
     {
         $this->assertSame("    *****   *****   *****\r\n    *   *   *   *   *   *\r\n    *   *   *   *   *   *\r\n    *   *   *   *   *   *\r\n*****   *****   *****   *", execute("F4L((F4R)2(F4L)2)2(F4R)2F4"));
         $this->assertSame("    ****\r\n    *  *\r\n    *  *\r\n********\r\n    *   \r\n    *   ", execute("LF5(RF3)(RF3R)F7"));

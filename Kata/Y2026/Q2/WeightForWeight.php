@@ -32,7 +32,7 @@ https://www.codewars.com/kata/weight-for-weight
 
 namespace Kata\Y2026\Q2;
 
-function orderWeight($str)
+function orderWeight(string $str): string
 {
     $nums = explode(" ", $str);
     $list = [];
@@ -51,7 +51,7 @@ function orderWeight($str)
     return substr_replace($return, "", -1);
 }
 
-function cmp($a, $b)
+function cmp(array $a, array $b): int
 {
     if ($a['weight'] > $b['weight']) {
         return 1;

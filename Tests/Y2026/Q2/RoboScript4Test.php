@@ -21,7 +21,7 @@ class RoboScript4Test extends TestCase
         }
         return $a;
     }
-    public function testRS2Only()
+    public function testRS2Only(): void
     {
         foreach ($this->randomize([
             function () {
@@ -31,7 +31,7 @@ class RoboScript4Test extends TestCase
             $assertion();
         }
     }
-    public function testPatternDefinitionsOnly()
+    public function testPatternDefinitionsOnly(): void
     {
         foreach ($this->randomize([
             function () {
@@ -44,7 +44,7 @@ class RoboScript4Test extends TestCase
             $assertion();
         }
     }
-    public function testDefineAndInvoke()
+    public function testDefineAndInvoke(): void
     {
         foreach ($this->randomize([
             function () {
@@ -57,7 +57,7 @@ class RoboScript4Test extends TestCase
             $assertion();
         }
     }
-    public function testParseOrder()
+    public function testParseOrder(): void
     {
         foreach ($this->randomize([
             function () {
@@ -70,7 +70,7 @@ class RoboScript4Test extends TestCase
             $assertion();
         }
     }
-    public function testMixedCodeBasic()
+    public function testMixedCodeBasic(): void
     {
         foreach ($this->randomize([
             function () {
@@ -80,7 +80,7 @@ class RoboScript4Test extends TestCase
             $assertion();
         }
     }
-    public function testMultipleInvocations()
+    public function testMultipleInvocations(): void
     {
         foreach ($this->randomize([
             function () {
@@ -91,24 +91,24 @@ class RoboScript4Test extends TestCase
         }
     }
 
-    public function testInvalidInvocation1()
+    public function testInvalidInvocation1(): void
     {
         $this->expectException(ParseError::class);
         execute('p0(F2LF2R)2qP1');
     }
 
-    public function testInvalidInvocation2()
+    public function testInvalidInvocation2(): void
     {
         $this->expectException(ParseError::class);
         execute('P0p312(F2LF2R)2q');
     }
 
-    public function testInvalidInvocation3()
+    public function testInvalidInvocation3(): void
     {
         $this->expectException(ParseError::class);
         execute('P312');
     }
-    public function testMultiplePatternDefinitions()
+    public function testMultiplePatternDefinitions(): void
     {
         foreach ($this->randomize([
             function () {
@@ -122,25 +122,25 @@ class RoboScript4Test extends TestCase
         }
     }
 
-    public function testInvalidDefinitionOverwrite()
+    public function testInvalidDefinitionOverwrite(): void
     {
         $this->expectException(ParseError::class);
         execute('p1F2Lqp1(F3LF4R)5qp2F2Rqp3P1(P2)2P1q(P3)3');
     }
 
-    public function testInfiniteRecursion()
+    public function testInfiniteRecursion(): void
     {
         $this->expectException(ParseError::class);
         execute('p1F2RP1F2LqP1');
     }
 
-    public function testInfiniteMutualRecursion()
+    public function testInfiniteMutualRecursion(): void
     {
         $this->expectException(ParseError::class);
         execute('p1F2LP2qp2F2RP1qP1');
     }
 
-    public function testMultipleRecursionMinimal()
+    public function testMultipleRecursionMinimal(): void
     {
         $this->expectException(ParseError::class);
         execute('p1F3R2F6L3FFFRq(P1)1024P11');

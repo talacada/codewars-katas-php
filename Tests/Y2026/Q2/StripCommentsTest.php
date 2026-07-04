@@ -11,7 +11,7 @@ use function Kata\Y2026\Q2\stripComments;
 
 class StripCommentsTest extends TestCase
 {
-    public function testSample()
+    public function testSample(): void
     {
         $this->assertSame(
             "avocados cherries \noranges avocados \n? pears - oranges ' \navocados pears pears \n",

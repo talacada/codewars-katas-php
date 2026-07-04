@@ -11,7 +11,7 @@ use function Kata\Y2026\Q2\escape;
 
 class CarParkEscapeTest extends TestCase
 {
-    public function testSampleTests()
+    public function testSampleTests(): void
     {
         $carpark = [[1, 0, 0, 0, 2],
             [0, 0, 0, 0, 0]];
