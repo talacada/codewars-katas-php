@@ -42,4 +42,16 @@ class RailFenceCipherSampleTest extends TestCase
         $this->assertSame(encodeRailFenceCipher("Hello, World!", 2), "Hlo ol!el,Wrd");
         $this->assertSame(decodeRailFenceCipher("Hlo ol!el,Wrd", 2), "Hello, World!");
     }
+
+    public function testFourRails()
+    {
+        $this->assertSame(encodeRailFenceCipher("Hello, World!", 4), "H !e,Wdloollr");
+        $this->assertSame(decodeRailFenceCipher("H !e,Wdloollr", 4), "Hello, World!");
+    }
+
+    public function testSixRails()
+    {
+        $this->assertSame(encodeRailFenceCipher("Hello, World!", 6), "Hlerdlo!lWo ,");
+        $this->assertSame(decodeRailFenceCipher("Hlerdlo!lWo ,", 6), "Hello, World!");
+    }
 }

@@ -45,20 +45,19 @@ class RailFenceCipherEncoder
     public function encode(): string
     {
         $result = [];
-
-        $blocks = str_split($this->stringCode,2 * ($this->numberRails - 1));
+		$blockSize = 2 * ($this->numberRails - 1);
+        $blocks = str_split($this->stringCode,$blockSize);
 
         foreach ($blocks as $block) {
             $block = str_split($block);
-			$blockSize = 2 * ($this->numberRails - 1);
 			for ($i = 0; $i < $blockSize; $i++) {
                 if ($i < $this->numberRails) {
 					if (isset($block[$i])) {
 						$result[$i][] = $block[$i];
 					}
                 } else {
-                    if (isset($block[2 * ($this->numberRails - 1) - $i])) {
-                        $result[2 * ($this->numberRails - 1) - $i][] = $block[2 * ($this->numberRails - 1) - $i];
+                    if (isset($block[$i])) {
+                        $result[2 * ($this->numberRails - 1) - $i][] = $block[$i];
                     }
                 }
 
@@ -83,6 +82,7 @@ class RailFenceCipherDecoder
             throw new ParseError("Number Rails should be greater than 2");
         }
     }
+	/*
     public function decode()
     {
         $blocks = [];
@@ -132,5 +132,18 @@ class RailFenceCipherDecoder
 
         return $final;
     }
+	*/
+	public function decode()
+	{
+		$characters = str_split($this->stringCode, 1);
+		$rows = [];
+
+
+		for($i = 0; $i < count($characters); $i++) {
+
+		}
+
+		return $rows;
+	}
 
 }
