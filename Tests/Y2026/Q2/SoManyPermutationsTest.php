@@ -17,7 +17,7 @@ final class SoManyPermutationsTest extends TestCase
         sort($actual);
         $this->assertSame($expected, $actual, $msg);
     }
-    public function testDescriptionExamples()
+    public function testDescriptionExamples(): void
     {
         $this->assertEquivalent([''], permutations(''));
         $this->assertEquivalent(['aabb', 'abab', 'abba', 'baab', 'baba', 'bbaa'], permutations('aabb'));

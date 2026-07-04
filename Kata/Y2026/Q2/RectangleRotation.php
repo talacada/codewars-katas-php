@@ -39,7 +39,7 @@ https://www.codewars.com/kata/5886e082a836a691340000c3
 
 namespace Kata\Y2026\Q2;
 
-function rectangle_rotation($a, $b): int
+function rectangle_rotation(int $a, int $b): int
 {
 
     $u = (int) floor($a / sqrt(2));

@@ -11,14 +11,14 @@ use function Kata\Y2026\Q2\ips_between;
 
 class CountIpAddressesTest extends TestCase
 {
-    public function testExamples()
+    public function testExamples(): void
     {
         $this->assertSame(1, ips_between("150.0.0.0", "150.0.0.1"));
         $this->assertSame(50, ips_between("10.0.0.0", "10.0.0.50"));
         $this->assertSame(246, ips_between("20.0.0.10", "20.0.1.0"));
     }
 
-    public function testExtra()
+    public function testExtra(): void
     {
         $this->assertSame(256, ips_between("10.0.0.0", "10.0.1.0"), "přeskočení přes třetí oktet");
         $this->assertSame(65536, ips_between("0.0.0.0", "0.1.0.0"), "přeskočení přes druhý oktet");

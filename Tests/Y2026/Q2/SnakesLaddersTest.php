@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class SnakesLaddersTest extends TestCase
 {
-    public function testExample()
+    public function testExample(): void
     {
         $game = new SnakesLadders();
         $this->assertSame("Player 1 is on square 38", $game->play(1, 1), "Should return: 'Player 1 is on square 38'");

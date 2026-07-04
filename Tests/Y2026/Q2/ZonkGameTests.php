@@ -9,13 +9,13 @@ use PHPUnit\Framework\TestCase;
 
 class ZonkGameTests extends TestCase
 {
-    private function doTest($dice, $expected, $msg = null)
+    private function doTest(array $dice, int $expected, ?string $msg = null): void
     {
         $msg = $msg ?: ('Dice=' . json_encode($dice));
         $game = new ZonkGame($dice);
         $this->assertSame($expected, $game->getScore(), $msg);
     }
-    public function testSingleDie()
+    public function testSingleDie(): void
     {
         $this->doTest([1], 100);
         $this->doTest([2], 0);
@@ -24,7 +24,7 @@ class ZonkGameTests extends TestCase
         $this->doTest([5], 50);
         $this->doTest([6], 0);
     }
-    public function testMultipleDice()
+    public function testMultipleDice(): void
     {
         $this->doTest([1,1], 200);
         $this->doTest([1,1,1], 1000);

@@ -1,5 +1,5 @@
 parameters:
-    level: 5
+    level: 6
     phpVersion: 80100
     paths:
         - Kata/
@@ -7,3 +7,5 @@ parameters:
     scanFiles:
         - _codewars_stubs.php
     tmpDir: .phpstan-cache
+    ignoreErrors:
+        - identifier: missingType.iterableValue

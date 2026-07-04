@@ -12,11 +12,11 @@ require_once __DIR__ . '/../../../Kata/Y2026/Q2/FibProduct.php';
 
 class FibProductTest extends TestCase
 {
-    private function revTest($actual, $expected): void
+    private function revTest(mixed $actual, mixed $expected): void
     {
         $this->assertSame($expected, $actual);
     }
-    public function testBasics()
+    public function testBasics(): void
     {
         $this->revTest(productFib(714), [21, 34, true]);
         $this->revTest(productFib(4895), [55, 89, true]);

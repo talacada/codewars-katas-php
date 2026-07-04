@@ -11,7 +11,7 @@ use function Kata\Y2026\Q2\highlight;
 
 class RoboScript1Test extends TestCase
 {
-    public function testDescriptionExamples()
+    public function testDescriptionExamples(): void
     {
         //echo "Code without syntax highlighting: F3RF5LF7\r\n";
         //echo "Expected syntax highlighting: <span style=\"color: pink\">F</span><span style=\"color: orange\">3</span><span style=\"color: green\">R</span><span style=\"color: pink\">F</span><span style=\"color: orange\">5</span><span style=\"color: red\">L</span><span style=\"color: pink\">F</span><span style=\"color: orange\">7</span>\r\n";

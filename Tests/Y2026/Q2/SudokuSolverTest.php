@@ -16,7 +16,7 @@ function sudoku(array $puzzle): array
 
 class SudokuSolverTest extends TestCase
 {
-    public function testDescriptionExample()
+    public function testDescriptionExample(): void
     {
         $this->assertSame([
             [5,3,4,6,7,8,9,1,2],

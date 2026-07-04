@@ -11,7 +11,7 @@ use function Kata\Y2026\Q2\nextBigger;
 
 class NextBiggerNumberTest extends TestCase
 {
-    public function testBasicTests()
+    public function testBasicTests(): void
     {
         $this->assertSame(21, nextBigger(12));
         $this->assertSame(531, nextBigger(513));

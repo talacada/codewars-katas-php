@@ -15,7 +15,7 @@ function format_duration(int $seconds): string
 
 class FormatDurationTest extends TestCase
 {
-    public function testExample()
+    public function testExample(): void
     {
         $this->assertSame("1 second", format_duration(1));
         $this->assertSame("1 minute and 2 seconds", format_duration(62));

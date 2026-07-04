@@ -23,7 +23,7 @@ https://www.codewars.com/kata/who-likes-it
 
 namespace Kata\Y2026\Q2;
 
-function likes($names)
+function likes(array $names): string
 {
     $defaultSingle = ' likes this';
     $defaultMultiple = ' like this';

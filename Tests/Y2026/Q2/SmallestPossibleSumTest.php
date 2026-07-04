@@ -11,7 +11,7 @@ use function Kata\Y2026\Q2\solutionSmallestSum;
 
 class SmallestPossibleSumTest extends TestCase
 {
-    public function testExample()
+    public function testExample(): void
     {
         $this->assertSame(3, solutionSmallestSum([10, 15, 21]));
         $this->assertSame(6, solutionSmallestSum([18, 12, 8]));

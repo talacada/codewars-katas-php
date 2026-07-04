@@ -145,7 +145,7 @@ function move(array $grid, int $facing, int $times, array $position): array
     return [$grid, $position];
 }
 
-function extendGrid(array $grid, int $facing, $position): array
+function extendGrid(array $grid, int $facing, array $position): array
 {
     if ($facing === 0 || $facing === 2) {
         $empty = array_fill(0, count($grid[0]), ' ');

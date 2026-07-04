@@ -11,7 +11,7 @@ use function Kata\Y2026\Q2\get_generation;
 
 class ConwaysGameOfLifeUnlimitedEditionTest extends TestCase
 {
-    public function testExample()
+    public function testExample(): void
     {
         $this->assertSame([
             [0, 1, 0],
@@ -24,7 +24,7 @@ class ConwaysGameOfLifeUnlimitedEditionTest extends TestCase
         ], 1));
     }
 
-    public function test2()
+    public function test2(): void
     {
         $this->assertSame([
             [1, 0, 1],
@@ -37,7 +37,7 @@ class ConwaysGameOfLifeUnlimitedEditionTest extends TestCase
         ], 2));
     }
 
-    public function testEmpty()
+    public function testEmpty(): void
     {
         $this->assertSame([
             []
