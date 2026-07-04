@@ -45,7 +45,7 @@ class ScreenLockingPatterns
 {
     private array $grid;
     private array $startIndex;
-    private mixed $finalLength;
+    private int $finalLength;
 
     public function __construct(string $start, int $length)
     {
