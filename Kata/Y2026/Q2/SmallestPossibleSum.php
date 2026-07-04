@@ -37,6 +37,10 @@ namespace Kata\Y2026\Q2;
 
 function solutionSmallestSum(array $input): int
 {
+    if ($input === []) {
+        return 0;
+    }
+
     rsort($input);
     do {
         $changed = false;

@@ -192,7 +192,7 @@ class StepsDecoupler
         $found = false;
         $nested = 0;
         do {
-            $possibleBracelet = strpos($code, ')', $index + 1);
+            $possibleBracelet = (int)strpos($code, ')', $index + 1);
 
             $countOpeningBracketsInBetween = substr_count($code, '(', $index + 1, $possibleBracelet - $index - 1);
 
