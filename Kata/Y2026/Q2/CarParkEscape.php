@@ -48,7 +48,7 @@ function escape(array $carpark): array
     foreach ($carpark as $index => $row) {
         if (!$hasStart) {
             if (in_array(2, $row, true)) {
-                $nowOnIndex = array_search(2, $row, true);
+                $nowOnIndex = (int)array_search(2, $row, true);
                 [$move, $nowOnIndex] = countSteps($row, $nowOnIndex);
                 if ($move != null) {
                     $return[] = $move;
@@ -67,7 +67,7 @@ function escape(array $carpark): array
                 }
             } else {
                 if ($arrayCount != $index + 1) {
-                    $return[array_key_last($return)] = "D" . ((int)str_split($return[array_key_last($return)])[1] + 1);
+                    $return[(int)array_key_last($return)] = "D" . ((int)str_split($return[(int)array_key_last($return)])[1] + 1);
                 }
             }
 
@@ -79,9 +79,9 @@ function escape(array $carpark): array
 function countSteps(array $row, int $nowIndex): array
 {
     if (in_array(1, $row, true)) {
-        $goToIndex = array_search(1, $row, true);
+        $goToIndex = (int)array_search(1, $row, true);
     } else {
-        $goToIndex = array_key_last($row);
+        $goToIndex = (int)array_key_last($row);
     }
 
     if ($nowIndex > $goToIndex) {

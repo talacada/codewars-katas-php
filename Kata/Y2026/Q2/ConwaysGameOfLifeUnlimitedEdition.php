@@ -99,7 +99,7 @@ function removeEmptyAround(array $cells): array
 {
     $cellsNew = [];
     $cellsFinal = [];
-    $keys =  [0, array_key_last($cells)];
+    $keys =  [0, (int)array_key_last($cells)];
     $cellsNew = $cells;
     foreach ($keys as $index => $key) {
         for ($realRow = 0; $realRow < count($cellsNew); $realRow++) {

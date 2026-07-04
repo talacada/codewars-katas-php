@@ -30,8 +30,8 @@ function find_uniq(array $a): string
     $sortedLett = $letters;
     sort($sortedLett);
 
-    if (count(array_diff($sortedLett[1], $sortedLett[array_key_last($sortedLett)])) > 0) {
-        $key = array_keys($letters, $sortedLett[array_key_last($sortedLett)], true)[0];
+    if (count(array_diff($sortedLett[1], $sortedLett[(int)array_key_last($sortedLett)])) > 0) {
+        $key = array_keys($letters, $sortedLett[(int)array_key_last($sortedLett)], true)[0];
     } else {
         $key = array_keys($letters, $sortedLett[0], true)[0];
     }
