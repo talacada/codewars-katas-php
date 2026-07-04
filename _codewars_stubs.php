@@ -9,9 +9,9 @@ namespace Kata\Y2026\Q2;
 
 class Node
 {
-    public function getNext(): ?Node
+    public function getNext(): Node
     {
-        return null;
+        return $this;
     }
 }
 
