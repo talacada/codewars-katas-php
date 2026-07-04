@@ -5,7 +5,7 @@ parameters:
         - Kata/
         - Tests/
     scanFiles:
-        - _codewars_stubs.php
+        - Support/_codewars_stubs.php
     tmpDir: .phpstan-cache
     ignoreErrors:
         - identifier: missingType.iterableValue
