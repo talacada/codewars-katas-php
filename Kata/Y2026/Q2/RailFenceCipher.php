@@ -136,11 +136,15 @@ class RailFenceCipherDecoder
 	public function decode()
 	{
 		$characters = str_split($this->stringCode, 1);
+		$blockSize = 2 * ($this->numberRails - 1);
+		$blocksCount = (int)ceil(count($characters) / $blockSize);
 		$rows = [];
 
 
-		for($i = 0; $i < count($characters); $i++) {
+		for($i = 0; $i < $blocksCount; $i++) {
+			for ($j = 0; $j < $blockSize; $j++) {
 
+			}
 		}
 
 		return $rows;
