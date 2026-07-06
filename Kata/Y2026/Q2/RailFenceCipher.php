@@ -139,6 +139,7 @@ class RailFenceCipherDecoder
 		$blockSize = 2 * ($this->numberRails - 1);
 		$blocksCount = (int)ceil(count($characters) / $blockSize);
 		$rows = [];
+		$missing = $blockSize - (count($characters) % $blockSize);
 
 
 		for($i = 0; $i < $blocksCount; $i++) {
