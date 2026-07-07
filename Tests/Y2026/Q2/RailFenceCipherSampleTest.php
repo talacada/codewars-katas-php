@@ -54,4 +54,25 @@ class RailFenceCipherSampleTest extends TestCase
         $this->assertSame(encodeRailFenceCipher("Hello, World!", 6), "Hlerdlo!lWo ,");
         $this->assertSame(decodeRailFenceCipher("Hlerdlo!lWo ,", 6), "Hello, World!");
     }
+
+    /**
+     * Simplified version of the failing testRandom case.
+     * When rails > string length, each character sits on its own rail
+     * and both encode/decode should return the original string unchanged.
+     */
+    public function testMoreRailsThanStringLength()
+    {
+        $this->assertSame(encodeRailFenceCipher("abcd", 5), "abcd");
+        $this->assertSame(decodeRailFenceCipher("abcd", 5), "abcd");
+    }
+
+    /**
+     * Medium case: blockSize > string length but rails < string length.
+     * 8 chars, 5 rails => blockSize = 8, exactly one block.
+     */
+    public function testHighRailsMediumString()
+    {
+        $encoded = encodeRailFenceCipher("abcdefgh", 5);
+        $this->assertSame(decodeRailFenceCipher($encoded, 5), "abcdefgh");
+    }
 }

@@ -82,73 +82,65 @@ class RailFenceCipherDecoder
             throw new ParseError("Number Rails should be greater than 2");
         }
     }
-	/*
-    public function decode()
-    {
-        $blocks = [];
-        $rows = [];
-        $blocksCount = (int)ceil(strlen($this->stringCode) / ($this->numberRails + 1));
-        $middleRow = ($this->numberRails - 1) / 2;
-        $missingAll = ($blocksCount * ($this->numberRails + 1)) - strlen($this->stringCode);
 
-
-        $used = 0;
-        for ($blocksRow = 0; $blocksRow < $this->numberRails; $blocksRow++) {
-            $missingThisRow = 0;
-            if ($missingAll > 1 && $missingAll + $blocksRow === $this->numberRails + 1) {
-                $missingThisRow = 1;
-            }
-            if ($blocksRow !== $middleRow) {
-                $rows[$blocksRow] = substr($this->stringCode, $used, $blocksCount);
-            } else {
-                if ($missingAll >  1) {
-                    $missingThisRow += 1;
-                }
-                $rows[$blocksRow] = substr($this->stringCode, $used, $blocksCount * 2 - $missingThisRow);
-            }
-            $used += strlen($rows[$blocksRow]);
-        }
-
-        $final = '';
-        for ($block = 0; $block < $blocksCount; $block++) {
-            foreach ($rows as $rowIndex => $row) {
-                if ($rowIndex === $middleRow) {
-                    if (substr($row, $block * 2, 1) !== '') {
-                        $final .= substr($row, $block * 2, 1);
-                    }
-                } else {
-                    if (substr($row, $block) !== '') {
-                        $final .= substr($row, $block, 1);
-                    }
-                }
-
-                if (count($rows) === $rowIndex + 1) {
-                    if (substr($rows[$middleRow], $block * 2 + 1, 1) !== '') {
-                        $final .= substr($rows[$middleRow], $block * 2 + 1, 1);
-                    }
-                }
-            }
-        }
-
-        return $final;
-    }
-	*/
-	public function decode()
+	public function decode(): string
 	{
 		$characters = str_split($this->stringCode, 1);
 		$blockSize = 2 * ($this->numberRails - 1);
 		$blocksCount = (int)ceil(count($characters) / $blockSize);
-		$rows = [];
+		$block = [];
 		$missing = $blockSize - (count($characters) % $blockSize);
+		$offset = 0;
 
-
-		for($i = 0; $i < $blocksCount; $i++) {
-			for ($j = 0; $j < $blockSize; $j++) {
-
+		for($i = 0; $i < $this->numberRails; $i++) {
+			if ($i === 0) {
+				$block[$i] = str_split(substr($this->stringCode, $offset, $blocksCount), 1);
+				$offset = count($block[$i]);
+			}elseif ($i === $this->numberRails - 1) {
+				$block[$i] = str_split(substr($this->stringCode, $offset, $blocksCount), 1);
+			}else {
+				$missingThisRow = 0;
+				if ($missing > $blockSize / 2) {
+					$missingThisRow = 2;
+					if ($i < $blockSize - $missing) {
+						$missingThisRow = 1;
+					}
+				}
+				$block[$i] = str_split(substr($this->stringCode, $offset,$blocksCount * 2 - $missingThisRow), 1);
+				$offset += count($block[$i]);
 			}
 		}
 
-		return $rows;
+		$moving = 0;
+		$nowOn = -1;
+		$finalString = "";
+
+		for($i = 0; $i < count($characters); $i++) {
+			if ($moving === 0) {
+				if (isset($block[$nowOn + 1][0])) {
+					$finalString .= $block[$nowOn + 1][0];
+					unset($block[$nowOn + 1][0]);
+					$block[$nowOn + 1] = array_values($block[$nowOn + 1]);
+					$nowOn++;
+				}
+			}else {
+				if (isset($block[$nowOn - 1][0])) {
+					$finalString .= $block[$nowOn - 1][0];
+					unset($block[$nowOn - 1][0]);
+					$block[$nowOn - 1] = array_values($block[$nowOn - 1]);
+					$nowOn--;
+				}
+			}
+
+			if ($nowOn === $this->numberRails - 1) {
+				$moving = 1;
+			}elseif ($nowOn === 0) {
+				$moving = 0;
+			}
+
+		}
+
+		return $finalString;
 	}
 
 }
