@@ -41,6 +41,7 @@ Work on Kata every day.
 
 | #  | Kata                                      | Dificulty | Solution                                                       | Completed  |
 |----|-------------------------------------------|-----------|----------------------------------------------------------------|------------|
+| 38 | Rail Fence Cipher                         | 3 kyu     | [Kata](Kata/Y2026/Q2/RailFenceCipher.php)                      | 08.07.2026 |
 | 37 | Product of consecutive Fib numbers        | 5 kyu     | [Kata](Kata/Y2026/Q2/FibProduct.php)                           | 28.06.2026 |
 | 36 | Rectangle Rotation                        | 4 kyu     | [Kata](Kata/Y2026/Q2/RectangleRotation.php)                    | 27.06.2026 |
 | 35 | RoboScript 4                              | 3 kyu     | [Kata](Kata/Y2026/Q2/RoboScript4.php)                          | 24.06.2026 |

@@ -26,7 +26,7 @@ https://www.codewars.com/kata/58c5577d61aefcf3ff000081
 
 namespace Kata\Y2026\Q2;
 
-use ParseError;
+use InvalidArgumentException;
 
 class RailFenceCipherEncoder
 {
@@ -39,22 +39,22 @@ class RailFenceCipherEncoder
         if ($numberRails >= 2) {
             $this->numberRails = $numberRails;
         } else {
-            throw new ParseError("Number Rails should be greater than 2");
+            throw new InvalidArgumentException("Number Rails should be greater than 2");
         }
     }
     public function encode(): string
     {
         $result = [];
-		$blockSize = 2 * ($this->numberRails - 1);
-        $blocks = str_split($this->stringCode,$blockSize);
+        $blockSize = 2 * ($this->numberRails - 1);
+        $blocks = str_split($this->stringCode, $blockSize);
 
         foreach ($blocks as $block) {
             $block = str_split($block);
-			for ($i = 0; $i < $blockSize; $i++) {
+            for ($i = 0; $i < $blockSize; $i++) {
                 if ($i < $this->numberRails) {
-					if (isset($block[$i])) {
-						$result[$i][] = $block[$i];
-					}
+                    if (isset($block[$i])) {
+                        $result[$i][] = $block[$i];
+                    }
                 } else {
                     if (isset($block[$i])) {
                         $result[2 * ($this->numberRails - 1) - $i][] = $block[$i];
@@ -79,68 +79,73 @@ class RailFenceCipherDecoder
         if ($numberRails >= 2) {
             $this->numberRails = $numberRails;
         } else {
-            throw new ParseError("Number Rails should be greater than 2");
+            throw new InvalidArgumentException("Number Rails should be greater than 2");
         }
     }
 
-	public function decode(): string
-	{
-		$characters = str_split($this->stringCode, 1);
-		$blockSize = 2 * ($this->numberRails - 1);
-		$blocksCount = (int)ceil(count($characters) / $blockSize);
-		$block = [];
-		$missing = $blockSize - (count($characters) % $blockSize);
-		$offset = 0;
+    public function decode(): string
+    {
+        $characters = str_split($this->stringCode, 1);
+        $blockSize = 2 * ($this->numberRails - 1);
+        $blocksCount = (int)ceil(count($characters) / $blockSize);
+        $block = [];
+        $offset = 0;
 
-		for($i = 0; $i < $this->numberRails; $i++) {
-			if ($i === 0) {
-				$block[$i] = str_split(substr($this->stringCode, $offset, $blocksCount), 1);
-				$offset = count($block[$i]);
-			}elseif ($i === $this->numberRails - 1) {
-				$block[$i] = str_split(substr($this->stringCode, $offset, $blocksCount), 1);
-			}else {
-				$missingThisRow = 0;
-				if ($missing > $blockSize / 2) {
-					$missingThisRow = 2;
-					if ($i < $blockSize - $missing) {
-						$missingThisRow = 1;
-					}
-				}
-				$block[$i] = str_split(substr($this->stringCode, $offset,$blocksCount * 2 - $missingThisRow), 1);
-				$offset += count($block[$i]);
-			}
-		}
+        $missing = $blockSize - (count($characters) % $blockSize);
+        if ($missing === $blockSize) {
+            $missing = 0;
+        }
 
-		$moving = 0;
-		$nowOn = -1;
-		$finalString = "";
+        for ($i = 0; $i < $this->numberRails; $i++) {
+            if ($i === 0) {
+                $block[$i] = str_split(substr($this->stringCode, $offset, $blocksCount), 1);
+                $offset = count($block[$i]);
+            } elseif ($i === $this->numberRails - 1) {
+                $block[$i] = str_split(substr($this->stringCode, $offset, $blocksCount), 1);
+            } else {
+                $missingThisRow = 0;
+                if ($i <= $missing) {
+                    $missingThisRow++;
+                }
+                if ($i >= $blockSize - $missing) {
+                    $missingThisRow++;
+                }
 
-		for($i = 0; $i < count($characters); $i++) {
-			if ($moving === 0) {
-				if (isset($block[$nowOn + 1][0])) {
-					$finalString .= $block[$nowOn + 1][0];
-					unset($block[$nowOn + 1][0]);
-					$block[$nowOn + 1] = array_values($block[$nowOn + 1]);
-					$nowOn++;
-				}
-			}else {
-				if (isset($block[$nowOn - 1][0])) {
-					$finalString .= $block[$nowOn - 1][0];
-					unset($block[$nowOn - 1][0]);
-					$block[$nowOn - 1] = array_values($block[$nowOn - 1]);
-					$nowOn--;
-				}
-			}
+                $block[$i] = str_split(substr($this->stringCode, $offset, $blocksCount * 2 - $missingThisRow), 1);
+                $offset += count($block[$i]);
+            }
+        }
 
-			if ($nowOn === $this->numberRails - 1) {
-				$moving = 1;
-			}elseif ($nowOn === 0) {
-				$moving = 0;
-			}
+        $moving = 0;
+        $nowOn = -1;
+        $finalString = "";
 
-		}
+        for ($i = 0; $i < count($characters); $i++) {
+            if ($moving === 0) {
+                if (isset($block[$nowOn + 1][0])) {
+                    $finalString .= $block[$nowOn + 1][0];
+                    unset($block[$nowOn + 1][0]);
+                    $block[$nowOn + 1] = array_values($block[$nowOn + 1]);
+                    $nowOn++;
+                }
+            } else {
+                if (isset($block[$nowOn - 1][0])) {
+                    $finalString .= $block[$nowOn - 1][0];
+                    unset($block[$nowOn - 1][0]);
+                    $block[$nowOn - 1] = array_values($block[$nowOn - 1]);
+                    $nowOn--;
+                }
+            }
 
-		return $finalString;
-	}
+            if ($nowOn === $this->numberRails - 1) {
+                $moving = 1;
+            } elseif ($nowOn === 0) {
+                $moving = 0;
+            }
+
+        }
+
+        return $finalString;
+    }
 
 }

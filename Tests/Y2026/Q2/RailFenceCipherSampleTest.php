@@ -75,4 +75,14 @@ class RailFenceCipherSampleTest extends TestCase
         $encoded = encodeRailFenceCipher("abcdefgh", 5);
         $this->assertSame(decodeRailFenceCipher($encoded, 5), "abcdefgh");
     }
+
+    /**
+     * Nejjednodušší případ, kde selhává decode:
+     * 3 znaky, 3 rails. Poslední blok není kompletní (blockSize=4, chybí 1 znak).
+     * Decoder chybně přiřadí rail 1 dva znaky a rail 2 nula znaků.
+     */
+    public function testSimplestFailingDecode()
+    {
+        $this->assertSame("abc", decodeRailFenceCipher("abc", 3));
+    }
 }
