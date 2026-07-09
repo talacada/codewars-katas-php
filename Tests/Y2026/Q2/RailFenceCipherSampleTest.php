@@ -10,13 +10,13 @@ use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../../../Kata/Y2026/Q2/RailFenceCipher.php';
 
-function encodeRailFenceCipher($string, $numberRails): string
+function encodeRailFenceCipher(string $string, int $numberRails): string
 {
     $encoder = new RailFenceCipherEncoder($string, $numberRails);
     return $encoder->encode();
 }
 
-function decodeRailFenceCipher($string, $numberRails)
+function decodeRailFenceCipher(string $string, int $numberRails): string
 {
     $decoder = new RailFenceCipherDecoder($string, $numberRails);
     return $decoder->decode();
@@ -25,7 +25,7 @@ function decodeRailFenceCipher($string, $numberRails)
 
 class RailFenceCipherSampleTest extends TestCase
 {
-    public function testSample()
+    public function testSample(): void
     {
         $this->assertSame(encodeRailFenceCipher("Hello, World!", 3), "Hoo!el,Wrdl l");
         $this->assertSame(decodeRailFenceCipher("Hoo!el,Wrdl l", 3), "Hello, World!");
@@ -37,19 +37,19 @@ class RailFenceCipherSampleTest extends TestCase
         $this->assertSame(decodeRailFenceCipher("WECRLTEERDSOEEFEAOCAIVDEN", 3), "WEAREDISCOVEREDFLEEATONCE");
     }
 
-    public function testTwoRails()
+    public function testTwoRails(): void
     {
         $this->assertSame(encodeRailFenceCipher("Hello, World!", 2), "Hlo ol!el,Wrd");
         $this->assertSame(decodeRailFenceCipher("Hlo ol!el,Wrd", 2), "Hello, World!");
     }
 
-    public function testFourRails()
+    public function testFourRails(): void
     {
         $this->assertSame(encodeRailFenceCipher("Hello, World!", 4), "H !e,Wdloollr");
         $this->assertSame(decodeRailFenceCipher("H !e,Wdloollr", 4), "Hello, World!");
     }
 
-    public function testSixRails()
+    public function testSixRails(): void
     {
         $this->assertSame(encodeRailFenceCipher("Hello, World!", 6), "Hlerdlo!lWo ,");
         $this->assertSame(decodeRailFenceCipher("Hlerdlo!lWo ,", 6), "Hello, World!");
@@ -60,7 +60,7 @@ class RailFenceCipherSampleTest extends TestCase
      * When rails > string length, each character sits on its own rail
      * and both encode/decode should return the original string unchanged.
      */
-    public function testMoreRailsThanStringLength()
+    public function testMoreRailsThanStringLength(): void
     {
         $this->assertSame(encodeRailFenceCipher("abcd", 5), "abcd");
         $this->assertSame(decodeRailFenceCipher("abcd", 5), "abcd");
@@ -70,7 +70,7 @@ class RailFenceCipherSampleTest extends TestCase
      * Medium case: blockSize > string length but rails < string length.
      * 8 chars, 5 rails => blockSize = 8, exactly one block.
      */
-    public function testHighRailsMediumString()
+    public function testHighRailsMediumString(): void
     {
         $encoded = encodeRailFenceCipher("abcdefgh", 5);
         $this->assertSame(decodeRailFenceCipher($encoded, 5), "abcdefgh");
@@ -81,7 +81,7 @@ class RailFenceCipherSampleTest extends TestCase
      * 3 znaky, 3 rails. Poslední blok není kompletní (blockSize=4, chybí 1 znak).
      * Decoder chybně přiřadí rail 1 dva znaky a rail 2 nula znaků.
      */
-    public function testSimplestFailingDecode()
+    public function testSimplestFailingDecode(): void
     {
         $this->assertSame("abc", decodeRailFenceCipher("abc", 3));
     }

@@ -46,7 +46,7 @@ class RailFenceCipherEncoder
     {
         $result = [];
         $blockSize = 2 * ($this->numberRails - 1);
-        $blocks = str_split($this->stringCode, $blockSize);
+        $blocks = str_split($this->stringCode, max(1, $blockSize));
 
         foreach ($blocks as $block) {
             $block = str_split($block);
