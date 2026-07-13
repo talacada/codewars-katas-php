@@ -54,13 +54,41 @@ class Formula
 	private function segmentateFormula(string $formula): array
 	{
 		$return = [];
-		$offset = 0;
-		$totalOperators = substr_count($formula, '-')+ substr_count($formula, '+') + substr_count($formula, '*') + substr_count($formula, '=');
+		$nowOn = 'number';
+		$lastWasMinus = false;
+		$formulaChars = str_split($formula);
+		$previousIndex = 0;
 
-		for ($i = 0; $i < $totalOperators; $i++) {
-			$nextOperand = strcspn($formula, '-+*=', $offset);
-			$return[] = substr($formula, $offset, $nextOperand);
-			$offset += $nextOperand + 1;
+		if ($formulaChars[0] === '-') {
+			$lastWasMinus = true;
+			$nowOn = 'operator';
+		}
+
+		foreach ($formulaChars as $index => $formulaChar) {
+			if ($nowOn === 'number') {
+				if (is_numeric($formulaChar) || $formulaChar === '?') {
+					$return[$previousIndex] .= $formulaChar;
+				}elseif (in_array($formulaChar, self::OPERANDS)) {
+					$return[] = $formulaChar;
+					$nowOn = 'operator';
+					$previousIndex ++;
+				}
+			}elseif ($nowOn === 'operator') {
+				if (is_numeric($formulaChar) || $formulaChar === '?') {
+					if ($lastWasMinus) {
+						$return[$previousIndex] .= $formulaChar;
+					}else {
+						$return[] = $formulaChar;
+						$previousIndex ++;
+					}
+					$nowOn = 'number';
+				}elseif ($formulaChar === '-' && $lastWasMinus === true) {
+					$return[] = $formulaChar;
+					if ($index != 0) {
+						$previousIndex ++;
+					}
+				}
+			}
 		}
 
 		return $return;
