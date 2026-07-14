@@ -30,11 +30,21 @@ class FindTheUnknownDigit
 
 	public function __construct(string $formula){
 		$this->formula = new Formula();
-		$this->formula->populate($formula);
+		$this->formula->populateFromString($formula);
 	}
 
-	public function decipher()
+	public function decipher(): int
 	{
+		for ($i = 0; $i < 10; $i++) {
+			$newData = str_replace("?", (string)$i, [$this->formula->numberOne, $this->formula->numberTwo, $this->formula->result]);
+			$mutatedFormula = new Formula();
+			$mutatedFormula->populateFromMutatedData($newData, $this->formula->operator);
+			if ($mutatedFormula->calculateIfCorrect()) {
+				return $i;
+			}
+		}
+
+		return -1;
 	}
 }
 
@@ -44,11 +54,18 @@ class Formula
 	public string $operator;
 	public string $numberTwo;
 	public string $result;
-	const OPERANDS = ['-', '+', '*', "="];
-	public function populate(string $formula) {
+	const OPERANDS = ['-', '+', '*', '='];
+	public function populateFromString(string $formula): void
+	{
+		[$this->numberOne, $this->operator, $this->numberTwo, $this->result] = $this->segmentateFormula($formula);
+	}
 
-		$this->segmentateFormula($formula);
-
+	public function populateFromMutatedData(array $mutatedNumbers, string $operator): void
+	{
+		$this->numberOne = $mutatedNumbers[0];
+		$this->operator = $operator;
+		$this->numberTwo = $mutatedNumbers[1];
+		$this->result = $mutatedNumbers[2];
 	}
 
 	private function segmentateFormula(string $formula): array
@@ -69,9 +86,12 @@ class Formula
 				if (is_numeric($formulaChar) || $formulaChar === '?') {
 					$return[$previousIndex] .= $formulaChar;
 				}elseif (in_array($formulaChar, self::OPERANDS)) {
-					$return[] = $formulaChar;
 					$nowOn = 'operator';
+					if ($formulaChar === '=') {
+						continue;
+					}
 					$previousIndex ++;
+					$return[] = $formulaChar;
 				}
 			}elseif ($nowOn === 'operator') {
 				if (is_numeric($formulaChar) || $formulaChar === '?') {
@@ -92,5 +112,20 @@ class Formula
 		}
 
 		return $return;
+	}
+
+	public function calculateIfCorrect(): bool
+	{
+		$computed = match ($this->operator) {
+			'+' => (int)$this->numberOne + (int)$this->numberTwo,
+			'-' => (int)$this->numberOne - (int)$this->numberTwo,
+			'*' => (int)$this->numberOne * (int)$this->numberTwo,
+		};
+
+		if ($computed === (int)$this->result) {
+			return true;
+		}else {
+			return false;
+		}
 	}
 }
