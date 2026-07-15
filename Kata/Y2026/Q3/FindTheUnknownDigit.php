@@ -39,6 +39,13 @@ class FindTheUnknownDigit
 			$newData = str_replace("?", (string)$i, [$this->formula->numberOne, $this->formula->numberTwo, $this->formula->result]);
 			$mutatedFormula = new Formula();
 			$mutatedFormula->populateFromMutatedData($newData, $this->formula->operator);
+			$knownDigits = str_split($this->formula->numberOne . $this->formula->numberTwo . $this->formula->result);
+			if (in_array((string)$i, $knownDigits)) {
+				continue;
+			}
+			if ($mutatedFormula->containsDoubleZero()) {
+				continue;
+			}
 			if ($mutatedFormula->calculateIfCorrect()) {
 				return $i;
 			}
@@ -50,10 +57,10 @@ class FindTheUnknownDigit
 
 class Formula
 {
-	public string $numberOne;
-	public string $operator;
-	public string $numberTwo;
-	public string $result;
+	public ?string $numberOne;
+	public ?string $operator;
+	public ?string $numberTwo;
+	public ?string $result;
 	const OPERANDS = ['-', '+', '*', '='];
 	public function populateFromString(string $formula): void
 	{
@@ -84,9 +91,13 @@ class Formula
 		foreach ($formulaChars as $index => $formulaChar) {
 			if ($nowOn === 'number') {
 				if (is_numeric($formulaChar) || $formulaChar === '?') {
-					$return[$previousIndex] .= $formulaChar;
+					if (isset($return[$previousIndex])) {
+						$return[$previousIndex] .= $formulaChar;
+					}else {
+						$return[] = $formulaChar;
+					}
 				}elseif (in_array($formulaChar, self::OPERANDS)) {
-					$nowOn = 'operator';
+					$nowOn = 'operator';// TODO this is broken
 					if ($formulaChar === '=') {
 						continue;
 					}
@@ -127,5 +138,17 @@ class Formula
 		}else {
 			return false;
 		}
+	}
+
+	public function containsDoubleZero(): bool
+	{
+		$startNumOne = substr($this->numberOne, 0, 2);
+		$startNumTwo = substr($this->numberTwo, 0, 2);
+		$startResult = substr($this->result, 0, 2);
+		if ((int)$startNumOne === 00 || (int)$startNumTwo === 00 || (int)$startResult === 00) {
+			return true;
+		}
+
+		return false;
 	}
 }
