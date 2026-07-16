@@ -84,7 +84,6 @@ class Formula
 		$previousIndex = 0;
 
 		if ($formulaChars[0] === '-') {
-			$lastWasMinus = true;
 			$nowOn = 'operator';
 		}
 
@@ -97,13 +96,14 @@ class Formula
 						$return[] = $formulaChar;
 					}
 				}elseif (in_array($formulaChar, self::OPERANDS)) {
-					$nowOn = 'operator';// TODO this is broken
+					$nowOn = 'operator';
 					if ($formulaChar === '=') {
 						continue;
 					}
 					$previousIndex ++;
 					$return[] = $formulaChar;
 				}
+				$lastWasMinus = false;
 			}elseif ($nowOn === 'operator') {
 				if (is_numeric($formulaChar) || $formulaChar === '?') {
 					if ($lastWasMinus) {
@@ -113,11 +113,13 @@ class Formula
 						$previousIndex ++;
 					}
 					$nowOn = 'number';
-				}elseif ($formulaChar === '-' && $lastWasMinus === true) {
+					$lastWasMinus = false;
+				}elseif ($formulaChar === '-' && $lastWasMinus === false) {
 					$return[] = $formulaChar;
 					if ($index != 0) {
 						$previousIndex ++;
 					}
+					$lastWasMinus = true;
 				}
 			}
 		}
@@ -145,7 +147,7 @@ class Formula
 		$startNumOne = substr($this->numberOne, 0, 2);
 		$startNumTwo = substr($this->numberTwo, 0, 2);
 		$startResult = substr($this->result, 0, 2);
-		if ((int)$startNumOne === 00 || (int)$startNumTwo === 00 || (int)$startResult === 00) {
+		if ($startNumOne === "00" || $startNumTwo === "00" || $startResult === "00") {
 			return true;
 		}
 
