@@ -36,11 +36,11 @@ class FindTheUnknownDigit
 
     public function decipher(): int
     {
-		$knownDigits = str_split($this->formula->numberOne . $this->formula->numberTwo . $this->formula->result);
-		for ($i = 0; $i < 10; $i++) {
-			$newData = str_replace("?", (string)$i, [$this->formula->numberOne, $this->formula->numberTwo, $this->formula->result]);
-			$mutatedFormula = new Formula();
-			$mutatedFormula->populateFromMutatedData($newData, $this->formula->operator);
+        $knownDigits = str_split($this->formula->numberOne . $this->formula->numberTwo . $this->formula->result);
+        for ($i = 0; $i < 10; $i++) {
+            $newData = str_replace("?", (string)$i, [$this->formula->numberOne, $this->formula->numberTwo, $this->formula->result]);
+            $mutatedFormula = new Formula();
+            $mutatedFormula->populateFromMutatedData($newData, $this->formula->operator);
             if (in_array((string)$i, $knownDigits)) {
                 continue;
             }
@@ -140,7 +140,7 @@ class Formula
             default => false
         };
 
-		return $computed === (int)$this->result;
+        return $computed === (int)$this->result;
     }
 
     public function containsDoubleZero(): bool
