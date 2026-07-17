@@ -26,131 +26,160 @@ namespace Kata\Y2026\Q3;
 
 class FindTheUnknownDigit
 {
-	private Formula $formula;
+    private Formula $formula;
 
-	public function __construct(string $formula){
-		$this->formula = new Formula();
-		$this->formula->populateFromString($formula);
-	}
+    public function __construct(string $formula)
+    {
+        $this->formula = new Formula();
+        $this->formula->populateFromString($formula);
+    }
 
-	public function decipher(): int
-	{
+    public function decipher(): int
+    {
+		$knownDigits = str_split($this->formula->numberOne . $this->formula->numberTwo . $this->formula->result);
 		for ($i = 0; $i < 10; $i++) {
 			$newData = str_replace("?", (string)$i, [$this->formula->numberOne, $this->formula->numberTwo, $this->formula->result]);
 			$mutatedFormula = new Formula();
 			$mutatedFormula->populateFromMutatedData($newData, $this->formula->operator);
-			$knownDigits = str_split($this->formula->numberOne . $this->formula->numberTwo . $this->formula->result);
-			if (in_array((string)$i, $knownDigits)) {
-				continue;
-			}
-			if ($mutatedFormula->containsDoubleZero()) {
-				continue;
-			}
-			if ($mutatedFormula->calculateIfCorrect()) {
-				return $i;
-			}
-		}
+            if (in_array((string)$i, $knownDigits)) {
+                continue;
+            }
+            if ($mutatedFormula->containsDoubleZero()) {
+                continue;
+            }
+            if ($mutatedFormula->numberStartsWithZero()) {
+                continue;
+            }
+            if ($mutatedFormula->calculateIfCorrect()) {
+                return $i;
+            }
+        }
 
-		return -1;
-	}
+        return -1;
+    }
 }
 
 class Formula
 {
-	public ?string $numberOne;
-	public ?string $operator;
-	public ?string $numberTwo;
-	public ?string $result;
-	const OPERANDS = ['-', '+', '*', '='];
-	public function populateFromString(string $formula): void
-	{
-		[$this->numberOne, $this->operator, $this->numberTwo, $this->result] = $this->segmentateFormula($formula);
-	}
+    public string $numberOne;
+    public string $operator;
+    public string $numberTwo;
+    public string $result;
+    public const OPERANDS = ['-', '+', '*', '='];
+    public function populateFromString(string $formula): void
+    {
+        [$this->numberOne, $this->operator, $this->numberTwo, $this->result] = $this->segmentateFormula($formula);
+    }
 
-	public function populateFromMutatedData(array $mutatedNumbers, string $operator): void
-	{
-		$this->numberOne = $mutatedNumbers[0];
-		$this->operator = $operator;
-		$this->numberTwo = $mutatedNumbers[1];
-		$this->result = $mutatedNumbers[2];
-	}
+    public function populateFromMutatedData(array $mutatedNumbers, string $operator): void
+    {
+        $this->numberOne = $mutatedNumbers[0];
+        $this->operator = $operator;
+        $this->numberTwo = $mutatedNumbers[1];
+        $this->result = $mutatedNumbers[2];
+    }
 
-	private function segmentateFormula(string $formula): array
-	{
-		$return = [];
-		$nowOn = 'number';
-		$lastWasMinus = false;
-		$formulaChars = str_split($formula);
-		$previousIndex = 0;
+    private function segmentateFormula(string $formula): array
+    {
+        $return = [];
+        $nowOn = 'number';
+        $lastWasMinus = false;
+        $formulaChars = str_split($formula);
+        $previousIndex = 0;
 
-		if ($formulaChars[0] === '-') {
-			$nowOn = 'operator';
-		}
+        if ($formulaChars[0] === '-') {
+            $nowOn = 'operator';
+        }
 
-		foreach ($formulaChars as $index => $formulaChar) {
-			if ($nowOn === 'number') {
-				if (is_numeric($formulaChar) || $formulaChar === '?') {
-					if (isset($return[$previousIndex])) {
-						$return[$previousIndex] .= $formulaChar;
-					}else {
-						$return[] = $formulaChar;
-					}
-				}elseif (in_array($formulaChar, self::OPERANDS)) {
-					$nowOn = 'operator';
-					if ($formulaChar === '=') {
-						continue;
-					}
-					$previousIndex ++;
-					$return[] = $formulaChar;
-				}
-				$lastWasMinus = false;
-			}elseif ($nowOn === 'operator') {
-				if (is_numeric($formulaChar) || $formulaChar === '?') {
-					if ($lastWasMinus) {
-						$return[$previousIndex] .= $formulaChar;
-					}else {
-						$return[] = $formulaChar;
-						$previousIndex ++;
-					}
-					$nowOn = 'number';
-					$lastWasMinus = false;
-				}elseif ($formulaChar === '-' && $lastWasMinus === false) {
-					$return[] = $formulaChar;
-					if ($index != 0) {
-						$previousIndex ++;
-					}
-					$lastWasMinus = true;
-				}
-			}
-		}
+        foreach ($formulaChars as $index => $formulaChar) {
+            if ($nowOn === 'number') {
+                if (is_numeric($formulaChar) || $formulaChar === '?') {
+                    if (isset($return[$previousIndex])) {
+                        $return[$previousIndex] .= $formulaChar;
+                    } else {
+                        $return[] = $formulaChar;
+                    }
+                } elseif (in_array($formulaChar, self::OPERANDS)) {
+                    $nowOn = 'operator';
+                    if ($formulaChar === '=') {
+                        continue;
+                    }
+                    $previousIndex++;
+                    $return[] = $formulaChar;
+                }
+                $lastWasMinus = false;
+            } elseif ($nowOn === 'operator') {
+                if (is_numeric($formulaChar) || $formulaChar === '?') {
+                    if ($lastWasMinus) {
+                        $return[$previousIndex] .= $formulaChar;
+                    } else {
+                        $return[] = $formulaChar;
+                        $previousIndex++;
+                    }
+                    $nowOn = 'number';
+                    $lastWasMinus = false;
+                } elseif ($formulaChar === '-' && $lastWasMinus === false) {
+                    $return[] = $formulaChar;
+                    if ($index != 0) {
+                        $previousIndex++;
+                    }
+                    $lastWasMinus = true;
+                }
+            }
+        }
 
-		return $return;
-	}
+        return $return;
+    }
 
-	public function calculateIfCorrect(): bool
-	{
-		$computed = match ($this->operator) {
-			'+' => (int)$this->numberOne + (int)$this->numberTwo,
-			'-' => (int)$this->numberOne - (int)$this->numberTwo,
-			'*' => (int)$this->numberOne * (int)$this->numberTwo,
-		};
+    public function calculateIfCorrect(): bool
+    {
+        $computed = match ($this->operator) {
+            '+' => (int)$this->numberOne + (int)$this->numberTwo,
+            '-' => (int)$this->numberOne - (int)$this->numberTwo,
+            '*' => (int)$this->numberOne * (int)$this->numberTwo,
+            default => false
+        };
 
-		if ($computed === (int)$this->result) {
-			return true;
-		}else {
-			return false;
-		}
-	}
+		return $computed === (int)$this->result;
+    }
 
-	public function containsDoubleZero(): bool
-	{
-		$startNumOne = substr($this->numberOne, 0, 2);
-		$startNumTwo = substr($this->numberTwo, 0, 2);
-		$startResult = substr($this->result, 0, 2);
-		if ($startNumOne === "00" || $startNumTwo === "00" || $startResult === "00") {
-			return true;
-		}
+    public function containsDoubleZero(): bool
+    {
+        $startNumOne = substr($this->numberOne, 0, 2);
+        $startNumTwo = substr($this->numberTwo, 0, 2);
+        $startResult = substr($this->result, 0, 2);
+        if ($startNumOne === "00" || $startNumTwo === "00" || $startResult === "00") {
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
+
+    public function numberStartsWithZero(): bool
+    {
+        $startNumOne = substr($this->numberOne, 0, 1);
+        $startNumTwo = substr($this->numberTwo, 0, 1);
+        $startResult = substr($this->result, 0, 1);
+
+        if ($startNumOne === "-") {
+            $startNumOne = substr($this->numberOne, 1, 1);
+        }
+        if ($startNumTwo === "-") {
+            $startNumTwo = substr($this->numberTwo, 1, 1);
+        }
+        if ($startResult === "-") {
+            $startResult = substr($this->result, 1, 1);
+        }
+        if ($startNumOne === "0" && strlen($this->numberOne) > 1) {
+            return true;
+        }
+        if ($startNumTwo === "0" && strlen($this->numberTwo) > 1) {
+            return true;
+        }
+        if ($startResult === "0" && strlen($this->result) > 1) {
+            return true;
+        }
+
+        return false;
+    }
 }

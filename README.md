@@ -41,6 +41,7 @@ Work on Kata every day.
 
 | #  | Kata                                      | Dificulty | Solution                                                       | Completed  |
 |----|-------------------------------------------|-----------|----------------------------------------------------------------|------------|
+| 40 | Find the unknown digit                    | 4 kyu     | [Kata](Kata/Y2026/Q3/FindTheUnknownDigit.php)                 | 17.07.2026 |
 | 39 | Nesting Structure Comparison             | 4 kyu     | [Kata](Kata/Y2026/Q3/NestingStructureComparison.php)          | 11.07.2026 |
 | 38 | Rail Fence Cipher                         | 3 kyu     | [Kata](Kata/Y2026/Q2/RailFenceCipher.php)                      | 08.07.2026 |
 | 37 | Product of consecutive Fib numbers        | 5 kyu     | [Kata](Kata/Y2026/Q2/FibProduct.php)                           | 28.06.2026 |
