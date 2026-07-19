@@ -60,6 +60,10 @@ https://www.codewars.com/kata/57cc3302d954d951530000a5
 
 namespace Kata\Y2026\Q3;
 
+use DigitCountOverflowException;
+use DivisionByZeroException;
+use InvalidInputException;
+
 class FluentCalculator
 {
 
@@ -67,7 +71,15 @@ class FluentCalculator
 		return new FluentCalculator();
 	}
 
-	public function zero()
-	{
+	public function __get(string $name) {
+		var_dump($name);
+		//throw new InvalidInputException();
+		//throw new DigitCountOverflowException();
+		//throw new DivisionByZeroException
 	}
+
+	public function __call(string $name, array $arguments) : FluentCalculator {
+		var_dump($name, $arguments);
+	}
+
 }
