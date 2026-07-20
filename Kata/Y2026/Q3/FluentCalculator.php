@@ -66,20 +66,113 @@ use InvalidInputException;
 
 class FluentCalculator
 {
+	private ?int $result = null;
+	private array $inputChain;
+	const ALLOWEDDIGITS = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "zero"];
+	const ALLOWEDOPERATORS = ["plus", "minus", "dividedBy", "times"];
+
+	public function __construct() {
+		$this->inputChain = [
+			new CalculatorInput("zero"),
+			new CalculatorInput("plus"),
+		];
+	}
 
 	public static function init() : FluentCalculator {
 		return new FluentCalculator();
 	}
 
-	public function __get(string $name) {
+	public function __get(string $name): FluentCalculator {
 		var_dump($name);
 		//throw new InvalidInputException();
 		//throw new DigitCountOverflowException();
 		//throw new DivisionByZeroException
 	}
 
-	public function __call(string $name, array $arguments) : FluentCalculator {
-		var_dump($name, $arguments);
+	/**
+	 * @throws InvalidInputException
+	 */
+	public function __call(string $name, array $arguments): int {
+		$this->checkIfValid($name);
+		$input = new CalculatorInput($name);
+		$this->addInputToChain($input);
+		//if ($this->checkIfMustCalculate()) {
+			$this->calculate();
+		//}
 	}
 
+	/**
+	 * @throws InvalidInputException
+	 */
+	private function checkIfValid(string $name): void {
+		if (!in_array($name, self::ALLOWEDDIGITS) && !in_array($name, self::ALLOWEDOPERATORS)) {
+			throw new InvalidInputException("$name is not a valid number");
+		}
+	}
+
+	private function addInputToChain(CalculatorInput $input)
+	{
+		$lastIndex = array_key_last($this->inputChain);
+		$lastInput = $this->inputChain[$lastIndex];
+		// Rewrite if last and now is operator
+		if ($lastInput->operator === true && $input->operator === true) {
+			$this->inputChain[$lastIndex] = $input;
+		}else {
+			$this->inputChain[] = $input;
+		}
+
+
+	}
+
+	private function checkIfMustCalculate(): bool
+	{
+		$countOperators = 0;
+		foreach ($this->inputChain as $chainEntry) {
+			if ($chainEntry->operator === true) {
+				$countOperators ++;
+			}
+		}
+
+		if ($countOperators === 2) {
+			return true;
+		}
+		return false;
+	}
+
+	private function calculate(): void
+	{
+		$saveLastOperator = $this->inputChain[array_key_last($this->inputChain)];
+		if ($this->result === null) {
+			$numOne = (int)$this->inputChain[0]->name;
+			$operator = $this->inputChain[1];
+		}else {
+			$numOne = $this->result;
+			$operator = $this->inputChain[0]->name;
+		}
+
+		$operatorIndex = array_search($operator, $this->inputChain, true);
+
+		$numberTwo = '';
+
+		for ($i = $operatorIndex + 1; $i <= count($this->inputChain) - 1; $i++) {
+			$numberTwo .= $this->inputChain[$i]->name;
+		}
+		//TODO here calculate new $result
+		var_dump($numOne, $operator, $numberTwo);
+
+	}
+
+}
+
+class CalculatorInput
+{
+	public string $name;
+	public bool $operator = false;
+
+	public function __construct(string $name) {
+		$this->name = $name;
+		if (in_array($name, FluentCalculator::ALLOWEDOPERATORS)) {
+			$this->operator = true;
+		}
+	}
 }

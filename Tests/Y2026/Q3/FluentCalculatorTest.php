@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Y2026\Q3;
 
+use DigitCountOverflowException;
+use InvalidInputException;
 use Kata\Y2026\Q3\FluentCalculator;
 use PHPUnit\Framework\TestCase;
 
