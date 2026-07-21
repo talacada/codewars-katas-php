@@ -82,11 +82,18 @@ class FluentCalculator
 		return new FluentCalculator();
 	}
 
+	/**
+	 * @throws InvalidInputException
+	 */
 	public function __get(string $name): FluentCalculator {
-		var_dump($name);
-		//throw new InvalidInputException();
-		//throw new DigitCountOverflowException();
-		//throw new DivisionByZeroException
+		$this->checkIfValid($name);
+		$input = new CalculatorInput($name);
+		$this->addInputToChain($input);
+		if ($this->checkIfMustCalculate()) {
+			$this->calculate();
+		}
+
+		return $this;
 	}
 
 	/**
@@ -96,9 +103,9 @@ class FluentCalculator
 		$this->checkIfValid($name);
 		$input = new CalculatorInput($name);
 		$this->addInputToChain($input);
-		//if ($this->checkIfMustCalculate()) {
-			$this->calculate();
-		//}
+		$this->calculate();
+
+		return $this->result;
 	}
 
 	/**
@@ -106,6 +113,7 @@ class FluentCalculator
 	 */
 	private function checkIfValid(string $name): void {
 		if (!in_array($name, self::ALLOWEDDIGITS) && !in_array($name, self::ALLOWEDOPERATORS)) {
+			debug_print_backtrace();
 			throw new InvalidInputException("$name is not a valid number");
 		}
 	}
@@ -114,7 +122,6 @@ class FluentCalculator
 	{
 		$lastIndex = array_key_last($this->inputChain);
 		$lastInput = $this->inputChain[$lastIndex];
-		// Rewrite if last and now is operator
 		if ($lastInput->operator === true && $input->operator === true) {
 			$this->inputChain[$lastIndex] = $input;
 		}else {
@@ -141,24 +148,40 @@ class FluentCalculator
 
 	private function calculate(): void
 	{
-		$saveLastOperator = $this->inputChain[array_key_last($this->inputChain)];
+		//$operatorCount =
 		if ($this->result === null) {
-			$numOne = (int)$this->inputChain[0]->name;
+			$numberOne = (int)$this->inputChain[0]->name;
 			$operator = $this->inputChain[1];
 		}else {
-			$numOne = $this->result;
-			$operator = $this->inputChain[0]->name;
+			$numberOne = $this->result;
+			$operator = $this->inputChain[0];
 		}
 
 		$operatorIndex = array_search($operator, $this->inputChain, true);
 
 		$numberTwo = '';
 
-		for ($i = $operatorIndex + 1; $i <= count($this->inputChain) - 1; $i++) {
-			$numberTwo .= $this->inputChain[$i]->name;
+		for ($i = $operatorIndex + 1; $i < count($this->inputChain); $i++) {
+			if ($this->inputChain[$i]->operator === true) {
+				continue;
+			}
+			$numberTwo .= $this->inputChain[$i]->getNumber();
 		}
-		//TODO here calculate new $result
-		var_dump($numOne, $operator, $numberTwo);
+		$numberOne = intval($numberOne);
+		$numberTwo = intval($numberTwo);
+
+		$this->result = match ($operator->name) {
+			'plus' => $numberOne + $numberTwo,
+			'minus' => $numberOne - $numberTwo,
+			'dividedBy' => floor($numberOne / $numberTwo),
+			'times' => $numberOne * $numberTwo,
+		};
+
+		$lastOperator = $this->inputChain[array_key_last($this->inputChain)];
+		if ($lastOperator->operator === true) {
+			$this->inputChain = [];
+			$this->inputChain[] = $lastOperator;
+		}
 
 	}
 
@@ -174,5 +197,21 @@ class CalculatorInput
 		if (in_array($name, FluentCalculator::ALLOWEDOPERATORS)) {
 			$this->operator = true;
 		}
+	}
+
+	public function getNumber():int
+	{
+		return match ($this->name) {
+			'zero' => 0,
+			'one' => 1,
+			'two' => 2,
+			'three' => 3,
+			'four' => 4,
+			'five' => 5,
+			'six' => 6,
+			'seven' => 7,
+			'eight' => 8,
+			'nine' => 9,
+		};
 	}
 }

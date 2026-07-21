@@ -19,14 +19,14 @@ class Node
 
 namespace {
 
-define('MORSE_CODE', ['s', 't', 'u', 'b', 's']);
+	define('MORSE_CODE', ['s', 't', 'u', 'b', 's']);
 
-// Preloaded exceptions for FluentCalculator (Kata\Y2026\Q3)
-class InvalidInputException extends Exception {
-}
-class DigitCountOverflowException extends Exception{
-}
-class DivisionByZeroException extends Exception{
-}
+	// Preloaded exceptions for FluentCalculator (Kata\Y2026\Q3)
+	class InvalidInputException extends Exception {
+	}
+	class DigitCountOverflowException extends Exception{
+	}
+	class DivisionByZeroException extends Exception{
+	}
 
 }

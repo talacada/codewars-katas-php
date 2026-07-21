@@ -8,7 +8,8 @@
     "autoload": {
         "psr-4": {
             "Kata\\": "Kata/"
-        }
+        },
+        "files": ["Support/_codewars_stubs.php"]
     },
     "autoload-dev": {
         "psr-4": {
