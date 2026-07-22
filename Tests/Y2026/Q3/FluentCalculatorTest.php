@@ -90,4 +90,17 @@ class FluentCalculatorTest extends TestCase
 		$this->expectException(DigitCountOverflowException::class);
 		FluentCalculator::init()->one->zero->zero->zero->zero->zero->times->one->zero->zero->zero->zero->zero();
 	}
+
+	public function testDigitCountOverflow_NumberTwoTooManyDigits() {
+		$this->expectException(DigitCountOverflowException::class);
+		FluentCalculator::init()->one->dividedBy->one->zero->zero->zero->zero->zero->zero->zero->zero->zero();
+	}
+
+	public function testDivisionRounding_NegativeNumbers() {
+		$this->assertSame(-1, FluentCalculator::init()->minus->three->dividedBy->two());
+	}
+
+	public function testNegativeResult_NineDigits_ShouldNotOverflow() {
+		$this->assertSame(-999999999, FluentCalculator::init()->minus->nine->nine->nine->nine->nine->nine->nine->nine->nine());
+	}
 }

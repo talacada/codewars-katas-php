@@ -113,7 +113,6 @@ class FluentCalculator
 	 */
 	private function checkIfValid(string $name): void {
 		if (!in_array($name, self::ALLOWEDDIGITS) && !in_array($name, self::ALLOWEDOPERATORS)) {
-			debug_print_backtrace();
 			throw new InvalidInputException("$name is not a valid number");
 		}
 	}
@@ -127,7 +126,6 @@ class FluentCalculator
 		}else {
 			$this->inputChain[] = $input;
 		}
-
 
 	}
 
@@ -146,9 +144,12 @@ class FluentCalculator
 		return false;
 	}
 
+	/**
+	 * @throws DigitCountOverflowException
+	 * @throws DivisionByZeroException
+	 */
 	private function calculate(): void
 	{
-		//$operatorCount =
 		if ($this->result === null) {
 			$numberOne = (int)$this->inputChain[0]->name;
 			$operator = $this->inputChain[1];
@@ -170,10 +171,17 @@ class FluentCalculator
 		$numberOne = intval($numberOne);
 		$numberTwo = intval($numberTwo);
 
+		$this->checkIfNumberNotLong($numberOne);
+		$this->checkIfNumberNotLong($numberTwo);
+
+		if ($operator->name === 'dividedBy' && $numberTwo === 0) {
+			throw new DivisionByZeroException("Division by zero");
+		}
+
 		$this->result = match ($operator->name) {
 			'plus' => $numberOne + $numberTwo,
 			'minus' => $numberOne - $numberTwo,
-			'dividedBy' => floor($numberOne / $numberTwo),
+			'dividedBy' => intdiv($numberOne, $numberTwo),
 			'times' => $numberOne * $numberTwo,
 		};
 
@@ -183,6 +191,23 @@ class FluentCalculator
 			$this->inputChain[] = $lastOperator;
 		}
 
+		$this->checkIfNumberNotLong($this->result);
+	}
+
+	/**
+	 * @throws DigitCountOverflowException
+	 */
+	private function checkIfNumberNotLong(int $num): void
+	{
+		if (substr($num, 0, 1) === '-') {
+			$allowedLength = 10;
+		}else {
+			$allowedLength = 9;
+		}
+
+		if (strlen($num) > $allowedLength) {
+			throw new DigitCountOverflowException();
+		}
 	}
 
 }
