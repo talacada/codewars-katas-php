@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 Fluent Calculator
 Your task is to create a class that implements a simple calculator with fluent syntax:
@@ -64,179 +66,227 @@ use DigitCountOverflowException;
 use DivisionByZeroException;
 use InvalidInputException;
 
+/**
+ * @method int zero()
+ * @method int one()
+ * @method int two()
+ * @method int three()
+ * @method int four()
+ * @method int five()
+ * @method int six()
+ * @method int seven()
+ * @method int eight()
+ * @method int nine()
+ * @method int plus()
+ * @method int minus()
+ * @method int times()
+ * @method int dividedBy()
+ *
+ * @property FluentCalculator $zero
+ * @property FluentCalculator $one
+ * @property FluentCalculator $two
+ * @property FluentCalculator $three
+ * @property FluentCalculator $four
+ * @property FluentCalculator $five
+ * @property FluentCalculator $six
+ * @property FluentCalculator $seven
+ * @property FluentCalculator $eight
+ * @property FluentCalculator $nine
+ * @property FluentCalculator $plus
+ * @property FluentCalculator $minus
+ * @property FluentCalculator $times
+ * @property FluentCalculator $dividedBy
+ */
 class FluentCalculator
 {
-	private ?int $result = null;
-	private array $inputChain;
-	const ALLOWEDDIGITS = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "zero"];
-	const ALLOWEDOPERATORS = ["plus", "minus", "dividedBy", "times"];
+    private ?int $result = null;
+    private array $inputChain;
+    public const ALLOWEDDIGITS = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "zero"];
+    public const ALLOWEDOPERATORS = ["plus", "minus", "dividedBy", "times"];
 
-	public function __construct() {
-		$this->inputChain = [
-			new CalculatorInput("zero"),
-			new CalculatorInput("plus"),
-		];
-	}
+    public function __construct()
+    {
+        $this->inputChain = [
+            new CalculatorInput("zero"),
+            new CalculatorInput("plus"),
+        ];
+    }
 
-	public static function init() : FluentCalculator {
-		return new FluentCalculator();
-	}
+    public static function init(): FluentCalculator
+    {
+        return new FluentCalculator();
+    }
 
-	/**
-	 * @throws InvalidInputException
-	 */
-	public function __get(string $name): FluentCalculator {
-		$this->checkIfValid($name);
-		$input = new CalculatorInput($name);
-		$this->addInputToChain($input);
-		if ($this->checkIfMustCalculate()) {
-			$this->calculate();
-		}
+    /**
+     * @throws InvalidInputException
+     */
+    public function __get(string $name): FluentCalculator
+    {
+        $this->checkIfValid($name);
+        $input = new CalculatorInput($name);
+        $this->addInputToChain($input);
+        if ($this->checkIfMustCalculate()) {
+            $this->calculate();
+        }
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * @throws InvalidInputException
-	 */
-	public function __call(string $name, array $arguments): int {
-		$this->checkIfValid($name);
-		$input = new CalculatorInput($name);
-		$this->addInputToChain($input);
-		$this->calculate();
+    /**
+     * @throws InvalidInputException
+     */
+    public function __call(string $name, array $arguments): int
+    {
+        $this->checkIfValid($name);
+        $input = new CalculatorInput($name);
+        $this->addInputToChain($input);
+        $this->calculate();
 
-		return $this->result;
-	}
+        return $this->result ?? 0;
+    }
 
-	/**
-	 * @throws InvalidInputException
-	 */
-	private function checkIfValid(string $name): void {
-		if (!in_array($name, self::ALLOWEDDIGITS) && !in_array($name, self::ALLOWEDOPERATORS)) {
-			throw new InvalidInputException("$name is not a valid number");
-		}
-	}
+    /**
+     * @throws InvalidInputException
+     */
+    private function checkIfValid(string $name): void
+    {
+        if (!in_array($name, self::ALLOWEDDIGITS) && !in_array($name, self::ALLOWEDOPERATORS)) {
+            throw new InvalidInputException("$name is not a valid number");
+        }
+    }
 
-	private function addInputToChain(CalculatorInput $input)
-	{
-		$lastIndex = array_key_last($this->inputChain);
-		$lastInput = $this->inputChain[$lastIndex];
-		if ($lastInput->operator === true && $input->operator === true) {
-			$this->inputChain[$lastIndex] = $input;
-		}else {
-			$this->inputChain[] = $input;
-		}
+    private function addInputToChain(CalculatorInput $input): void
+    {
+        $lastIndex = array_key_last($this->inputChain);
+        $lastInput = $this->inputChain[$lastIndex];
+        if ($lastInput->operator === true && $input->operator === true) {
+            $this->inputChain[$lastIndex] = $input;
+        } else {
+            $this->inputChain[] = $input;
+        }
 
-	}
+    }
 
-	private function checkIfMustCalculate(): bool
-	{
-		$countOperators = 0;
-		foreach ($this->inputChain as $chainEntry) {
-			if ($chainEntry->operator === true) {
-				$countOperators ++;
-			}
-		}
+    private function checkIfMustCalculate(): bool
+    {
+        $countOperators = 0;
+        foreach ($this->inputChain as $chainEntry) {
+            if ($chainEntry->operator === true) {
+                $countOperators++;
+            }
+        }
 
-		if ($countOperators === 2) {
-			return true;
-		}
-		return false;
-	}
+        if ($countOperators === 2) {
+            return true;
+        }
+        return false;
+    }
 
-	/**
-	 * @throws DigitCountOverflowException
-	 * @throws DivisionByZeroException
-	 */
-	private function calculate(): void
-	{
-		if ($this->result === null) {
-			$numberOne = (int)$this->inputChain[0]->name;
-			$operator = $this->inputChain[1];
-		}else {
-			$numberOne = $this->result;
-			$operator = $this->inputChain[0];
-		}
+    /**
+     * @throws DigitCountOverflowException
+     * @throws DivisionByZeroException
+     */
+    private function calculate(): void
+    {
+        if ($this->result === null) {
+            $numberOne = (int)$this->inputChain[0]->name;
+            $operator = $this->inputChain[1];
+        } else {
+            $numberOne = $this->result;
+            $operator = $this->inputChain[0];
+        }
 
-		$operatorIndex = array_search($operator, $this->inputChain, true);
+        $operatorIndex = (int)array_search($operator, $this->inputChain, true);
 
-		$numberTwo = '';
+        $numberTwo = '';
 
-		for ($i = $operatorIndex + 1; $i < count($this->inputChain); $i++) {
-			if ($this->inputChain[$i]->operator === true) {
-				continue;
-			}
-			$numberTwo .= $this->inputChain[$i]->getNumber();
-		}
-		$numberOne = intval($numberOne);
-		$numberTwo = intval($numberTwo);
+        for ($i = $operatorIndex + 1; $i < count($this->inputChain); $i++) {
+            if ($this->inputChain[$i]->operator === true) {
+                continue;
+            }
+            $numberTwo .= $this->inputChain[$i]->getNumber();
+        }
 
-		$this->checkIfNumberNotLong($numberOne);
-		$this->checkIfNumberNotLong($numberTwo);
+        if ($numberTwo != '') {
+            $numberTwo = intval($numberTwo);
+        }
+        $numberOne = intval($numberOne);
 
-		if ($operator->name === 'dividedBy' && $numberTwo === 0) {
-			throw new DivisionByZeroException("Division by zero");
-		}
 
-		$this->result = match ($operator->name) {
-			'plus' => $numberOne + $numberTwo,
-			'minus' => $numberOne - $numberTwo,
-			'dividedBy' => intdiv($numberOne, $numberTwo),
-			'times' => $numberOne * $numberTwo,
-		};
+        $this->checkIfNumberNotLong($numberOne);
+        $this->checkIfNumberNotLong((int)$numberTwo);
 
-		$lastOperator = $this->inputChain[array_key_last($this->inputChain)];
-		if ($lastOperator->operator === true) {
-			$this->inputChain = [];
-			$this->inputChain[] = $lastOperator;
-		}
+        if ($operator->name === 'dividedBy' && $numberTwo === 0) {
+            throw new DivisionByZeroException("Division by zero");
+        }
 
-		$this->checkIfNumberNotLong($this->result);
-	}
+        if ($numberTwo != '') {
+            $this->result = match ($operator->name) {
+                'plus' => $numberOne + $numberTwo,
+                'minus' => $numberOne - $numberTwo,
+                'dividedBy' => intdiv($numberOne, $numberTwo),
+                'times' => $numberOne * $numberTwo,
+                default => 0,
+            };
+        }
 
-	/**
-	 * @throws DigitCountOverflowException
-	 */
-	private function checkIfNumberNotLong(int $num): void
-	{
-		if (substr($num, 0, 1) === '-') {
-			$allowedLength = 10;
-		}else {
-			$allowedLength = 9;
-		}
+        $lastOperator = $this->inputChain[array_key_last($this->inputChain)];
+        if ($lastOperator->operator === true) {
+            $this->inputChain = [];
+            $this->inputChain[] = $lastOperator;
+        }
 
-		if (strlen($num) > $allowedLength) {
-			throw new DigitCountOverflowException();
-		}
-	}
+        if ($this->result === null) {
+            $this->result = 0;
+        }
+        $this->checkIfNumberNotLong($this->result);
+    }
+
+    /**
+     * @throws DigitCountOverflowException
+     */
+    private function checkIfNumberNotLong(int $num): void
+    {
+        if (str_starts_with((string)$num, '-')) {
+            $allowedLength = 10;
+        } else {
+            $allowedLength = 9;
+        }
+
+        if (strlen((string)$num) > $allowedLength) {
+            throw new DigitCountOverflowException();
+        }
+    }
 
 }
 
 class CalculatorInput
 {
-	public string $name;
-	public bool $operator = false;
+    public string $name;
+    public bool $operator = false;
 
-	public function __construct(string $name) {
-		$this->name = $name;
-		if (in_array($name, FluentCalculator::ALLOWEDOPERATORS)) {
-			$this->operator = true;
-		}
-	}
+    public function __construct(string $name)
+    {
+        $this->name = $name;
+        if (in_array($name, FluentCalculator::ALLOWEDOPERATORS)) {
+            $this->operator = true;
+        }
+    }
 
-	public function getNumber():int
-	{
-		return match ($this->name) {
-			'zero' => 0,
-			'one' => 1,
-			'two' => 2,
-			'three' => 3,
-			'four' => 4,
-			'five' => 5,
-			'six' => 6,
-			'seven' => 7,
-			'eight' => 8,
-			'nine' => 9,
-		};
-	}
+    public function getNumber(): int
+    {
+        return match ($this->name) {
+            'zero' => 0,
+            'one' => 1,
+            'two' => 2,
+            'three' => 3,
+            'four' => 4,
+            'five' => 5,
+            'six' => 6,
+            'seven' => 7,
+            'eight' => 8,
+            'nine' => 9,
+            default => 0
+        };
+    }
 }
