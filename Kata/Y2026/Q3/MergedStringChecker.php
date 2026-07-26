@@ -61,7 +61,7 @@ class MergedStringChecker
                     if ($resultOne || $resultTwo) {
                         return true;
                     }
-					return false;
+                    return false;
                 }
             }
             if (isset($part1[$oneIndex]) && $fullLetter === $part1[$oneIndex]) {
