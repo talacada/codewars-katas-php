@@ -1,35 +1,44 @@
 <?php
 
+// https://www.codewars.com/kata/5834a44e44ff289b5a000075
 
-function my_crib(int $n):string {
-	$crib = '';
-	$base = $n*2 + 2;
-	$roofMinus = 0;
-	for ($roofFloor = $base; $roofFloor > 0; $roofFloor = $roofFloor - 2) {
-		$crib .= str_repeat(' ', floor(($base - 2 - $roofMinus) / 2));
-		$crib .= '/';
+declare(strict_types=1);
 
-		if ($roofFloor === 2) {
-			$crib .= str_repeat('_', floor(($base - 2 + $roofMinus) / 2));
-		}elseif ($roofFloor === $base) {
-			$crib .= '';
-		}else {
-			$crib .= str_repeat(' ', floor(($base - 2 + $roofMinus) / 2));
-		}
 
-		$crib .= '\\';
-		$crib .= str_repeat(' ', floor(($base - 2 - $roofMinus) / 2));
+function my_crib(int $n): string
+{
+    $crib = '';
+    $roofOuterMargin = $n;
+    $roofInnerMargin = 0;
+    //Roof
+    for ($roofFloor = $n; $roofFloor >= 0; $roofFloor--) {
+        $crib .= str_repeat(' ', $roofOuterMargin);
+        $crib .= '/';
 
-		$crib .= '\n';
-		$roofMinus = $roofMinus + 2;
-	}
-	for ($floor = $n; $floor > 0; $floor--) {
-		$crib .= '|';
-		if ($floor === 1) {
-			$crib .= str_repeat('_', $n*2);
-		}
-		$crib .= '|\n';
-	}
+        if ($roofFloor === 0) {
+            $crib .= str_repeat('_', $roofInnerMargin * 2);
+        } else {
+            $crib .= str_repeat(' ', $roofInnerMargin * 2);
+        }
 
-	return $crib;
+        $crib .= '\\';
+        $crib .= str_repeat(' ', $roofOuterMargin);
+
+        $crib .= '\n';
+
+        $roofInnerMargin++;
+        $roofOuterMargin--;
+    }
+    //Body
+    for ($floor = $n; $floor > 0; $floor--) {
+        $crib .= '|';
+        if ($floor === 1) {
+            $crib .= str_repeat('_', $n * 2);
+        } else {
+            $crib .= str_repeat(' ', $n * 2);
+        }
+        $crib .= '|\n';
+    }
+
+    return rtrim($crib, "\\n");
 }
