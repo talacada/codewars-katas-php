@@ -45,18 +45,25 @@ https://www.codewars.com/kata/58360d112fb0ba255300008b
 
 namespace Y2026\Q3;
 
-function my_crib(string $n): string {
+function my_crib(int $n): string {
 	$crib = '';
-	$roofOuterMargin = $n;
-	$roofInnerMargin = 0;
+	//TODO this is wrong
+	$width = 4 + ($n - 1) *2;
+	$roofInnerMargin = 3 + ($n - 1) * 2;
+	$roofOuterMargin = $width - $roofInnerMargin;
 	//Roof
 	for ($roofFloor = $n; $roofFloor >= 0; $roofFloor--) {
 		$crib .= str_repeat(' ', $roofOuterMargin);
-		$crib .= '/';
+		if ($roofFloor != $n) {
+			$crib .= '/';
+		}
 
-		$crib .= str_repeat('_', $roofInnerMargin * 2);
+		$crib .= str_repeat('_', $roofInnerMargin + $roofFloor * 2);
 
-		$crib .= '\\';
+		if ($roofFloor != $n) {
+			$crib .= '\\';
+		}
+
 		$crib .= str_repeat(' ', $roofOuterMargin);
 
 		$crib .= '\n';
