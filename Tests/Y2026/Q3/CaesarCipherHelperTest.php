@@ -11,9 +11,10 @@ require_once __DIR__ . '/../../../Kata/Y2026/Q3/CaesarCipherHelper.php';
 
 class CaesarCipherHelperTest extends TestCase
 {
-	public function testExamples() {
-		$c = new CaesarCipherHelper(5);
-		$this->assertSame($c->encode('Codewars'), 'HTIJBFWX');
-		$this->assertSame($c->decode('Htijbfwx'), 'CODEWARS');
-	}
+    public function testExamples(): void
+    {
+        $c = new CaesarCipherHelper(5);
+        $this->assertSame($c->encode('Codewars'), 'HTIJBFWX');
+        $this->assertSame($c->decode('Htijbfwx'), 'CODEWARS');
+    }
 }
