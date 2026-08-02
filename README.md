@@ -41,6 +41,7 @@ Work on Kata every day.
 
 | #  | Kata                                      | Dificulty | Solution                                                       | Completed  |
 |----|-------------------------------------------|-----------|----------------------------------------------------------------|------------|
+| 44 | Now that's a crib!                        | 5 kyu     | [Kata](Kata/Y2026/Q3/NowThatACrib.php)                        | 31.07.2026 |
 | 43 | MTV Cribs                                 | 6 kyu     | [Kata](Kata/Y2026/Q3/MTVCribs.php)                            | 28.07.2026 |
 | 42 | Merged String Checker                     | 5 kyu     | [Kata](Kata/Y2026/Q3/MergedStringChecker.php)                 | 26.07.2026 |
 | 41 | Fluent Calculator                         | 3 kyu     | [Kata](Kata/Y2026/Q3/FluentCalculator.php)                    | 23.07.2026 |

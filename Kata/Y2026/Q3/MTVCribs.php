@@ -4,6 +4,7 @@
 
 declare(strict_types=1);
 
+namespace Y2026\Q3\MTVCribs;
 
 function my_crib(int $n): string
 {
