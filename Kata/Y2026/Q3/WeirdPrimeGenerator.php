@@ -74,12 +74,33 @@ Takže: g = [1] + [a(2)-a(1), a(3)-a(2), a(4)-a(3), ...]
   A překvapení: všechna tato zbylá čísla jsou prvočísla!
 */
 
-function countOnes($n) {
-	// your code
+function countOnes(int $n) {
+	$array = [];
+	for ($i = 0; $i < $n; $i++) {
+		$array[] = ($n - 1) + gcd($n, ($n - 1));
+	}
+	return $array;
 }
+
+
 function maxPn($n) {
 	// your code
 }
 function anOverAverage($n) {
 	// your code
+}
+function gcd(int $n, int $param)
+{
+	$bestMatch = 1;
+	for ($i = 1; $i <= min($n, $param); $i++) {
+		if (
+			$n % $i === 0 &&
+			$param % $i === 0 &&
+			$i > $bestMatch
+		) {
+			$bestMatch = $i;
+		}
+	}
+
+	return $bestMatch;
 }

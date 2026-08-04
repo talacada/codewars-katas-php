@@ -16,9 +16,9 @@ class WeirdPrimeGeneratorTest extends TestCase
 		$this->assertSame($expected, $actual);
 	}
 	public function testCountOnesBasics(): void {
+		$this->revTest(countOnes(100), 90);
 		$this->revTest(countOnes(1), 1);
 		$this->revTest(countOnes(10), 8);
-		$this->revTest(countOnes(100), 90);
 	}
 	public function testMaxPnBasics(): void {
 		$this->revTest(maxPn(1), 5);
