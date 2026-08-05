@@ -75,11 +75,14 @@ Takže: g = [1] + [a(2)-a(1), a(3)-a(2), a(4)-a(3), ...]
 */
 
 function countOnes(int $n) {
-	$array = [];
-	for ($i = 0; $i < $n; $i++) {
-		$array[] = ($n - 1) + gcd($n, ($n - 1));
+	$array[1] = 1;
+	$prevA = 7;
+	for ($i = 2; $i <= $n; $i++) {
+		$newA = $prevA + gcd($i, $prevA);
+		$array[$i] = $newA - $prevA;
+		$prevA = $newA;
 	}
-	return $array;
+	return array_count_values($array)[1];
 }
 
 
