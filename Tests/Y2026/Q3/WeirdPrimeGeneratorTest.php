@@ -21,8 +21,8 @@ class WeirdPrimeGeneratorTest extends TestCase
 		$this->revTest(countOnes(10), 8);
 	}
 	public function testMaxPnBasics(): void {
-		$this->revTest(maxPn(1), 5);
 		$this->revTest(maxPn(5), 47);
+		$this->revTest(maxPn(1), 5);
 		$this->revTest(maxPn(7), 101);
 	}
 	public function testanOverAverageBasics(): void {

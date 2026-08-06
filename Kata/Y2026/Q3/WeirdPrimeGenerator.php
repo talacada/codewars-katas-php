@@ -75,24 +75,27 @@ Takže: g = [1] + [a(2)-a(1), a(3)-a(2), a(4)-a(3), ...]
 */
 
 function countOnes(int $n) {
-	$array[1] = 1;
-	$prevA = 7;
-	for ($i = 2; $i <= $n; $i++) {
-		$newA = $prevA + gcd($i, $prevA);
-		$array[$i] = $newA - $prevA;
-		$prevA = $newA;
-	}
+
+	$array = getSequence($n);
 	return array_count_values($array)[1];
 }
 
 
-function maxPn($n) {
-	// your code
+function maxPn(int $n) {
+	$i = 5;
+	do {
+		$sequence = getSequence($n + $i);
+		$sequence = array_diff($sequence, [1]);
+		$sequence = array_unique($sequence);
+		$i += 5;
+	} while (count($sequence) < $n);
+
+	return max($sequence);
 }
 function anOverAverage($n) {
 	// your code
 }
-function gcd(int $n, int $param)
+function gcd(int $n, int $param): int
 {
 	$bestMatch = 1;
 	for ($i = 1; $i <= min($n, $param); $i++) {
@@ -106,4 +109,15 @@ function gcd(int $n, int $param)
 	}
 
 	return $bestMatch;
+}
+
+function getSequence(int $n): array {
+	$array[1] = 1;
+	$prevA = 7;
+	for ($i = 2; $i <= $n; $i++) {
+		$newA = $prevA + gcd($i, $prevA);
+		$array[$i] = $newA - $prevA;
+		$prevA = $newA;
+	}
+	return $array;
 }
