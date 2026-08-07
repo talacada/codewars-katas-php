@@ -92,8 +92,20 @@ function maxPn(int $n) {
 
 	return max($sequence);
 }
-function anOverAverage($n) {
-	// your code
+function anOverAverage($n):int {
+	$array = [];
+	$prevA = 7;
+	$i = 2;
+	while (count($array) != $n) {
+		$newA = $prevA + gcd($i, $prevA);
+		if ($newA - $prevA !== 1) {
+			$array[] = $newA  / $i;
+		}
+		$prevA = $newA;
+		$i++;
+	}
+
+	return (int) array_sum($array) / $n;
 }
 function gcd(int $n, int $param): int
 {
