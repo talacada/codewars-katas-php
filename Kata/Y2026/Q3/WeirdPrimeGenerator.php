@@ -82,6 +82,7 @@ function countOnes(int $n) {
 
 
 function maxPn(int $n) {
+	//TODO optimize next
 	$i = 5;
 	do {
 		$sequence = getSequence($n + $i);
@@ -109,18 +110,16 @@ function anOverAverage($n):int {
 }
 function gcd(int $n, int $param): int
 {
-	$bestMatch = 1;
-	for ($i = 1; $i <= min($n, $param); $i++) {
-		if (
-			$n % $i === 0 &&
-			$param % $i === 0 &&
-			$i > $bestMatch
-		) {
-			$bestMatch = $i;
-		}
-	}
+	$a = $param;
+	$b = $n;
 
-	return $bestMatch;
+	do {
+		$res = $a % $b;
+		$a = $b;
+		$b = $res;
+	} while ($b != 0);
+
+	return $a;
 }
 
 function getSequence(int $n): array {
