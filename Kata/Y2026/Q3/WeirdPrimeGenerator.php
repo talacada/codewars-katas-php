@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 Consider the sequence a(1) = 7, a(n) = a(n-1) + gcd(n, a(n-1)) for n >= 2:
 
-	7, 8, 9, 10, 15, 18, 19, 20, 21, 22, 33, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 69, 72, 73....
+    7, 8, 9, 10, 15, 18, 19, 20, 21, 22, 33, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 69, 72, 73....
 
 Let us take the differences between successive elements of the sequence and get a second sequence g: 1, 1, 1, 5, 3, 1, 1, 1, 1, 11, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 23, 3, 1....
 
@@ -32,103 +34,73 @@ https://www.codewars.com/kata/562b384167350ac93b00010c
 
 namespace Y2026\Q3;
 
-/*
-Tři testované funkce:
-
-  ┌──────────────────┬────────────────────────────────────────┐
-  │      Funkce      │                Co dělá                 │
-  ├──────────────────┼────────────────────────────────────────┤
-  │ countOnes(n)     │ Spočítej, kolik jedniček je v prvních  │
-  │                  │ n členech posloupnosti g               │
-  ├──────────────────┼────────────────────────────────────────┤
-  │ maxPn(n)         │ Najdi prvních n unikátních prvočísel z │
-  │                  │  p a vrať to největší                  │
-  ├──────────────────┼────────────────────────────────────────┤
-  │                  │ Pro každý index i, kde g(i) ≠ 1,       │
-  │ anOverAverage(n) │ spočítej a(i) / i. Z prvních n         │
-  │                  │ takových hodnot vrať celočíselný       │
-  │                  │ průměr                                 │
-  └──────────────────┴────────────────────────────────────────┘
-
-  1. Posloupnost a(n)
-
-  Začínáme s a(1) = 7. Každý další člen se vypočítá jako:
-
-  a(n) = a(n-1) + gcd(n, a(n-1))
-
-  Tedy: vezmi předchozí člen, spočítej největšího společného
-  dělitele (gcd) aktuálního indexu n a předchozí hodnoty, a ten
-  přičti.
-
-  2. Posloupnost g(n) — rozdíly
-
-  g(n) jsou rozdíly mezi po sobě jdoucími členy a(n). A na
-  začátek se ještě uměle přidá jedna 1 navíc.
-
-Takže: g = [1] + [a(2)-a(1), a(3)-a(2), a(4)-a(3), ...]
-
- 3. Posloupnost p — vyhozené jedničky
-
-  Když z g odstraníš všechny 1, zbyde ti p: 5, 3, 11, 3, 23, 3...
-
-  A překvapení: všechna tato zbylá čísla jsou prvočísla!
-*/
-
-function countOnes(int $n) {
-
-	$array = getSequence($n);
-	return array_count_values($array)[1];
+function countOnes(int $n): int
+{
+    $array = getSequence($n);
+    return array_count_values($array)[1];
 }
 
 
-function maxPn(int $n) {
-	//TODO optimize next
-	$i = 5;
-	do {
-		$sequence = getSequence($n + $i);
-		$sequence = array_diff($sequence, [1]);
-		$sequence = array_unique($sequence);
-		$i += 5;
-	} while (count($sequence) < $n);
+function maxPn(int $n): int
+{
 
-	return max($sequence);
+    $array = [];
+    $prevA = 7;
+    $i = 2;
+    do {
+        $newA = $prevA + gcd($i, $prevA);
+        if ($newA - $prevA != 1) {
+            $array[$i] = $newA - $prevA;
+            $array = array_unique($array);
+        }
+        $prevA = $newA;
+        $i++;
+    } while (count($array) < $n);
+
+    if ($array === []) {
+        return 0;
+    }
+
+    return max($array);
 }
-function anOverAverage($n):int {
-	$array = [];
-	$prevA = 7;
-	$i = 2;
-	while (count($array) != $n) {
-		$newA = $prevA + gcd($i, $prevA);
-		if ($newA - $prevA !== 1) {
-			$array[] = $newA  / $i;
-		}
-		$prevA = $newA;
-		$i++;
-	}
+function anOverAverage(int $n): int
+{
+    $array = [];
+    $prevA = 7;
+    $i = 2;
+    while (count($array) != $n) {
+        $newA = $prevA + gcd($i, $prevA);
+        if ($newA - $prevA !== 1) {
+            $array[] = $newA  / $i;
+        }
+        $prevA = $newA;
+        $i++;
+    }
 
-	return (int) array_sum($array) / $n;
+    return (int) array_sum($array) / $n;
 }
 function gcd(int $n, int $param): int
 {
-	$a = $param;
-	$b = $n;
+    $a = $param;
+    $b = $n;
 
-	do {
-		$res = $a % $b;
-		$a = $b;
-		$b = $res;
-	} while ($b != 0);
+    do {
+        $res = $a % $b;
+        $a = $b;
+        $b = $res;
+    } while ($b != 0);
 
-	return $a;
+    return $a;
 }
 
-function getSequence(int $n): array {
-	$array[1] = 1;
-	$prevA = 7;
-	for ($i = 2; $i <= $n; $i++) {
-		$newA = $prevA + gcd($i, $prevA);
-		$array[$i] = $newA - $prevA;
-		$prevA = $newA;
-	}
-	return $array;
+function getSequence(int $n): array
+{
+    $array[1] = 1;
+    $prevA = 7;
+    for ($i = 2; $i <= $n; $i++) {
+        $newA = $prevA + gcd($i, $prevA);
+        $array[$i] = $newA - $prevA;
+        $prevA = $newA;
+    }
+    return $array;
 }
