@@ -41,6 +41,7 @@ Work on Kata every day.
 
 | #  | Kata                                      | Dificulty | Solution                                                       | Completed  |
 |----|-------------------------------------------|-----------|----------------------------------------------------------------|------------|
+| 46 | Weird prime generator                     | 5 kyu     | [Kata](Kata/Y2026/Q3/WeirdPrimeGenerator.php)                  | 09.08.2026 |
 | 45 | Caesar Cipher Helper                      | 5 kyu     | [Kata](Kata/Y2026/Q3/CaesarCipherHelper.php)                  | 02.08.2026 |
 | 44 | Now that's a crib!                        | 5 kyu     | [Kata](Kata/Y2026/Q3/NowThatACrib.php)                        | 31.07.2026 |
 | 43 | MTV Cribs                                 | 6 kyu     | [Kata](Kata/Y2026/Q3/MTVCribs.php)                            | 28.07.2026 |
