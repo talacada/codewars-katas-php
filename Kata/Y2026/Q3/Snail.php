@@ -31,6 +31,12 @@ namespace Kata\Y2026\Q3;
 class Snail
 {
 	private array $matrix;
+	private int $topOffset = 0;
+	private int $bottomOffset = 0;
+	private int $leftOffset = 0;
+	private int $rightOffset = 0;
+	private int $nowSide = 0;
+	private int $direction = 0;
 
 	public function __construct(array $array)
 	{
@@ -41,18 +47,39 @@ class Snail
 		$return = [];
 
 		do {
-
+			if ($this->nowSide === 0) {
+				$return[] = $this->getRow();
+			} else {
+				$return[] = $this->getCol();
+			}
 		} while (count(...$this->matrix) != count($return));
 
 		return $return;
 	}
 
-	private function getRow(int $direction, $row): array
+	private function getRow(): array
 	{
+		if ($this->direction === 0) {
+			$return = array_merge($this->matrix[$this->topOffset]);
+			$this->topOffset++;
+		}else {
+			$return = $this->matrix[$this->bottomOffset];
+			$this->bottomOffset++;
+		}
 
+		$return = array_slice($return, $this->leftOffset);
+		if ($this->rightOffset > 0) {
+			$return = array_slice($return, 0, -$this->rightOffset);
+		}
+
+			if ($this->direction === 1) {
+			$return = array_reverse($return);
+		}
+
+		return $return;
 	}
 
-	private function getCol(int $direction): array
+	private function getCol(): array
 	{
 
 	}
