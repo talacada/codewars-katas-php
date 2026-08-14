@@ -13,7 +13,7 @@ class RangeExtractionTest extends TestCase
 {
 	private function solution(array $array): string
 	{
-		$orderer = new RangeExtraction();
+		$orderer = new RangeExtraction($array);
 		return $orderer->getString();
 	}
 	/**

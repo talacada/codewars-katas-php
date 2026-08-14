@@ -20,18 +20,33 @@ namespace Kata\Y2026\Q3;
 
 class RangeExtraction
 {
+	private array $output;
+	public function __construct(array $array){
 
-	public function __construct(){
+		for ($i = 0; $i < count($array); $i++) {
+			$countRange = $i;
+			while ((int) $array[$countRange + 1] === (int )$array[$countRange] + 1) {
+				$countRange++;
+			}
 
+			$length = $countRange - $i + 1;
+
+			if ($length >= 3) {
+				$this->output[] = new Range($array[$i], (int) $array[$countRange]);
+				$i = $countRange;
+			}else {
+				$this->output[] = new SingleNumber($array[$i]);
+			}
+		}
 	}
 
 	public function getString(): string
 	{
-
+		//TODO
 	}
 }
 
-class OutputType {
+abstract class OutputType {
 	private int $start;
 
 	public function __construct(int $start)
