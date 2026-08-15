@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /*
 A format for expressing an ordered list of integers is to use a comma separated list of either
 
@@ -15,71 +17,83 @@ Courtesy of rosettacode.org
 https://www.codewars.com/kata/51ba717bb08c1cd60f00002f/train/php
 */
 
-
 namespace Kata\Y2026\Q3;
 
 class RangeExtraction
 {
-	private array $output;
-	public function __construct(array $array){
+    private array $output;
+    public function __construct(array $array)
+    {
+        for ($i = 0; $i < count($array); $i++) {
+            $countRange = $i;
+            while (isset($array[$countRange + 1]) && (int) $array[$countRange + 1] === (int) $array[$countRange] + 1) {
+                $countRange++;
+            }
 
-		for ($i = 0; $i < count($array); $i++) {
-			$countRange = $i;
-			while ((int) $array[$countRange + 1] === (int )$array[$countRange] + 1) {
-				$countRange++;
-			}
+            $length = $countRange - $i + 1;
 
-			$length = $countRange - $i + 1;
+            if ($length >= 3) {
+                $this->output[] = new Range($array[$i], (int) $array[$countRange]);
+                $i = $countRange;
+            } else {
+                $this->output[] = new SingleNumber($array[$i]);
+            }
+        }
+    }
 
-			if ($length >= 3) {
-				$this->output[] = new Range($array[$i], (int) $array[$countRange]);
-				$i = $countRange;
-			}else {
-				$this->output[] = new SingleNumber($array[$i]);
-			}
-		}
-	}
+    public function getString(): string
+    {
+        $output = '';
 
-	public function getString(): string
-	{
-		//TODO
-	}
+        foreach ($this->output as $value) {
+            $output .= $value->getString() . ',';
+        }
+
+        return substr($output, 0, -1);
+    }
 }
 
-abstract class OutputType {
-	private int $start;
+abstract class OutputType
+{
+    private int $start;
 
-	public function __construct(int $start)
-	{
-		$this->start = $start;
-	}
+    public function __construct(int $start)
+    {
+        $this->start = $start;
+    }
 
-	abstract public function getString(): string;
+    public function getStart(): int
+    {
+        return $this->start;
+    }
+
+    public function setStart(int $start): void
+    {
+        $this->start = $start;
+    }
+
+    abstract public function getString(): string;
 }
 
-class SingleNumber extends OutputType{
-	public function __construct(int $start)
-	{
-		parent::__construct($start);
-	}
-
-	public function getString(): string
-	{
-		// TODO: Implement getString() method.
-	}
+class SingleNumber extends OutputType
+{
+    public function getString(): string
+    {
+        return (string) $this->getStart();
+    }
 }
 
-class Range extends OutputType {
-	private int $end;
-	public function __construct(int $start, int $end)
-	{
-		parent::__construct($start);
-		$this->end = $end;
-	}
+class Range extends OutputType
+{
+    private int $end;
+    public function __construct(int $start, int $end)
+    {
+        parent::__construct($start);
+        $this->end = $end;
+    }
 
-	public function getString(): string
-	{
-		// TODO: Implement getString() method.
-	}
+    public function getString(): string
+    {
+        return $this->getStart() . '-' . $this->end;
+    }
 }
-
