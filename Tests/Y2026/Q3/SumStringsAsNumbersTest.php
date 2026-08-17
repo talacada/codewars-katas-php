@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Y2026\Q3;
+namespace Y2026\Q3\SumStringsAsNumbers;
 
 use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../../../Kata/Y2026/Q3/SumStringsAsNumbers.php';
 
-use function Kata\Y2026\Q3\sum_strings;
+use function Kata\Y2026\Q3\SumStringsAsNumbers\sum_strings;
 
 class SumStringsAsNumbersTest extends TestCase
 {
