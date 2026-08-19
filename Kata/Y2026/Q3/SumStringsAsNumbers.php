@@ -19,15 +19,22 @@ namespace Kata\Y2026\Q3\SumStringsAsNumbers;
 
 function sum_strings($a, $b): string
 {
-	$calculator = new SumStringsAsNumbers();
-	return $calculator->result($a, $b);
+	$calculator = new SumStringsAsNumbers($a, $b);
+	return $calculator->result();
 }
 
 class SumStringsAsNumbers
 {
-	public function result($a, $b): string
+	private Number $a;
+	private Number $b;
+
+	public function __construct($a, $b) {
+		$this->a = new Number($a);
+		$this->b = new Number($b);
+	}
+	public function result(): string
 	{
-		$bonus = 0;
+		/*$bonus = 0;
 		$aRev = strrev($a);
 		$bRev = strrev($b);
 		$final = '';
@@ -54,6 +61,74 @@ class SumStringsAsNumbers
 			}
 		}
 
-		return ltrim(strrev($final), "0");
+		return ltrim(strrev($final), "0");*/
+
+		$bonus = new Number(0);
+		$result = new Number();
+
+	}
+}
+
+class Number {
+	private string $number;
+	private array $digits;
+
+	public function __construct(string $number = '') {
+		$this->number = $number;
+		$digits = str_split($this->number);
+
+		$this->digits = array_map(function (string $char): Digit {
+			return new Digit((int) $char);
+		}, $digits);
+	}
+
+	public function getReversedNumber(): string
+	{
+		return strrev($this->number);
+	}
+
+	public function getDigitFromBack($n) {
+		return array_reverse($this->digits)[$n];
+	}
+
+	public function getNumber(): string
+	{
+		return $this->number;
+	}
+
+	public function setNumber(string $number): void
+	{
+		$this->number = $number;
+	}
+
+	public function getDigits(): array
+	{
+		return $this->digits;
+	}
+
+	public function setDigits(array $digits): void
+	{
+		$this->digits = $digits;
+	}
+
+
+}
+
+class Digit
+{
+	private int $digit;
+
+	public function __construct(int $number){
+		$this->digit = $number;
+	}
+
+	public function getDigit(): int
+	{
+		return $this->digit;
+	}
+
+	public function setDigit(int $digit): void
+	{
+		$this->digit = $digit;
 	}
 }
