@@ -27,10 +27,12 @@ class SumStringsAsNumbers
 {
 	private Number $a;
 	private Number $b;
+	private Number $bonus;
 
 	public function __construct($a, $b) {
 		$this->a = new Number($a);
 		$this->b = new Number($b);
+		$this->bonus = new Number(0);
 	}
 	public function result(): string
 	{
@@ -66,6 +68,40 @@ class SumStringsAsNumbers
 		$bonus = new Number(0);
 		$result = new Number();
 
+		$maxLength = max($this->a->getLength(), $this->b->getLength());
+
+		for ($i = 0; $i < $maxLength; $i++) {
+			$this->getThisIterationResult($i, $maxLength);
+		}
+	}
+
+	private function getThisIterationResult(int $iteration, int $maxLength): Digit
+	{
+		$aIntNow = $this->a->getDigitFromBack($iteration)->getDigit();
+		$bIntNow = $this->b->getDigitFromBack($iteration)->getDigit();
+		$bonusInt = $this->bonus->getNumberAsInt();
+		$return = new Digit();
+
+		if ($aIntNow +  $bIntNow + $bonusInt > 9) {
+			if ($iteration === $maxLength - 1) {
+				$return->setDigit($aIntNow +  $bIntNow + $bonusInt);
+			}else {
+				$return->setDigit($aIntNow +  $bIntNow + $bonusInt - 10);
+			}
+			if ($bonusInt != 0) {
+				//TODO
+				$this->bonus-setNumber($bonusInt - 1);
+			}
+			//TODO
+			$bonus += 1;
+		}else {
+			//TODO
+			$final .= $aNow + $bNow + $bonus;
+			if ($bonus != 0) {
+				$bonus -= 1;
+			}
+
+		}
 	}
 }
 
@@ -87,13 +123,18 @@ class Number {
 		return strrev($this->number);
 	}
 
-	public function getDigitFromBack($n) {
+	public function getDigitFromBack($n): ?Digit {
 		return array_reverse($this->digits)[$n];
 	}
 
-	public function getNumber(): string
+	public function getNumberAsString(): string
 	{
 		return $this->number;
+	}
+
+	public function getNumberAsInt(): int
+	{
+		return intval($this->number);
 	}
 
 	public function setNumber(string $number): void
@@ -111,18 +152,22 @@ class Number {
 		$this->digits = $digits;
 	}
 
+	public function getLength(): int
+	{
+		return strlen($this->number);
+	}
 
 }
 
 class Digit
 {
-	private int $digit;
+	private ?int $digit;
 
-	public function __construct(int $number){
+	public function __construct(int $number = null){
 		$this->digit = $number;
 	}
 
-	public function getDigit(): int
+	public function getDigit(): ?int
 	{
 		return $this->digit;
 	}
