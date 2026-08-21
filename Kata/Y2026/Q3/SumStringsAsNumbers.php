@@ -36,49 +36,21 @@ class SumStringsAsNumbers
 	}
 	public function result(): string
 	{
-		/*$bonus = 0;
-		$aRev = strrev($a);
-		$bRev = strrev($b);
-		$final = '';
-		$maxLength = max(strlen($a), strlen($b));
-		for ($i = 0; $i < $maxLength; $i++) {
-			$aNow = (int) substr($aRev, $i, 1);
-			$bNow = (int) substr($bRev, $i, 1);
-			if ($aNow +  $bNow + $bonus > 9) {
-				if ($i === $maxLength - 1) {
-					$final .= strrev($aNow + $bNow + $bonus);
-				}else {
-					$final .= $aNow + $bNow + $bonus - 10;
-				}
-				if ($bonus != 0) {
-					$bonus -= 1;
-				}
-				$bonus += 1;
-			}else {
-				$final .= $aNow + $bNow + $bonus;
-				if ($bonus != 0) {
-					$bonus -= 1;
-				}
-
-			}
-		}
-
-		return ltrim(strrev($final), "0");*/
-
-		$bonus = new Number(0);
 		$result = new Number();
 
 		$maxLength = max($this->a->getLength(), $this->b->getLength());
 
 		for ($i = 0; $i < $maxLength; $i++) {
-			$this->getThisIterationResult($i, $maxLength);
+			$result->addDigit($this->getThisIterationResult($i, $maxLength));
 		}
+
+		return ltrim($result->getDigitsReversedAsString(), 0);
 	}
 
 	private function getThisIterationResult(int $iteration, int $maxLength): Digit
 	{
-		$aIntNow = $this->a->getDigitFromBack($iteration)->getDigit();
-		$bIntNow = $this->b->getDigitFromBack($iteration)->getDigit();
+		$aIntNow = $this->a->getDigitFromBack($iteration) !== null ? $this->a->getDigitFromBack($iteration)->getDigit() : null;
+		$bIntNow = $this->b->getDigitFromBack($iteration) !== null ? $this->b->getDigitFromBack($iteration)->getDigit() : null;
 		$bonusInt = $this->bonus->getNumberAsInt();
 		$return = new Digit();
 
@@ -89,19 +61,17 @@ class SumStringsAsNumbers
 				$return->setDigit($aIntNow +  $bIntNow + $bonusInt - 10);
 			}
 			if ($bonusInt != 0) {
-				//TODO
-				$this->bonus-setNumber($bonusInt - 1);
+				$bonusInt --;
 			}
-			//TODO
-			$bonus += 1;
+			$this->bonus = new Number((string) ($bonusInt + 1));
 		}else {
-			//TODO
-			$final .= $aNow + $bNow + $bonus;
-			if ($bonus != 0) {
-				$bonus -= 1;
+			$return->setDigit($aIntNow +  $bIntNow + $bonusInt);
+			if ($bonusInt != 0) {
+				$this->bonus = new Number((string) ($bonusInt - 1));
 			}
-
 		}
+
+		return $return;
 	}
 }
 
@@ -113,23 +83,17 @@ class Number {
 		$this->number = $number;
 		$digits = str_split($this->number);
 
+		if ($number === '') {
+			return;
+		}
+
 		$this->digits = array_map(function (string $char): Digit {
 			return new Digit((int) $char);
 		}, $digits);
 	}
 
-	public function getReversedNumber(): string
-	{
-		return strrev($this->number);
-	}
-
 	public function getDigitFromBack($n): ?Digit {
-		return array_reverse($this->digits)[$n];
-	}
-
-	public function getNumberAsString(): string
-	{
-		return $this->number;
+		return array_reverse($this->digits)[$n] ?? null;
 	}
 
 	public function getNumberAsInt(): int
@@ -137,26 +101,27 @@ class Number {
 		return intval($this->number);
 	}
 
-	public function setNumber(string $number): void
-	{
-		$this->number = $number;
-	}
-
-	public function getDigits(): array
-	{
-		return $this->digits;
-	}
-
-	public function setDigits(array $digits): void
-	{
-		$this->digits = $digits;
-	}
-
 	public function getLength(): int
 	{
 		return strlen($this->number);
 	}
 
+	public function addDigit(Digit $digit): void
+	{
+		$this->digits[] = $digit;
+	}
+
+	public function getDigitsReversedAsString(): string
+	{
+		$digits = array_reverse($this->digits);
+		$result = '';
+
+		foreach ($digits as $digit) {
+			$result .= $digit->getDigit();
+		}
+
+		return $result;
+	}
 }
 
 class Digit
