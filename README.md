@@ -41,6 +41,7 @@ Work on Kata every day.
 
 | #  | Kata                                      | Dificulty | Solution                                                       | Completed  |
 |----|-------------------------------------------|-----------|----------------------------------------------------------------|------------|
+| 48 | Sum Strings as Numbers                    | 4 kyu     | [Kata](Kata/Y2026/Q3/SumStringsAsNumbers.php)                 | 22.08.2026 |
 | 47 | Snail                                     | 4 kyu     | [Kata](Kata/Y2026/Q3/Snail.php)                                | 12.08.2026 |
 | 46 | Weird prime generator                     | 5 kyu     | [Kata](Kata/Y2026/Q3/WeirdPrimeGenerator.php)                  | 09.08.2026 |
 | 45 | Caesar Cipher Helper                      | 5 kyu     | [Kata](Kata/Y2026/Q3/CaesarCipherHelper.php)                  | 02.08.2026 |
