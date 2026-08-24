@@ -46,13 +46,88 @@ https://www.codewars.com/kata/5629db57620258aa9d000014
 
 namespace Kata\Y2026\Q3\StringsMix;
 
-function mix (string $s1, string $s2):string {
+use Exception;
 
+function mix (string $s1, string $s2):string {
+	$mixer = new StringsMix($s1, $s2);
+	return $mixer->getResult();
 }
 
 class StringsMix
 {
 
+	private array $s1;
+	private array $s2;
+	private array $s1Characters = [];
+	private array $s2Characters = [];
+	public function __construct (string $s1, string $s2) {
+		$this->s1 = str_split($s1);
+		$this->s2 = str_split($s2);
+	}
 
+	public function getResult()
+	{
+		foreach ($this->s1 as $char) {
+			$this->checkIfCharValidAndAdd($char, $this->s1Characters);
+		}
+		foreach ($this->s2 as $char) {
+			$this->checkIfCharValidAndAdd($char, $this->s2Characters);
+		}
 
+		//TODO build final string
+		return $this->s1Characters;
+	}
+
+	private function checkIfCharValidAndAdd(mixed $char, array &$targetArray): void
+	{
+		if (ctype_lower($char)) {
+			if (!isset($targetArray[$char])) {
+				$targetArray[$char] = new Character($char);
+			}else {
+				$targetArray[$char]->addToCount();
+			}
+		}
+	}
+
+	public function getS1(): array
+	{
+		return $this->s1;
+	}
+
+	public function getS2(): array
+	{
+		return $this->s2;
+	}
+}
+
+class Character {
+	private string $character;
+	private int $order;
+	private int $count;
+
+	public function __construct (string $character) {
+		$this->character = $character;
+		$this->count = 1;
+		$this->order = ord($character);
+	}
+
+	public function getCharacter(): string
+	{
+		return $this->character;
+	}
+
+	public function getOrder(): int
+	{
+		return $this->order;
+	}
+
+	public function getCount(): int
+	{
+		return $this->count;
+	}
+
+	public function addToCount(): void
+	{
+		$this->count ++;
+	}
 }
