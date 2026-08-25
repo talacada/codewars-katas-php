@@ -58,14 +58,16 @@ class StringsMix
 
 	private array $s1;
 	private array $s2;
+	/** @var array<string, Character> */
 	private array $s1Characters = [];
+	/** @var array<string, Character> */
 	private array $s2Characters = [];
 	public function __construct (string $s1, string $s2) {
 		$this->s1 = str_split($s1);
 		$this->s2 = str_split($s2);
 	}
 
-	public function getResult()
+	public function getResult(): string
 	{
 		foreach ($this->s1 as $char) {
 			$this->checkIfCharValidAndAdd($char, $this->s1Characters);
@@ -75,7 +77,7 @@ class StringsMix
 		}
 
 		//TODO build final string
-		return $this->s1Characters;
+		$output = new OutputFormat($this->s1Characters, $this->s2Characters);
 	}
 
 	private function checkIfCharValidAndAdd(mixed $char, array &$targetArray): void
@@ -130,4 +132,73 @@ class Character {
 	{
 		$this->count ++;
 	}
+}
+
+class OutputFormat {
+	private array $output = [];
+
+	public function __construct(array $s1, array $s2) {
+		foreach ([$s1, $s2] as $group) {
+			foreach ($group as $char) {
+				if (!isset($output[$char->getCharacter()])) {
+					$output[$char->getCharacter()] = new OutputChar($char, //IDK);
+				}
+			}
+		}
+	}
+
+	public function getOutput(): array
+	{
+		return $this->output;
+	}
+
+	public function setOutput(array $output): void
+	{
+		$this->output = $output;
+	}
+
+}
+
+class OutputChar {
+	private Character $char;
+	private bool $inBoth;
+	private int $inArray;
+
+	public function __construct(Character $char, int $inArray, bool $inBoth = false) {
+		$this->char = $char;
+		$this->inArray = $inArray;
+		$this->inBoth = $inBoth;
+	}
+
+	public function getChar(): Character
+	{
+		return $this->char;
+	}
+
+	public function setChar(Character $char): void
+	{
+		$this->char = $char;
+	}
+
+	public function isInBoth(): bool
+	{
+		return $this->inBoth;
+	}
+
+	public function setInBoth(bool $inBoth): void
+	{
+		$this->inBoth = $inBoth;
+	}
+
+	public function getInArray(): int
+	{
+		return $this->inArray;
+	}
+
+	public function setInArray(int $inArray): void
+	{
+		$this->inArray = $inArray;
+	}
+
+
 }
