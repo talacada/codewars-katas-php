@@ -76,8 +76,9 @@ class StringsMix
 			$this->checkIfCharValidAndAdd($char, $this->s2Characters);
 		}
 
-		//TODO build final string
 		$output = new OutputFormat($this->s1Characters, $this->s2Characters);
+		$output->orderDesc();
+		return $output->getOutputString();
 	}
 
 	private function checkIfCharValidAndAdd(mixed $char, array &$targetArray): void
@@ -135,16 +136,26 @@ class Character {
 }
 
 class OutputFormat {
-	private array $output = [];
+	private array $output;
 
 	public function __construct(array $s1, array $s2) {
-		foreach ([$s1, $s2] as $group) {
+		foreach ([$s1, $s2] as $groupIndex => $group) {
 			foreach ($group as $char) {
 				if (!isset($output[$char->getCharacter()])) {
-					$output[$char->getCharacter()] = new OutputChar($char, //IDK);
+					$output[$char->getCharacter()] = new OutputChar($char, $groupIndex + 1);
+				}elseif ($output[$char->getCharacter()]->getChar()->getCount() > $char->getCount()) {
+					continue;
+				}elseif ($output[$char->getCharacter()]->getChar()->getCount() < $char->getCount()) {
+					$output[$char->getCharacter()]->setChar($char);
+					$output[$char->getCharacter()]->setInArray($groupIndex + 1);
+					$output[$char->getCharacter()]->setInBoth(false);
+				}elseif ($output[$char->getCharacter()]->getChar()->getCount() === $char->getCount()) {
+					$output[$char->getCharacter()]->setInBoth(true);
+					$output[$char->getCharacter()]->setInArray(0);
 				}
 			}
 		}
+		$this->output = $output;
 	}
 
 	public function getOutput(): array
@@ -155,6 +166,14 @@ class OutputFormat {
 	public function setOutput(array $output): void
 	{
 		$this->output = $output;
+	}
+
+	public function orderDesc(): void
+	{
+	}
+
+	public function getOutputString(): string
+	{
 	}
 
 }
