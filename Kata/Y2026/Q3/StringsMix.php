@@ -151,7 +151,7 @@ class OutputFormat {
 					$output[$char->getCharacter()]->setInBoth(false);
 				}elseif ($output[$char->getCharacter()]->getChar()->getCount() === $char->getCount()) {
 					$output[$char->getCharacter()]->setInBoth(true);
-					$output[$char->getCharacter()]->setInArray(0);
+					$output[$char->getCharacter()]->setInArray(3);
 				}
 			}
 		}
@@ -170,6 +170,19 @@ class OutputFormat {
 
 	public function orderDesc(): void
 	{
+		uasort($this->output, function (OutputChar $a, OutputChar $b) {
+			$count = $b->getChar()->getCount() <=> $a->getChar()->getCount();
+			if ($count !== 0) {
+				return $count;
+			}
+
+			$inArray = $a->getInArray() <=> $b->getInArray();
+			if ($inArray !== 0) {
+				return $inArray;
+			}
+
+			return $a->getChar()->getOrder() <=> $b->getChar()->getOrder();
+		});
 	}
 
 	public function getOutputString(): string
