@@ -41,6 +41,7 @@ Work on Kata every day.
 
 | #  | Kata                                      | Dificulty | Solution                                                       | Completed  |
 |----|-------------------------------------------|-----------|----------------------------------------------------------------|------------|
+| 50 | Strings Mix                               | 4 kyu     | [Kata](Kata/Y2026/Q3/StringsMix.php)                           | 28.08.2026 |
 | 49 | Sum Strings as Numbers                    | 4 kyu     | [Kata](Kata/Y2026/Q3/SumStringsAsNumbers.php)                 | 22.08.2026 |
 | 48 | Range Extraction                          | 4 kyu     | [Kata](Kata/Y2026/Q3/RangeExtraction.php)                     | 15.08.2026 |
 | 47 | Snail                                     | 4 kyu     | [Kata](Kata/Y2026/Q3/Snail.php)                                | 12.08.2026 |

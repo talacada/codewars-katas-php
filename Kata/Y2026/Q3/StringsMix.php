@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 
 Given two strings s1 and s2, we want to visualize how different the two strings are. We will only take into account the lowercase letters (a to z). First let us count the frequency of each lowercase letters in s1 and s2.
@@ -46,191 +48,217 @@ https://www.codewars.com/kata/5629db57620258aa9d000014
 
 namespace Kata\Y2026\Q3\StringsMix;
 
-use Exception;
-
-function mix (string $s1, string $s2):string {
-	$mixer = new StringsMix($s1, $s2);
-	return $mixer->getResult();
+function mix(string $s1, string $s2): string
+{
+    $mixer = new StringsMix($s1, $s2);
+    return $mixer->getResult();
 }
 
 class StringsMix
 {
+    private array $s1;
+    private array $s2;
+    /** @var array<string, Character> */
+    private array $s1Characters = [];
+    /** @var array<string, Character> */
+    private array $s2Characters = [];
+    public function __construct(string $s1, string $s2)
+    {
+        $this->s1 = str_split($s1);
+        $this->s2 = str_split($s2);
+    }
 
-	private array $s1;
-	private array $s2;
-	/** @var array<string, Character> */
-	private array $s1Characters = [];
-	/** @var array<string, Character> */
-	private array $s2Characters = [];
-	public function __construct (string $s1, string $s2) {
-		$this->s1 = str_split($s1);
-		$this->s2 = str_split($s2);
-	}
+    public function getResult(): string
+    {
+        foreach ($this->s1 as $char) {
+            $this->checkIfCharValidAndAdd($char, $this->s1Characters);
+        }
+        foreach ($this->s2 as $char) {
+            $this->checkIfCharValidAndAdd($char, $this->s2Characters);
+        }
 
-	public function getResult(): string
-	{
-		foreach ($this->s1 as $char) {
-			$this->checkIfCharValidAndAdd($char, $this->s1Characters);
-		}
-		foreach ($this->s2 as $char) {
-			$this->checkIfCharValidAndAdd($char, $this->s2Characters);
-		}
+        $output = new OutputFormat($this->s1Characters, $this->s2Characters);
+        $output->orderDesc();
+        return $output->getOutputString();
+    }
 
-		$output = new OutputFormat($this->s1Characters, $this->s2Characters);
-		$output->orderDesc();
-		return $output->getOutputString();
-	}
+    private function checkIfCharValidAndAdd(mixed $char, array &$targetArray): void
+    {
+        if (ctype_lower($char)) {
+            if (!isset($targetArray[$char])) {
+                $targetArray[$char] = new Character((string) $char);
+            } else {
+                $targetArray[$char]->addToCount();
+            }
+        }
+    }
 
-	private function checkIfCharValidAndAdd(mixed $char, array &$targetArray): void
-	{
-		if (ctype_lower($char)) {
-			if (!isset($targetArray[$char])) {
-				$targetArray[$char] = new Character($char);
-			}else {
-				$targetArray[$char]->addToCount();
-			}
-		}
-	}
+    public function getS1(): array
+    {
+        return $this->s1;
+    }
 
-	public function getS1(): array
-	{
-		return $this->s1;
-	}
-
-	public function getS2(): array
-	{
-		return $this->s2;
-	}
+    public function getS2(): array
+    {
+        return $this->s2;
+    }
 }
 
-class Character {
-	private string $character;
-	private int $order;
-	private int $count;
+class Character
+{
+    private string $character;
+    private int $order;
+    private int $count;
 
-	public function __construct (string $character) {
-		$this->character = $character;
-		$this->count = 1;
-		$this->order = ord($character);
-	}
+    public function __construct(string $character)
+    {
+        $this->character = $character;
+        $this->count = 1;
+        $this->order = ord($character);
+    }
 
-	public function getCharacter(): string
-	{
-		return $this->character;
-	}
+    public function getCharacter(): string
+    {
+        return $this->character;
+    }
 
-	public function getOrder(): int
-	{
-		return $this->order;
-	}
+    public function getOrder(): int
+    {
+        return $this->order;
+    }
 
-	public function getCount(): int
-	{
-		return $this->count;
-	}
+    public function getCount(): int
+    {
+        return $this->count;
+    }
 
-	public function addToCount(): void
-	{
-		$this->count ++;
-	}
+    public function addToCount(): void
+    {
+        $this->count++;
+    }
 }
 
-class OutputFormat {
-	private array $output;
+class OutputFormat
+{
+    /** @var array<OutputChar> */
+    private array $output;
 
-	public function __construct(array $s1, array $s2) {
-		foreach ([$s1, $s2] as $groupIndex => $group) {
-			foreach ($group as $char) {
-				if (!isset($output[$char->getCharacter()])) {
-					$output[$char->getCharacter()] = new OutputChar($char, $groupIndex + 1);
-				}elseif ($output[$char->getCharacter()]->getChar()->getCount() > $char->getCount()) {
-					continue;
-				}elseif ($output[$char->getCharacter()]->getChar()->getCount() < $char->getCount()) {
-					$output[$char->getCharacter()]->setChar($char);
-					$output[$char->getCharacter()]->setInArray($groupIndex + 1);
-					$output[$char->getCharacter()]->setInBoth(false);
-				}elseif ($output[$char->getCharacter()]->getChar()->getCount() === $char->getCount()) {
-					$output[$char->getCharacter()]->setInBoth(true);
-					$output[$char->getCharacter()]->setInArray(3);
-				}
-			}
-		}
-		$this->output = $output;
-	}
+    public function __construct(array $s1, array $s2)
+    {
+        $output = [];
+        foreach ([$s1, $s2] as $groupIndex => $group) {
+            foreach ($group as $char) {
+                if (!isset($output[$char->getCharacter()])) {
+                    $output[$char->getCharacter()] = new OutputChar($char, $groupIndex + 1);
+                } elseif ($output[$char->getCharacter()]->getChar()->getCount() > $char->getCount()) {
+                    continue;
+                } elseif ($output[$char->getCharacter()]->getChar()->getCount() < $char->getCount()) {
+                    $output[$char->getCharacter()]->setChar($char);
+                    $output[$char->getCharacter()]->setInArray($groupIndex + 1);
+                    $output[$char->getCharacter()]->setInBoth(false);
+                } elseif ($output[$char->getCharacter()]->getChar()->getCount() === $char->getCount()) {
+                    $output[$char->getCharacter()]->setInBoth(true);
+                    $output[$char->getCharacter()]->setInArray(3);
+                }
+            }
+        }
+        $this->output = $output;
+    }
 
-	public function getOutput(): array
-	{
-		return $this->output;
-	}
+    public function getOutput(): array
+    {
+        return $this->output;
+    }
 
-	public function setOutput(array $output): void
-	{
-		$this->output = $output;
-	}
+    public function setOutput(array $output): void
+    {
+        $this->output = $output;
+    }
 
-	public function orderDesc(): void
-	{
-		uasort($this->output, function (OutputChar $a, OutputChar $b) {
-			$count = $b->getChar()->getCount() <=> $a->getChar()->getCount();
-			if ($count !== 0) {
-				return $count;
-			}
+    public function orderDesc(): void
+    {
+        uasort($this->output, function (OutputChar $a, OutputChar $b) {
+            $count = $b->getChar()->getCount() <=> $a->getChar()->getCount();
+            if ($count !== 0) {
+                return $count;
+            }
 
-			$inArray = $a->getInArray() <=> $b->getInArray();
-			if ($inArray !== 0) {
-				return $inArray;
-			}
+            $inArray = $a->getInArray() <=> $b->getInArray();
+            if ($inArray !== 0) {
+                return $inArray;
+            }
 
-			return $a->getChar()->getOrder() <=> $b->getChar()->getOrder();
-		});
-	}
+            return $a->getChar()->getOrder() <=> $b->getChar()->getOrder();
+        });
+    }
 
-	public function getOutputString(): string
-	{
-	}
+    public function getOutputString(): string
+    {
+        $final = '';
+
+        foreach ($this->output as $char) {
+            if ($char->getChar()->getCount() > 1) {
+                if ($char->isInBoth()) {
+                    $final .= '=';
+                } else {
+                    $final .= $char->getInArray();
+                }
+
+                $final .= ':';
+
+                $final .= str_repeat($char->getChar()->getCharacter(), $char->getChar()->getCount());
+
+                $final .= '/';
+            }
+        }
+
+        return rtrim($final, '/');
+    }
 
 }
 
-class OutputChar {
-	private Character $char;
-	private bool $inBoth;
-	private int $inArray;
+class OutputChar
+{
+    private Character $char;
+    private bool $inBoth;
+    private int $inArray;
 
-	public function __construct(Character $char, int $inArray, bool $inBoth = false) {
-		$this->char = $char;
-		$this->inArray = $inArray;
-		$this->inBoth = $inBoth;
-	}
+    public function __construct(Character $char, int $inArray, bool $inBoth = false)
+    {
+        $this->char = $char;
+        $this->inArray = $inArray;
+        $this->inBoth = $inBoth;
+    }
 
-	public function getChar(): Character
-	{
-		return $this->char;
-	}
+    public function getChar(): Character
+    {
+        return $this->char;
+    }
 
-	public function setChar(Character $char): void
-	{
-		$this->char = $char;
-	}
+    public function setChar(Character $char): void
+    {
+        $this->char = $char;
+    }
 
-	public function isInBoth(): bool
-	{
-		return $this->inBoth;
-	}
+    public function isInBoth(): bool
+    {
+        return $this->inBoth;
+    }
 
-	public function setInBoth(bool $inBoth): void
-	{
-		$this->inBoth = $inBoth;
-	}
+    public function setInBoth(bool $inBoth): void
+    {
+        $this->inBoth = $inBoth;
+    }
 
-	public function getInArray(): int
-	{
-		return $this->inArray;
-	}
+    public function getInArray(): int
+    {
+        return $this->inArray;
+    }
 
-	public function setInArray(int $inArray): void
-	{
-		$this->inArray = $inArray;
-	}
+    public function setInArray(int $inArray): void
+    {
+        $this->inArray = $inArray;
+    }
 
 
 }
