@@ -6,7 +6,7 @@ namespace Y2026\Q3\TwiceLinear;
 
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/../../../Kata/Y2026/Q3/TwiceLinear.php.php';
+require_once __DIR__ . '/../../../Kata/Y2026/Q3/TwiceLinear.php';
 use function Kata\Y2026\Q3\TwiceLinear\dblLinear;
 
 class TwiceLinearTest extends TestCase

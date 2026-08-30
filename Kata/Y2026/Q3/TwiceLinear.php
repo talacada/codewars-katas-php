@@ -38,11 +38,76 @@ function dblLinear(int $u):int {
 
 class TwiceLinear
 {
+	private int $requestedIndex;
+	private array $sequence;
+
 	public function __construct(int $u){
-		$this->u = $u;
+		$this->requestedIndex = $u;
+		$this->sequence[1] = new Number(1);
 	}
 
 	public function getResult()
 	{
+		$this->generateSequence();
+		return $this->sequence[$this->requestedIndex];
 	}
+
+	private function generateSequence()
+	{
+		while ($this->requestedIndex > count($this->sequence)) {
+			foreach ($this->sequence as $number) {
+				if ($number->isLoopedOver() === false && $this->requestedIndex > count($this->sequence)) {
+					$y = $this->calculate($number, 2);
+					$z = $this->calculate($number, 3);
+					if (!isset($this->sequence[$y])) {
+						$this->sequence[$y] = new Number($y);
+					}
+					if (!isset($this->sequence[$z])) {
+						$this->sequence[$z] = new Number($z);
+					}
+					$number->setLoopedOver(true);
+				}
+			}
+		}
+		//TODO trim if more than requested (its because when it was 9 and it duplicates its 11 now)
+		//TODO order ASC
+		//TODO return last
+		$this->sequence = array_values($this->sequence);
+	}
+
+	private function calculate(Number $number, int $multiplier): int
+	{
+		return $number->getNumber() * $multiplier + 1;
+	}
+}
+
+class Number {
+	private int $number;
+	private bool $loopedOver = false;
+
+	public function __construct(int $number){
+		$this->number = $number;
+	}
+
+	public function getNumber(): int
+	{
+		return $this->number;
+	}
+
+	public function setNumber(int $number): void
+	{
+		$this->number = $number;
+	}
+
+	public function isLoopedOver(): bool
+	{
+		return $this->loopedOver;
+	}
+
+	public function setLoopedOver(bool $loopedOver): void
+	{
+		$this->loopedOver = $loopedOver;
+	}
+
+
 }
