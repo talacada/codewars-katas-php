@@ -33,7 +33,7 @@ But that array
 */
 function dblLinear(int $u):int {
 	$calculator = new TwiceLinear($u);
-	$calculator->getResult();
+	return $calculator->getResult();
 }
 
 class TwiceLinear
@@ -46,17 +46,20 @@ class TwiceLinear
 		$this->sequence[1] = new Number(1);
 	}
 
-	public function getResult()
+	public function getResult(): int
 	{
 		$this->generateSequence();
-		return $this->sequence[$this->requestedIndex];
+		return $this->sequence[array_key_last($this->sequence)]->getNumber();
 	}
 
-	private function generateSequence()
+	private function generateSequence(): void
 	{
-		while ($this->requestedIndex > count($this->sequence)) {
+		//TODO working on low numbers. Problem is when we reach requestedIndex but the real ASC ordered u is generated later
+		$haveTestedAll = false;
+		while ($this->requestedIndex > count($this->sequence) && $haveTestedAll === false) {
+			$haveTestedAll = true;
 			foreach ($this->sequence as $number) {
-				if ($number->isLoopedOver() === false && $this->requestedIndex > count($this->sequence)) {
+				if ($number->isLoopedOver() === false) {
 					$y = $this->calculate($number, 2);
 					$z = $this->calculate($number, 3);
 					if (!isset($this->sequence[$y])) {
@@ -66,13 +69,13 @@ class TwiceLinear
 						$this->sequence[$z] = new Number($z);
 					}
 					$number->setLoopedOver(true);
+					$haveTestedAll = false;
 				}
 			}
 		}
-		//TODO trim if more than requested (its because when it was 9 and it duplicates its 11 now)
-		//TODO order ASC
-		//TODO return last
-		$this->sequence = array_values($this->sequence);
+
+		ksort($this->sequence);
+		$this->sequence = array_slice($this->sequence, 0, $this->requestedIndex + 1, true);
 	}
 
 	private function calculate(Number $number, int $multiplier): int
