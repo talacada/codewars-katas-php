@@ -54,10 +54,8 @@ class TwiceLinear
 
 	private function generateSequence(): void
 	{
-		//TODO working on low numbers. Problem is when we reach requestedIndex but the real ASC ordered u is generated later
-		$haveTestedAll = false;
-		while ($this->requestedIndex > count($this->sequence) && $haveTestedAll === false) {
-			$haveTestedAll = true;
+		$haveEnoughNumbers = false;
+		while ($haveEnoughNumbers === false) {
 			foreach ($this->sequence as $number) {
 				if ($number->isLoopedOver() === false) {
 					$y = $this->calculate($number, 2);
@@ -69,8 +67,23 @@ class TwiceLinear
 						$this->sequence[$z] = new Number($z);
 					}
 					$number->setLoopedOver(true);
-					$haveTestedAll = false;
 				}
+			}
+
+			//TODO this is not effective
+			ksort($this->sequence);
+			if ($this->requestedIndex <= count($this->sequence)) {
+				$allTested = true;
+				foreach (array_slice($this->sequence, 0, $this->requestedIndex) as $number) {
+					if ($number->isLoopedOver() === false) {
+						$allTested = false;
+					}
+				}
+
+				if ($allTested === true) {
+					$haveEnoughNumbers = true;
+				}
+
 			}
 		}
 
