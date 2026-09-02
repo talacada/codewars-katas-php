@@ -23,14 +23,6 @@ https://www.codewars.com/kata/5672682212c8ecf83e000050
 */
 namespace Kata\Y2026\Q3\TwiceLinear;
 
-
-/*
-Returning one number as requested index $u.
-But that array
-- cant have duplicities
-- must be ordered ASC
-
-*/
 function dblLinear(int $u):int {
 	$calculator = new TwiceLinear($u);
 	return $calculator->getResult();
@@ -56,10 +48,20 @@ class TwiceLinear
 	{
 		$haveEnoughNumbers = false;
 		while ($haveEnoughNumbers === false) {
+
+			// TODO this
+			/*
+			 * Dont loop over all numbers
+			 * Have two pointers one for 2* second for 3*
+			 * Add to array only one, and it will stay ordered + move only one pointer (if results not same)
+			 * Than the second part wont be needed and can end if have requested numbers
+			 * */
+
 			foreach ($this->sequence as $number) {
 				if ($number->isLoopedOver() === false) {
 					$y = $this->calculate($number, 2);
 					$z = $this->calculate($number, 3);
+
 					if (!isset($this->sequence[$y])) {
 						$this->sequence[$y] = new Number($y);
 					}
@@ -70,8 +72,6 @@ class TwiceLinear
 				}
 			}
 
-			//TODO this is not effective
-			ksort($this->sequence);
 			if ($this->requestedIndex <= count($this->sequence)) {
 				$allTested = true;
 				foreach (array_slice($this->sequence, 0, $this->requestedIndex) as $number) {
