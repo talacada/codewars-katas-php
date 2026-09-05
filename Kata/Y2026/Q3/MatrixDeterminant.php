@@ -37,7 +37,8 @@ https://www.codewars.com/kata/52a382ee44408cea2500074c
 namespace Kata\Y2026\Q3\MatrixDeterminant;
 
 function determinant(array $matrix): int {
-	// Your code here
+	$calculator = new MatrixDeterminant($matrix);
+	return $calculator->getResult();
 }
 
 
@@ -51,5 +52,61 @@ function determinant(array $matrix): int {
 
 class MatrixDeterminant
 {
+	private array $matrix;
+	public function __construct(array $matrix)
+	{
+		$this->matrix = $matrix;
+	}
+
+	public function getResult(): int
+	{
+		$determinant = 0;
+
+		$allPartialDeterminants = $this->getAllDeterminants($this->matrix);
+
+
+		$operatorPlus = true;
+		for ($i = 0; $i < count($allPartialDeterminants); $i++) {
+			if ($operatorPlus) {
+				$determinant = $determinant + $allPartialDeterminants[$i] * $this->matrix[0][$i];
+				$operatorPlus = false;
+			}else {
+				$determinant = $determinant - $allPartialDeterminants[$i] * $this->matrix[0][$i];
+				$operatorPlus = true;
+			}
+		}
+
+		return $determinant;
+	}
+
+	private function makeMatrixSmaller(array $matrix, int $column)
+	{
+		unset($matrix[0]);
+
+		$newMatrix = [];
+		foreach ($matrix as $row) {
+			unset($row[$column]);
+			$newMatrix[] = $row;
+		}
+
+		return $newMatrix;
+	}
+
+	private function getAllDeterminants(array $matrix): array
+	{
+		$partialDeterminants = [];
+
+		for ($i = 0; $i < count($this->matrix); $i++) {
+			if (count($matrix) === 2) {
+				$partialDeterminants[] = $matrix[0][0] * $matrix[1][1] - $matrix[0][1] * $matrix[1][0];
+			}elseif (count($matrix) === 1) {
+				$partialDeterminants[] = $matrix[0][0];
+			}else {
+				$smallerArray = $this->makeMatrixSmaller($this->matrix, $i);
+			}
+		}
+
+		return $partialDeterminants;
+	}
 
 }
