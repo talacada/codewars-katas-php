@@ -41,15 +41,6 @@ function determinant(array $matrix): int {
 	return $calculator->getResult();
 }
 
-
-/*
-- Dostanu matici 5*5
-- Musim odstranit první radek a jednotlive sloupce
-- potom z jednotlivých menších matic postavim det (M) = +b ·det (M) - b ·det (M) + b ·det (M) - b ·det (M)
-- - Kde det (M) je "e*i - f*h" -> vynásobené diagonály od sebe odečtené
-- Bude hodně rekurze
-*/
-
 class MatrixDeterminant
 {
 	private array $matrix;
@@ -64,6 +55,9 @@ class MatrixDeterminant
 
 		$allPartialDeterminants = $this->getAllDeterminants($this->matrix);
 
+		if (count($allPartialDeterminants) === 1) {
+			return $allPartialDeterminants[0];
+		}
 
 		$operatorPlus = true;
 		for ($i = 0; $i < count($allPartialDeterminants); $i++) {
@@ -86,6 +80,7 @@ class MatrixDeterminant
 		$newMatrix = [];
 		foreach ($matrix as $row) {
 			unset($row[$column]);
+			$row = array_values($row);
 			$newMatrix[] = $row;
 		}
 
@@ -94,15 +89,18 @@ class MatrixDeterminant
 
 	private function getAllDeterminants(array $matrix): array
 	{
+		if (count($matrix) === 1) {
+			return [$matrix[0][0]];
+		}
+
 		$partialDeterminants = [];
 
-		for ($i = 0; $i < count($this->matrix); $i++) {
+		for ($i = 0; $i < count($matrix); $i++) {
 			if (count($matrix) === 2) {
-				$partialDeterminants[] = $matrix[0][0] * $matrix[1][1] - $matrix[0][1] * $matrix[1][0];
-			}elseif (count($matrix) === 1) {
-				$partialDeterminants[] = $matrix[0][0];
+				return [($matrix[0][0] * $matrix[1][1]) - ($matrix[0][1] * $matrix[1][0])];
 			}else {
 				$smallerArray = $this->makeMatrixSmaller($this->matrix, $i);
+				array_push($partialDeterminants, ...$this->getAllDeterminants($smallerArray));
 			}
 		}
 
