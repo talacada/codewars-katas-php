@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 Write a function that accepts a square matrix (N x N 2D array) and returns the determinant of the matrix.
 
@@ -36,75 +38,71 @@ https://www.codewars.com/kata/52a382ee44408cea2500074c
 
 namespace Kata\Y2026\Q3\MatrixDeterminant;
 
-function determinant(array $matrix): int {
-	$calculator = new MatrixDeterminant($matrix);
-	return $calculator->getResult();
+function determinant(array $matrix): int
+{
+    $calculator = new MatrixDeterminant($matrix);
+    return $calculator->getResult();
 }
 
 class MatrixDeterminant
 {
-	private array $matrix;
-	public function __construct(array $matrix)
-	{
-		$this->matrix = $matrix;
-	}
+    private array $matrix;
+    public function __construct(array $matrix)
+    {
+        $this->matrix = $matrix;
+    }
 
-	public function getResult(): int
-	{
-		$determinant = 0;
+    public function getResult(): int
+    {
+        return $this->getAllDeterminants($this->matrix);
+    }
 
-		$allPartialDeterminants = $this->getAllDeterminants($this->matrix);
+    private function makeMatrixSmaller(array $matrix, int $column): array
+    {
+        unset($matrix[0]);
 
-		if (count($allPartialDeterminants) === 1) {
-			return $allPartialDeterminants[0];
-		}
+        $newMatrix = [];
+        foreach ($matrix as $row) {
+            unset($row[$column]);
+            $row = array_values($row);
+            $newMatrix[] = $row;
+        }
 
-		$operatorPlus = true;
-		for ($i = 0; $i < count($allPartialDeterminants); $i++) {
-			if ($operatorPlus) {
-				$determinant = $determinant + $allPartialDeterminants[$i] * $this->matrix[0][$i];
-				$operatorPlus = false;
-			}else {
-				$determinant = $determinant - $allPartialDeterminants[$i] * $this->matrix[0][$i];
-				$operatorPlus = true;
-			}
-		}
+        return $newMatrix;
+    }
 
-		return $determinant;
-	}
+    private function getAllDeterminants(array $matrix): int
+    {
+        if (count($matrix) === 1) {
+            return $matrix[0][0];
+        }
+        if (count($matrix) === 2) {
+            return ($matrix[0][0] * $matrix[1][1]) - ($matrix[0][1] * $matrix[1][0]);
+        }
 
-	private function makeMatrixSmaller(array $matrix, int $column)
-	{
-		unset($matrix[0]);
+        $partialDeterminants = [];
 
-		$newMatrix = [];
-		foreach ($matrix as $row) {
-			unset($row[$column]);
-			$row = array_values($row);
-			$newMatrix[] = $row;
-		}
+        for ($i = 0; $i < count($matrix); $i++) {
+            $smallerArray = $this->makeMatrixSmaller($matrix, $i);
+            $partialDeterminants[] = $this->getAllDeterminants($smallerArray);
+        }
 
-		return $newMatrix;
-	}
+        return $this->getPartialDeterminant($partialDeterminants, $matrix);
+    }
 
-	private function getAllDeterminants(array $matrix): array
-	{
-		if (count($matrix) === 1) {
-			return [$matrix[0][0]];
-		}
+    private function getPartialDeterminant(array $partialDeterminants, array $matrix): int
+    {
+        if (count($partialDeterminants) === 1) {
+            return $partialDeterminants[0];
+        }
 
-		$partialDeterminants = [];
+        $operator = 1;
+        $determinant = 0;
+        for ($i = 0; $i < count($partialDeterminants); $i++) {
+            $determinant += $operator * $partialDeterminants[$i] * $matrix[0][$i];
+            $operator = -$operator;
+        }
 
-		for ($i = 0; $i < count($matrix); $i++) {
-			if (count($matrix) === 2) {
-				return [($matrix[0][0] * $matrix[1][1]) - ($matrix[0][1] * $matrix[1][0])];
-			}else {
-				$smallerArray = $this->makeMatrixSmaller($this->matrix, $i);
-				array_push($partialDeterminants, ...$this->getAllDeterminants($smallerArray));
-			}
-		}
-
-		return $partialDeterminants;
-	}
-
+        return $determinant;
+    }
 }
