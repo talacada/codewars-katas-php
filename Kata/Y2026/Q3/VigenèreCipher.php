@@ -43,13 +43,47 @@ namespace Kata\Y2026\Q3;
 
 class VigenèreCipher {
 
-	public function __construct(string $kay, string $alphabet) {
+	private string $alphabet;
+	private array $key;
+	private int $keyIndex = 0;
 
+	public function __construct(string $key, string $alphabet) {
+		foreach (str_split($key) as $letter) {
+			if (str_contains($alphabet, $letter)) {
+				$this->key[] = ord($letter) - 96;
+			} else {
+				$this->key[] = null;
+			}
+		}
+
+		$this->alphabet = $alphabet;
 	}
 
 	// cesar + key  = mew
 	public function encode(string $message):string {
+		$encoded = '';
+		foreach (str_split($message) as $letter) {
+			if (str_contains($this->alphabet, $letter)) {
+				$cesarShift = ord($letter) - 96;
+				$keyShift = $this->key[$this->keyIndex];
 
+				if ($cesarShift + $keyShift > 26) {
+					$newShift = $cesarShift + $keyShift - 26;
+				}else {
+					$newShift = $keyShift + $cesarShift;
+				}
+
+				$encoded .= chr($newShift + 95);
+
+				if ($this->keyIndex < count($this->key)) {
+					$this->keyIndex++;
+				}else {
+					$this->keyIndex = 0;
+				}
+			}
+		}
+
+		return $encoded;
 	}
 
 	//cesar - key = new
