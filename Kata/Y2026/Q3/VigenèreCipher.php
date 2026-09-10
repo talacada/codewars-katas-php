@@ -45,7 +45,6 @@ class VigenèreCipher {
 
 	private string $alphabet;
 	private array $key;
-	private int $keyIndex = 0;
 
 	public function __construct(string $key, string $alphabet) {
 		foreach (str_split($key) as $letter) {
@@ -62,10 +61,11 @@ class VigenèreCipher {
 	// cesar + key  = mew
 	public function encode(string $message):string {
 		$encoded = '';
+		$keyIndex = 0;
 		foreach (str_split($message) as $letter) {
 			if (str_contains($this->alphabet, $letter)) {
 				$cesarShift = ord($letter) - 96;
-				$keyShift = $this->key[$this->keyIndex];
+				$keyShift = $this->key[$keyIndex];
 
 				if ($cesarShift + $keyShift > 26) {
 					$newShift = $cesarShift + $keyShift - 26;
@@ -75,11 +75,13 @@ class VigenèreCipher {
 
 				$encoded .= chr($newShift + 95);
 
-				if ($this->keyIndex < count($this->key)) {
-					$this->keyIndex++;
+				if ($keyIndex < count($this->key)) {
+					$keyIndex++;
 				}else {
-					$this->keyIndex = 0;
+					$keyIndex = 0;
 				}
+			} else {
+				$encoded .= $letter;
 			}
 		}
 
