@@ -16,12 +16,12 @@ class VigenereCipherTest extends TestCase
 	public function test1() {
 		$c = new VigenèreCipher('password', 'abcdefghijklmnopqrstuvwxyz');
 
-		$this->assertSame('rovwsoiv', $c->encode('codewars'));
-		$this->assertSame('laxxhsj', $c->encode('waffles'));
-		$this->assertSame('CODEWARS', $c->encode('CODEWARS'));
-
 		$this->assertSame('codewars', $c->decode('rovwsoiv'));
 		$this->assertSame('waffles', $c->decode('laxxhsj'));
 		$this->assertSame('CODEWARS', $c->decode('CODEWARS'));
+
+		$this->assertSame('rovwsoiv', $c->encode('codewars'));
+		$this->assertSame('laxxhsj', $c->encode('waffles'));
+		$this->assertSame('CODEWARS', $c->encode('CODEWARS'));
 	}
 }

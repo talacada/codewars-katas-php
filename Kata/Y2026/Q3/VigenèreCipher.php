@@ -90,6 +90,31 @@ class VigenèreCipher {
 
 	//cesar - key = new
 	public function decode(string $message): string {
+		$decoded = '';
+		$keyIndex = 0;
+		foreach (str_split($message) as $letter) {
+			if (str_contains($this->alphabet, $letter)) {
+				$cesarShift = ord($letter) - 96;
+				$keyShift = $this->key[$keyIndex];
 
+				if ($cesarShift - $keyShift < 0) {
+					$newShift = $cesarShift - $keyShift + 26;
+				}else {
+					$newShift = $cesarShift - $keyShift;
+				}
+
+				$decoded .= chr($newShift + 97);
+
+				if ($keyIndex < count($this->key)) {
+					$keyIndex++;
+				}else {
+					$keyIndex = 0;
+				}
+			} else {
+				$decoded .= $letter;
+			}
+		}
+
+		return $decoded;
 	}
 }
