@@ -49,7 +49,7 @@ class VigenèreCipher {
 	public function __construct(string $key, string $alphabet) {
 		foreach (str_split($key) as $letter) {
 			if (str_contains($alphabet, $letter)) {
-				$this->key[] = ord($letter) - 96;
+				$this->key[] = strpos($alphabet, $letter);
 			} else {
 				$this->key[] = null;
 			}
@@ -58,11 +58,8 @@ class VigenèreCipher {
 		$this->alphabet = $alphabet;
 	}
 
-	// cesar + key  = mew
 	public function encode(string $message):string {
-		$encoded = '';
-		$keyIndex = 0;
-		foreach (str_split($message) as $letter) {
+		/*foreach (str_split($message) as $letter) {
 			if (str_contains($this->alphabet, $letter)) {
 				$cesarShift = ord($letter) - 96;
 				$keyShift = $this->key[$keyIndex];
@@ -74,24 +71,22 @@ class VigenèreCipher {
 				}
 
 				$encoded .= chr($newShift + 95);
-
-				if ($keyIndex < count($this->key)) {
-					$keyIndex++;
-				}else {
-					$keyIndex = 0;
-				}
 			} else {
 				$encoded .= $letter;
 			}
-		}
 
-		return $encoded;
+			if ($keyIndex <= count($this->key) - 1) {
+				$keyIndex++;
+			}else {
+				$keyIndex = 0;
+			}
+		}*/
+
+		return $this->transform($message, 'encode');
 	}
 
-	//cesar - key = new
 	public function decode(string $message): string {
-		$decoded = '';
-		$keyIndex = 0;
+		/*$keyIndex = 0;
 		foreach (str_split($message) as $letter) {
 			if (str_contains($this->alphabet, $letter)) {
 				$cesarShift = ord($letter) - 96;
@@ -104,17 +99,48 @@ class VigenèreCipher {
 				}
 
 				$decoded .= chr($newShift + 97);
-
-				if ($keyIndex < count($this->key)) {
-					$keyIndex++;
-				}else {
-					$keyIndex = 0;
-				}
 			} else {
 				$decoded .= $letter;
 			}
+
+			if ($keyIndex <= count($this->key) - 1) {
+				$keyIndex++;
+			}else {
+				$keyIndex = 0;
+			}
+		}*/
+
+		return $this->transform($message, 'decode');
+	}
+
+	private function transform(string $message, string $mode): string
+	{
+		$transformed = '';
+		$keyIndex = 0;
+		foreach (str_split($message) as $letter) {
+			if (str_contains($this->alphabet, $letter)) {
+				$cesarShift = strpos($this->alphabet, $letter);
+				$keyShift = $this->key[$keyIndex];
+
+				//TODO two modes
+				if ($cesarShift - $keyShift < 0) {
+					$newShift = $cesarShift - $keyShift + 26;
+				}else {
+					$newShift = $cesarShift - $keyShift;
+				}
+
+				$transformed .= chr($newShift + 97);
+			} else {
+				$transformed .= $letter;
+			}
+
+			if ($keyIndex <= count($this->key) - 1) {
+				$keyIndex++;
+			}else {
+				$keyIndex = 0;
+			}
 		}
 
-		return $decoded;
+		return $transformed;
 	}
 }
