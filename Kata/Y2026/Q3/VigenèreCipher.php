@@ -59,57 +59,10 @@ class VigenèreCipher {
 	}
 
 	public function encode(string $message):string {
-		/*foreach (str_split($message) as $letter) {
-			if (str_contains($this->alphabet, $letter)) {
-				$cesarShift = ord($letter) - 96;
-				$keyShift = $this->key[$keyIndex];
-
-				if ($cesarShift + $keyShift > 26) {
-					$newShift = $cesarShift + $keyShift - 26;
-				}else {
-					$newShift = $keyShift + $cesarShift;
-				}
-
-				$encoded .= chr($newShift + 95);
-			} else {
-				$encoded .= $letter;
-			}
-
-			if ($keyIndex <= count($this->key) - 1) {
-				$keyIndex++;
-			}else {
-				$keyIndex = 0;
-			}
-		}*/
-
 		return $this->transform($message, 'encode');
 	}
 
 	public function decode(string $message): string {
-		/*$keyIndex = 0;
-		foreach (str_split($message) as $letter) {
-			if (str_contains($this->alphabet, $letter)) {
-				$cesarShift = ord($letter) - 96;
-				$keyShift = $this->key[$keyIndex];
-
-				if ($cesarShift - $keyShift < 0) {
-					$newShift = $cesarShift - $keyShift + 26;
-				}else {
-					$newShift = $cesarShift - $keyShift;
-				}
-
-				$decoded .= chr($newShift + 97);
-			} else {
-				$decoded .= $letter;
-			}
-
-			if ($keyIndex <= count($this->key) - 1) {
-				$keyIndex++;
-			}else {
-				$keyIndex = 0;
-			}
-		}*/
-
 		return $this->transform($message, 'decode');
 	}
 
@@ -117,20 +70,30 @@ class VigenèreCipher {
 	{
 		$transformed = '';
 		$keyIndex = 0;
+		$alphabetLength = strlen($this->alphabet);
+
+		//TODO error with some wierd shift when overflow
 		foreach (str_split($message) as $letter) {
 			if (str_contains($this->alphabet, $letter)) {
 				$cesarShift = strpos($this->alphabet, $letter);
 				$keyShift = $this->key[$keyIndex];
 
-				//TODO two modes
-				if ($cesarShift - $keyShift < 0) {
-					$newShift = $cesarShift - $keyShift + 26;
-				}else {
-					$newShift = $cesarShift - $keyShift;
-				}
+				//TODO make switch
+				if ($mode === 'encode') {
+					if ($cesarShift + $keyShift > $alphabetLength) {
+						$newShift = $cesarShift + $keyShift - $alphabetLength;
+					}else {
+						$newShift = $keyShift + $cesarShift;
+					}
+				}else
+					if ($cesarShift - $keyShift < 0) {
+						$newShift = $cesarShift - $keyShift + $alphabetLength;
+					}else {
+						$newShift = $cesarShift - $keyShift;
+					}
 
-				$transformed .= chr($newShift + 97);
-			} else {
+				$transformed .= substr($this->alphabet,  $newShift, 1);
+			}else {
 				$transformed .= $letter;
 			}
 
