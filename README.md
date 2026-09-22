@@ -41,6 +41,7 @@ Work on Kata every day.
 
 | #  | Kata                                      | Dificulty | Solution                                                       | Completed  |
 |----|-------------------------------------------|-----------|----------------------------------------------------------------|------------|
+| 53 | Vigenère Cipher Helper                    | 4 kyu     | [Kata](Kata/Y2026/Q3/VigenèreCipher.php)                       | 22.09.2026 |
 | 52 | Matrix Determinant                        | 4 kyu     | [Kata](Kata/Y2026/Q3/MatrixDeterminant.php)                    | 07.09.2026 |
 | 51 | Twice linear                              | 4 kyu     | [Kata](Kata/Y2026/Q3/TwiceLinear.php)                          | 03.09.2026 |
 | 50 | Strings Mix                               | 4 kyu     | [Kata](Kata/Y2026/Q3/StringsMix.php)                           | 28.08.2026 |

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 
 In this kata, you will implement cipher functions using utf-8 strings.
@@ -41,69 +43,79 @@ https://www.codewars.com/kata/52d1bd3694d26f8d6e0000d3
 
 namespace Kata\Y2026\Q3;
 
-class VigenèreCipher {
+class VigenèreCipher
+{
+    private string $alphabet;
+    private array $key;
 
-	private string $alphabet;
-	private array $key;
+    public function __construct(string $key, string $alphabet)
+    {
+        foreach (str_split($key) as $letter) {
+            if (str_contains($alphabet, $letter)) {
+                $this->key[] = strpos($alphabet, $letter);
+            } else {
+                $this->key[] = null;
+            }
+        }
 
-	public function __construct(string $key, string $alphabet) {
-		foreach (str_split($key) as $letter) {
-			if (str_contains($alphabet, $letter)) {
-				$this->key[] = strpos($alphabet, $letter);
-			} else {
-				$this->key[] = null;
-			}
-		}
+        $this->alphabet = $alphabet;
+    }
 
-		$this->alphabet = $alphabet;
-	}
+    public function encode(string $message): string
+    {
+        return $this->transform($message, 'encode');
+    }
 
-	public function encode(string $message):string {
-		return $this->transform($message, 'encode');
-	}
+    public function decode(string $message): string
+    {
+        return $this->transform($message, 'decode');
+    }
 
-	public function decode(string $message): string {
-		return $this->transform($message, 'decode');
-	}
+    private function transform(string $message, string $mode): string
+    {
+        $transformed = '';
+        $keyIndex = 0;
+        $alphabetLength = strlen($this->alphabet);
 
-	private function transform(string $message, string $mode): string
-	{
-		$transformed = '';
-		$keyIndex = 0;
-		$alphabetLength = strlen($this->alphabet);
+        foreach (str_split($message) as $letter) {
+            if (str_contains($this->alphabet, $letter)) {
+                $cesarShift = (int) strpos($this->alphabet, $letter);
+                $keyShift = (int) $this->key[$keyIndex];
+                $newIndex = $this->getShiftByMode($mode, $keyShift, $cesarShift, $alphabetLength);
+                $transformed .= substr($this->alphabet, $newIndex, 1);
+            } else {
+                $transformed .= $letter;
+            }
 
-		//TODO error with some wierd shift when overflow
-		foreach (str_split($message) as $letter) {
-			if (str_contains($this->alphabet, $letter)) {
-				$cesarShift = strpos($this->alphabet, $letter);
-				$keyShift = $this->key[$keyIndex];
+            if ($keyIndex < count($this->key) - 1) {
+                $keyIndex++;
+            } else {
+                $keyIndex = 0;
+            }
+        }
 
-				//TODO make switch
-				if ($mode === 'encode') {
-					if ($cesarShift + $keyShift > $alphabetLength) {
-						$newShift = $cesarShift + $keyShift - $alphabetLength;
-					}else {
-						$newShift = $keyShift + $cesarShift;
-					}
-				}else
-					if ($cesarShift - $keyShift < 0) {
-						$newShift = $cesarShift - $keyShift + $alphabetLength;
-					}else {
-						$newShift = $cesarShift - $keyShift;
-					}
+        return $transformed;
+    }
 
-				$transformed .= substr($this->alphabet,  $newShift, 1);
-			}else {
-				$transformed .= $letter;
-			}
+    private function getShiftByMode(string $mode, int $keyShift, int $cesarShift, int $alphabetLength): int
+    {
+        $newShift = 0;
+        switch ($mode) {
+            case 'encode':
+                if ($cesarShift + $keyShift >= $alphabetLength) {
+                    $newShift = $cesarShift + $keyShift - $alphabetLength;
+                } else {
+                    $newShift = $keyShift + $cesarShift;
+                }
+                break;
+            case 'decode':
+                if ($cesarShift - $keyShift < 0) {
+                    $newShift = $cesarShift - $keyShift + $alphabetLength;
+                } else {
+                    $newShift = $cesarShift - $keyShift;
+                }
+        }
 
-			if ($keyIndex <= count($this->key) - 1) {
-				$keyIndex++;
-			}else {
-				$keyIndex = 0;
-			}
-		}
-
-		return $transformed;
-	}
+        return $newShift;
+    }
 }

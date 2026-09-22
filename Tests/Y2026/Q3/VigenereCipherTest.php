@@ -35,8 +35,8 @@ class VigenereCipherTest extends TestCase
         $key = 'PASSWORD';
         $c = new VigenèreCipher($key, $abc);
 
-        $this->assertSame('ROVWSOIV', $c->encode('CODEWARS'));
         $this->assertSame('CODEWARS', $c->decode('ROVWSOIV'));
+        $this->assertSame('ROVWSOIV', $c->encode('CODEWARS'));
         $this->assertSame('LAXXHSJ', $c->encode('WAFFLES'));
         $this->assertSame('WAFFLES', $c->decode('LAXXHSJ'));
         $this->assertSame('codewars', $c->encode('codewars'));
@@ -49,8 +49,8 @@ class VigenereCipherTest extends TestCase
         $key = 'pizza';
         $c = new VigenèreCipher($key, $abc);
 
-        $this->assertSame('rwcwpzr', $c->encode('codewars'));
-        $this->assertSame('codewars', $c->decode('rwcwpzr'));
+        $this->assertSame('rwcdwpzr', $c->encode('codewars'));
+        $this->assertSame('codewars', $c->decode('rwcdwpzr'));
         $this->assertSame('lieelta', $c->encode('waffles'));
         $this->assertSame('waffles', $c->decode('lieelta'));
         $this->assertSame('pa_hf', $c->encode('as_if'));
@@ -65,8 +65,8 @@ class VigenereCipherTest extends TestCase
         $key = 'PIZZA';
         $c = new VigenèreCipher($key, $abc);
 
-        $this->assertSame('RWCWPZR', $c->encode('CODEWARS'));
-        $this->assertSame('CODEWARS', $c->decode('RWCWPZR'));
+        $this->assertSame('CODEWARS', $c->decode('RWCDWPZR'));
+        $this->assertSame('RWCDWPZR', $c->encode('CODEWARS'));
         $this->assertSame('LIEELTA', $c->encode('WAFFLES'));
         $this->assertSame('WAFFLES', $c->decode('LIEELTA'));
         $this->assertSame('PA_HF', $c->encode('AS_IF'));
@@ -75,4 +75,3 @@ class VigenereCipherTest extends TestCase
         $this->assertSame('codewars', $c->decode('codewars'));
     }
 }
-
