@@ -52,7 +52,13 @@ namespace Kata\Y2026\Q3;
 class RomanNumerals
 {
 	public static function toRoman(int $num): string {
-		return 'IV';
+		$digits = str_split((string) $num);
+		$nowOn = count($digits);
+
+		foreach ($digits as $index => $digit) {
+			$nowOn --;
+			// we know now its 3 digits behind this one meaning its $digit + xxx
+		}
 	}
 
 	public static function fromRoman(string $str): int {
