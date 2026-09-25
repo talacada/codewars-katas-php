@@ -33,6 +33,7 @@ class RomanNumeralsTest extends TestCase
 	public function toRomanFixedTestDataProvider(): array
 	{
 		return [
+			"input:438"    => ["CDXXXVIII",  438, "toRoman"],
 			"input:1000"    => ["M",  1000, "toRoman"],
 			"input:4"       => ["IV", 4, "toRoman"],
 			"input:1"       => ["I", 1, "toRoman"],
