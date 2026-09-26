@@ -30,7 +30,7 @@ class RomanNumeralsTest extends TestCase
 		$this->doTest($expected, $actual, $input, $method);
 	}
 
-	public function toRomanFixedTestDataProvider(): array
+	public static function toRomanFixedTestDataProvider(): array
 	{
 		return [
 			"input:438"    => ["CDXXXVIII",  438, "toRoman"],
@@ -42,7 +42,7 @@ class RomanNumeralsTest extends TestCase
 		];
 	}
 
-	public function fromRomanFixedTestDataProvider(): array
+	public static function fromRomanFixedTestDataProvider(): array
 	{
 		return [
 			"input:XXI"     => [21, "XXI", "fromRoman"],

@@ -78,8 +78,7 @@ class RomanNumerals
 		$nowOn = count($digits);
 		$roman = '';
 
-		//OK but deprecations + 2000 not working
-		foreach ($digits as $index => $digit) {
+		foreach ($digits as $digit) {
 			$nowOn --;
 			$now = (int) ($digit . str_repeat(0, $nowOn));
 			if ($now === 0) {
@@ -89,7 +88,7 @@ class RomanNumerals
 			$roman .= BREAKPOINTS[$closestBreakpoint];
 			if ($closestBreakpoint < $now) {
 				$need = $now - $closestBreakpoint;
-				$needJump = BREAKPOINTS[array_search(substr($need, 1), JUMPS)];
+				$needJump = BREAKPOINTS[array_search(substr($need, 1), JUMPS, true)];
 
 				$roman .= str_repeat($needJump, substr($need,  0, 1));
 			}
