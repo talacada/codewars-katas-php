@@ -97,8 +97,26 @@ class RomanNumerals
 		return $roman;
 	}
 
+	//cant do backward IV
 	public static function fromRoman(string $str): int {
-		return 4;
+		$num = 0;
+		$originalRoman = str_split($str);
+		for ($i = 0; $i < count($originalRoman); $i = $i) {
+			$char = $str[$i];
+			$roman = $char;
+			for ($j = $i + 1; $j < str_split($str); $j++) {
+				if (isset($originalRoman[$j]) && $char === $originalRoman[$j]) {
+					$roman .= $originalRoman[$j];
+				}else {
+					if (isset($originalRoman[$j]) && $char === $str[$i]) {}
+					break;
+				}
+			}
+			$romanLength = strlen($roman);
+			$num += array_search($char, BREAKPOINTS, true) * $romanLength;
+			$i = $i + $romanLength;
+		}
+		return $num;
 	}
 
 	private static function getClosestIndex(int $param): int
