@@ -50,6 +50,7 @@ class RomanNumeralsTest extends TestCase
 			"input:MMVIII"  => [2008, "MMVIII", "fromRoman"],
 			"input:MDCLXVI" => [1666, "MDCLXVI", "fromRoman"],
 			"input:IV"      => [4, "IV", "fromRoman"],
+			'input:CMXCIII' => [993, "CMXCIII", "fromRoman"],
 		];
 	}
 }

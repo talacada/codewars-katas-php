@@ -49,30 +49,30 @@ https://www.codewars.com/kata/51b66044bce5799a7f000003
 
 namespace Kata\Y2026\Q3;
 
-const BREAKPOINTS = [
-	1 => 'I',
-	4 => 'IV',
-	5 => 'V',
-	9 => 'IX',
-	10 => 'X',
-	40 => 'XL',
-	50 => 'L',
-	90 => 'XC',
-	100 => 'C',
-	400 => 'CD',
-	500 => 'D',
-	900 => 'CM',
-	1000 => 'M'
-];
-const JUMPS = [
-	1 => '',
-	10 => '0',
-	100 => '00',
-	1000 => '000'
-];
-
 class RomanNumerals
 {
+
+	const BREAKPOINTS = [
+		1 => 'I',
+		4 => 'IV',
+		5 => 'V',
+		9 => 'IX',
+		10 => 'X',
+		40 => 'XL',
+		50 => 'L',
+		90 => 'XC',
+		100 => 'C',
+		400 => 'CD',
+		500 => 'D',
+		900 => 'CM',
+		1000 => 'M'
+	];
+	const JUMPS = [
+		1 => '',
+		10 => '0',
+		100 => '00',
+		1000 => '000'
+	];
 	public static function toRoman(int $num): string {
 		$digits = str_split((string) $num);
 		$nowOn = count($digits);
@@ -85,10 +85,10 @@ class RomanNumerals
 				continue;
 			}
 			$closestBreakpoint = self::getClosestIndex($now);
-			$roman .= BREAKPOINTS[$closestBreakpoint];
+			$roman .= self::BREAKPOINTS[$closestBreakpoint];
 			if ($closestBreakpoint < $now) {
 				$need = $now - $closestBreakpoint;
-				$needJump = BREAKPOINTS[array_search(substr($need, 1), JUMPS, true)];
+				$needJump = self::BREAKPOINTS[array_search(substr($need, 1), self::JUMPS, true)];
 
 				$roman .= str_repeat($needJump, substr($need,  0, 1));
 			}
@@ -104,16 +104,25 @@ class RomanNumerals
 		for ($i = 0; $i < count($originalRoman); $i = $i) {
 			$char = $str[$i];
 			$roman = $char;
-			for ($j = $i + 1; $j < str_split($str); $j++) {
+			for ($j = $i + 1; $j < count($originalRoman); $j++) {
 				if (isset($originalRoman[$j]) && $char === $originalRoman[$j]) {
 					$roman .= $originalRoman[$j];
 				}else {
-					if (isset($originalRoman[$j]) && $char === $str[$i]) {}
+					if (isset($originalRoman[$j]) && array_search($originalRoman[$i], self::BREAKPOINTS, true) < array_search($originalRoman[$j], self::BREAKPOINTS, true)) {
+						$char .= $originalRoman[$j];
+						$roman .= $originalRoman[$j];
+						$i ++;
+					}
 					break;
 				}
 			}
 			$romanLength = strlen($roman);
-			$num += array_search($char, BREAKPOINTS, true) * $romanLength;
+			if (count(array_unique(str_split($char))) === 1) {
+				$num += array_search($char, self::BREAKPOINTS, true) * $romanLength;
+			}else {
+				$num += array_search($char, self::BREAKPOINTS, true);
+			}
+
 			$i = $i + $romanLength;
 		}
 		return $num;
@@ -122,7 +131,7 @@ class RomanNumerals
 	private static function getClosestIndex(int $param): int
 	{
 		$prev = 1;
-		foreach (BREAKPOINTS as $index => $breakpoint) {
+		foreach (self::BREAKPOINTS as $index => $breakpoint) {
 			if ($param === $index) {
 				return $index;
 			} elseif ($param < $index) {
