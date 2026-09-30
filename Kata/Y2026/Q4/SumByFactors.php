@@ -25,7 +25,7 @@ In Fortran - as in any other language - the returned string is not permitted to 
 https://www.codewars.com/kata/54d496788776e49e6b00052f
 */
 
-namespace Kata\Y2026\Q3\SumByFactors;
+namespace Kata\Y2026\Q4\SumByFactors;
 
 /*
 Kroky řešení:

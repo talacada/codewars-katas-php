@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Y2026\Q3\SumByFactors;
+namespace Y2026\Q4\SumByFactors;
 
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/../../../Kata/Y2026/Q3/SumByFactors.php';
-use function Kata\Y2026\Q3\SumByFactors\sumOfDivided;
+require_once __DIR__ . '/../../../Kata/Y2026/Q4/SumByFactors.php';
+use function Kata\Y2026\Q4\SumByFactors\sumOfDivided;
 class NewKataTest extends TestCase
 {
 	private function revTest($actual, $expected) {
