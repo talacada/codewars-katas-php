@@ -47,9 +47,32 @@ Kroky řešení:
    [[2, 12], [3, 27], [5, 15]]
 */
 function sumOfDivided(array $input):array {
-
+	$calculator = new SumByFactors($input);
+	$calculator->calculate();
 }
 class SumByFactors
 {
+	private array $input;
 
+	public function __construct(array $input){
+		$this->input = $input;
+	}
+
+	public function calculate():array {
+		$allPrimes = [];
+		foreach ($this->input as $value) {
+			$allPrimes[] = $this->getPrimeDivisor($value);
+		}
+		$allPrimes = array_unique($allPrimes);
+	}
+
+	private function getPrimeDivisor(int $input):array
+	{
+		$nowOn = $input;
+		for ($i=2; $nowOn != 0; $i++) {
+			if ($nowOn % $i === 0) {
+				$nowOn = $nowOn / $i;
+			}
+		}
+	}
 }

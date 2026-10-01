@@ -8,9 +8,9 @@ use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../../../Kata/Y2026/Q4/SumByFactors.php';
 use function Kata\Y2026\Q4\SumByFactors\sumOfDivided;
-class NewKataTest extends TestCase
+class SumByFactorsTest extends TestCase
 {
-	private function revTest($actual, $expected) {
+	private function revTest(array $actual, array $expected): void {
 		$this->assertSame($expected, $actual);
 	}
 	public function testBasics() {
