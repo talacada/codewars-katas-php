@@ -63,16 +63,39 @@ class SumByFactors
 		foreach ($this->input as $value) {
 			$allPrimes[] = $this->getPrimeDivisor($value);
 		}
+		//TODO this dont work
 		$allPrimes = array_unique($allPrimes);
+		$allPrimes = array_filter($allPrimes);
 	}
 
+	// TODO look into big numbers if like 377 is getting right prime factors
 	private function getPrimeDivisor(int $input):array
 	{
 		$nowOn = $input;
-		for ($i=2; $nowOn != 0; $i++) {
+		$primes = [];
+		for ($i=2; !in_array($nowOn, [1, -1]); $i++) {
 			if ($nowOn % $i === 0) {
 				$nowOn = $nowOn / $i;
+				$primes[] = $i;
 			}
+			$nowOn = $this->divideByPrimes($nowOn, $primes);
 		}
+		return $primes;
+	}
+
+	private function divideByPrimes(int $nowOn, array $primes): int
+	{
+		$canBeDivided = true;
+		do {
+			$canBeDivided = false;
+			foreach ($primes as $prime) {
+				if ($nowOn % $prime === 0) {
+					$nowOn = $nowOn / $prime;
+					$canBeDivided = true;
+				}
+			}
+		} while ($canBeDivided);
+
+		return $nowOn;
 	}
 }
