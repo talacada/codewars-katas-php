@@ -14,7 +14,7 @@ class SumByFactorsTest extends TestCase
 		$this->assertSame($expected, $actual);
 	}
 	public function testBasics() {
-		$this->revTest(sumOfDivided([66, 121, 377]), [ [2, 12], [3, 27], [5, 15] ]);
+		$this->revTest(sumOfDivided([377, 66, 121]), [ [2, 12], [3, 27], [5, 15] ]);
 		$this->revTest(sumOfDivided([12, 15]), [ [2, 12], [3, 27], [5, 15] ]);
 		$this->revTest(sumOfDivided([15,21,24,30,45]), [ [2, 54], [3, 135], [5, 90], [7, 21] ]);
 		$this->revTest(sumOfDivided([15,21,24,30,-45]), [ [2, 54], [3, 45], [5, 0], [7, 21] ]);
