@@ -29,25 +29,6 @@ https://www.codewars.com/kata/54d496788776e49e6b00052f
 
 namespace Kata\Y2026\Q4\SumByFactors;
 
-/*
-Kroky řešení:
-
-1. Najdeš všechny prvočíselné dělitele (kladná prvočísla p), která dělí alespoň jedno číslo ze vstupu:
-   - Pro číslo 12: 2 a 3 (12 = 2 * 2 * 3)
-   - Pro číslo 15: 3 a 5 (15 = 3 * 5)
-   - Unikátní prvočísla ze všech čísel: [2, 3, 5]
-
-2. Tato nalezená prvočísla seřadíš vzestupně:
-   - 2 < 3 < 5
-
-3. Pro každé toto prvočíslo p sečteš všechna čísla ze vstupu, která jsou jím dělitelná:
-   - Pro 2: dělí pouze 12  -> součet: 12         -> dvojice [2, 12]
-   - Pro 3: dělí 12 i 15   -> součet: 12 + 15 = 27 -> dvojice [3, 27]
-   - Pro 5: dělí pouze 15  -> součet: 15         -> dvojice [5, 15]
-
-4. Výsledek složíš do pole polí:
-   [[2, 12], [3, 27], [5, 15]]
-*/
 function sumOfDivided(array $input): array
 {
     $calculator = new SumByFactors($input);
