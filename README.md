@@ -41,6 +41,7 @@ Work on Kata every day.
 
 | #  | Kata                                      | Dificulty | Solution                                                       | Completed  |
 |----|-------------------------------------------|-----------|----------------------------------------------------------------|------------|
+| 55 | Sum by Factors                            | 4 kyu     | [Kata](Kata/Y2026/Q4/SumByFactors.php)                         | 05.10.2026 |
 | 54 | Roman Numerals Helper                     | 4 kyu     | [Kata](Kata/Y2026/Q3/RomanNumerals.php)                        | 29.09.2026 |
 | 53 | Vigenère Cipher Helper                    | 4 kyu     | [Kata](Kata/Y2026/Q3/VigenèreCipher.php)                       | 22.09.2026 |
 | 52 | Matrix Determinant                        | 4 kyu     | [Kata](Kata/Y2026/Q3/MatrixDeterminant.php)                    | 07.09.2026 |
