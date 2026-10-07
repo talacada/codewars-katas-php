@@ -28,4 +28,10 @@ class EvaluateMathematicalExpressionTest extends TestCase
 			['2 / (2 + 3) * 4.33 - -6', 7.732],
 		]) as $a) $this->assertSame($a[1], calc($a[0]));
 	}
+
+	public function testMine() {
+		$this->assertSame('30', calc('(-5 * (-5)) + 1.25 + 3.75'));
+		$this->assertSame('4.25', calc('1.25 + 3'));
+	}
+
 }
