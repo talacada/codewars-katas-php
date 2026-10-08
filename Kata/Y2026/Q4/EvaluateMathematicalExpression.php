@@ -57,6 +57,8 @@ function calc(string $expression): float {
 }
 class EvaluateMathematicalExpression
 {
+	private array $stream;
+
 	public function __construct(string $expression) {
 		$expression = str_replace(' ', '', $expression);
 		$splitExpression = str_split($expression);
@@ -75,18 +77,30 @@ class EvaluateMathematicalExpression
 				}
 			}
 		}
-
-		$ss = '';
+		
+		$this->stream = $stream;
 	}
-	public function getResult(): int|float
+	public function getResult(): float
 	{
+		$calculationOrder = $this->getOrderLogicalCalculationOrderByOperatorsAndBracelets($this->stream);
+	}
+
+	private function getOrderLogicalCalculationOrderByOperatorsAndBracelets(array $stream): CalculationOperatio
+	{
+		$haveMoreBracelets = true;
+		while ($haveMoreBracelets) {
+			if (in_array(new Braclet('('), $stream)) {
+				$dd = false;
+			}
+		}
 	}
 }
 
-class Number
+class Number implements UsedInterface
 {
 	private float $value;
 	private string $stringValue;
+	private bool $usedInSearch = false;
 
 	public function __construct(float $value){
 		$this->stringValue = $value;
@@ -101,11 +115,22 @@ class Number
 	{
 		$this->stringValue .= $value;
 	}
+
+	public function getUsedInSearch(): bool
+	{
+		// TODO: Implement getUsedInSearch() method.
+	}
+
+	public function setUsedInSearch(bool $usedInSearch): void
+	{
+		// TODO: Implement setUsedInSearch() method.
+	}
 }
-class Operator
+class Operator implements UsedInterface
 {
 	private string $operator;
 	private int $priority;
+	private bool $usedInSearch = false;
 
 	public function __construct(string $operator) {
 		$this->operator = $operator;
@@ -116,11 +141,21 @@ class Operator
 		}
 	}
 
+	public function getUsedInSearch(): bool
+	{
+		// TODO: Implement getUsedInSearch() method.
+	}
+
+	public function setUsedInSearch(bool $usedInSearch): void
+	{
+		// TODO: Implement setUsedInSearch() method.
+	}
 }
 
-class Braclet
+class Braclet implements UsedInterface
 {
 	private bool $opening;
+	private bool $usedInSearch = false;
 
 	public function __construct($value)
 	{
@@ -130,4 +165,23 @@ class Braclet
 			$this->opening = false;
 		}
 	}
+
+	public function getUsedInSearch(): bool
+	{
+		// TODO: Implement getUsedInSearch() method.
+	}
+
+	public function setUsedInSearch(bool $usedInSearch): void
+	{
+		// TODO: Implement setUsedInSearch() method.
+	}
+}
+
+interface UsedInterface {
+	public function getUsedInSearch(): bool;
+	public function setUsedInSearch(bool $usedInSearch): void;
+}
+
+class CalculationOperatio {
+
 }
