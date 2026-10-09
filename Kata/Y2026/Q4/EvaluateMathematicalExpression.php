@@ -85,14 +85,36 @@ class EvaluateMathematicalExpression
 		$calculationOrder = $this->getOrderLogicalCalculationOrderByOperatorsAndBracelets($this->stream);
 	}
 
-	private function getOrderLogicalCalculationOrderByOperatorsAndBracelets(array $stream): CalculationOperatio
+	private function getOrderLogicalCalculationOrderByOperatorsAndBracelets(array $stream): CalculationOperation
 	{
 		$haveMoreBracelets = true;
 		while ($haveMoreBracelets) {
-			if (in_array(new Braclet('('), $stream)) {
-				$dd = false;
+			$braceletStartIndex = $this->getFirstNotUsedOpeningBraceletIndex();
+
+			if ($braceletStartIndex) {
+				$braceletEndIndex = $this->getClosingBraceletIndex($braceletStartIndex);
+				//TODO tady tedy budu vedet cely obsah jedne zavorky
+			}else {
+				$haveMoreBracelets = false;
+			}
+
+		}
+	}
+
+	private function getFirstNotUsedOpeningBraceletIndex(): int|false
+	{
+		foreach ($this->stream as $index => $stream) {
+			if ($stream instanceof Braclet && $stream->getUsedInSearch() === false) {
+				return $index;
 			}
 		}
+
+		return false;
+	}
+
+	private function getClosingBraceletIndex(int $braceletStartIndex)
+	{
+		//TODO
 	}
 }
 
@@ -182,6 +204,6 @@ interface UsedInterface {
 	public function setUsedInSearch(bool $usedInSearch): void;
 }
 
-class CalculationOperatio {
+class CalculationOperation {
 
 }
