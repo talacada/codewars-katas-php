@@ -91,7 +91,7 @@ class EvaluateMathematicalExpression
 		while ($haveMoreBracelets) {
 			$braceletStartIndex = $this->getFirstNotUsedOpeningBraceletIndex();
 
-			if ($braceletStartIndex) {
+			if ($braceletStartIndex !== false) {
 				$braceletEndIndex = $this->getClosingBraceletIndex($braceletStartIndex);
 				//TODO tady tedy budu vedet cely obsah jedne zavorky
 			}else {
@@ -104,7 +104,8 @@ class EvaluateMathematicalExpression
 	private function getFirstNotUsedOpeningBraceletIndex(): int|false
 	{
 		foreach ($this->stream as $index => $stream) {
-			if ($stream instanceof Braclet && $stream->getUsedInSearch() === false) {
+			if ($stream instanceof Braclet && $stream->getUsedInSearch() === false && $stream->isOpening() === true) {
+				$stream->setUsedInSearch(true);
 				return $index;
 			}
 		}
@@ -114,7 +115,21 @@ class EvaluateMathematicalExpression
 
 	private function getClosingBraceletIndex(int $braceletStartIndex)
 	{
-		//TODO
+		$haveBetweenBracelets = 0;
+		for ($i = $braceletStartIndex + 1; $i < count($this->stream); $i++) {
+			if ($this->stream[$i] instanceof Braclet) {
+				if ($this->stream[$i]->isOpening() === false) {
+					if ($haveBetweenBracelets === 0) {
+						$this->stream[$i]->setUsedInSearch(true);
+						return $i;
+					}else{
+						$haveBetweenBracelets--;
+					}
+				}else {
+					$haveBetweenBracelets++;
+				}
+			}
+		}
 	}
 }
 
@@ -190,12 +205,22 @@ class Braclet implements UsedInterface
 
 	public function getUsedInSearch(): bool
 	{
-		// TODO: Implement getUsedInSearch() method.
+		return $this->usedInSearch;
 	}
 
 	public function setUsedInSearch(bool $usedInSearch): void
 	{
-		// TODO: Implement setUsedInSearch() method.
+		$this->usedInSearch = $usedInSearch;
+	}
+
+	public function isOpening(): bool
+	{
+		return $this->opening;
+	}
+
+	public function setOpening(bool $opening): void
+	{
+		$this->opening = $opening;
 	}
 }
 
