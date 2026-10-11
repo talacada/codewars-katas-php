@@ -82,10 +82,11 @@ class EvaluateMathematicalExpression
 	}
 	public function getResult(): float
 	{
-		$calculationOrder = $this->getOrderLogicalCalculationOrderByOperatorsAndBracelets($this->stream);
+		$this->getBraceletsPairs();
+		$calculationOrder = $this->getCalculationOrder($this->stream);
 	}
 
-	private function getOrderLogicalCalculationOrderByOperatorsAndBracelets(array $stream): CalculationOperation
+	private function getBraceletsPairs(): void
 	{
 		$haveMoreBracelets = true;
 		while ($haveMoreBracelets) {
@@ -93,19 +94,18 @@ class EvaluateMathematicalExpression
 
 			if ($braceletStartIndex !== false) {
 				$braceletEndIndex = $this->getClosingBraceletIndex($braceletStartIndex);
-				//TODO tady tedy budu vedet cely obsah jedne zavorky
+				$this->stream[$braceletStartIndex]->setPairBraceletIndex($braceletEndIndex);
+				$this->stream[$braceletEndIndex]->setPairBraceletIndex($braceletStartIndex);
 			}else {
 				$haveMoreBracelets = false;
 			}
-
 		}
 	}
 
 	private function getFirstNotUsedOpeningBraceletIndex(): int|false
 	{
 		foreach ($this->stream as $index => $stream) {
-			if ($stream instanceof Braclet && $stream->getUsedInSearch() === false && $stream->isOpening() === true) {
-				$stream->setUsedInSearch(true);
+			if ($stream instanceof Braclet && $stream->getPairBraceletIndex() === null && $stream->isOpening() === true) {
 				return $index;
 			}
 		}
@@ -113,14 +113,13 @@ class EvaluateMathematicalExpression
 		return false;
 	}
 
-	private function getClosingBraceletIndex(int $braceletStartIndex)
+	private function getClosingBraceletIndex(int $braceletStartIndex): int
 	{
 		$haveBetweenBracelets = 0;
 		for ($i = $braceletStartIndex + 1; $i < count($this->stream); $i++) {
 			if ($this->stream[$i] instanceof Braclet) {
 				if ($this->stream[$i]->isOpening() === false) {
 					if ($haveBetweenBracelets === 0) {
-						$this->stream[$i]->setUsedInSearch(true);
 						return $i;
 					}else{
 						$haveBetweenBracelets--;
@@ -131,9 +130,31 @@ class EvaluateMathematicalExpression
 			}
 		}
 	}
+
+	private function getCalculationOrder(array $inputOperation, CalculationOperation $leftSide = null): CalculationOperation
+	{
+		$operation = new CalculationOperation();
+		$operation->setValueLeft($leftSide);
+
+		for ($i = 0; $i < count($inputOperation); $i++) {
+			if ($inputOperation[$i] instanceof Braclet ) {
+				$endingOfBracelet = $inputOperation[$i]->getPairBraceletIndex();
+				if (!$operation->setNextValue($this->getCalculationOrder(array_splice($inputOperation, $i, $endingOfBracelet)))) {
+					//todo IDK
+					$this->getCalculationOrder(array_splice($inputOperation, $i, $endingOfBracelet));
+				};
+				$i = $endingOfBracelet;
+			}elseif ($inputOperation[$i] instanceof Operator) {
+				$operation->setOperator($inputOperation[$i]);
+			}elseif ($inputOperation[$i] instanceof Number) {
+				$operation->setNextValue($inputOperation[$i]);
+			}
+		}
+	}
+
 }
 
-class Number implements UsedInterface
+class Number
 {
 	private float $value;
 	private string $stringValue;
@@ -153,17 +174,8 @@ class Number implements UsedInterface
 		$this->stringValue .= $value;
 	}
 
-	public function getUsedInSearch(): bool
-	{
-		// TODO: Implement getUsedInSearch() method.
-	}
-
-	public function setUsedInSearch(bool $usedInSearch): void
-	{
-		// TODO: Implement setUsedInSearch() method.
-	}
 }
-class Operator implements UsedInterface
+class Operator
 {
 	private string $operator;
 	private int $priority;
@@ -177,22 +189,12 @@ class Operator implements UsedInterface
 			$this->priority = 0;
 		}
 	}
-
-	public function getUsedInSearch(): bool
-	{
-		// TODO: Implement getUsedInSearch() method.
-	}
-
-	public function setUsedInSearch(bool $usedInSearch): void
-	{
-		// TODO: Implement setUsedInSearch() method.
-	}
 }
 
-class Braclet implements UsedInterface
+class Braclet
 {
 	private bool $opening;
-	private bool $usedInSearch = false;
+	private ?int $pairBraceletIndex = null;
 
 	public function __construct($value)
 	{
@@ -201,16 +203,6 @@ class Braclet implements UsedInterface
 		}else {
 			$this->opening = false;
 		}
-	}
-
-	public function getUsedInSearch(): bool
-	{
-		return $this->usedInSearch;
-	}
-
-	public function setUsedInSearch(bool $usedInSearch): void
-	{
-		$this->usedInSearch = $usedInSearch;
 	}
 
 	public function isOpening(): bool
@@ -222,13 +214,68 @@ class Braclet implements UsedInterface
 	{
 		$this->opening = $opening;
 	}
-}
 
-interface UsedInterface {
-	public function getUsedInSearch(): bool;
-	public function setUsedInSearch(bool $usedInSearch): void;
+	public function getPairBraceletIndex(): int|null
+	{
+		return $this->pairBraceletIndex;
+	}
+
+	public function setPairBraceletIndex(int $pairBraceletIndex): void
+	{
+		$this->pairBraceletIndex = $pairBraceletIndex;
+	}
+
+
 }
 
 class CalculationOperation {
+
+	private CalculationOperation|Number|null $valueLeft = null;
+	private Operator $operator;
+	private CalculationOperation|Number|null $valueRight = null;
+
+	public function getValueLeft(): Number|CalculationOperation
+	{
+		return $this->valueLeft;
+	}
+
+	public function setValueLeft(Number|CalculationOperation $valueLeft): void
+	{
+		$this->valueLeft = $valueLeft;
+	}
+
+	public function getOperator(): Operator
+	{
+		return $this->operator;
+	}
+
+	public function setOperator(Operator $operator): void
+	{
+		$this->operator = $operator;
+	}
+
+	public function getValueRight(): Number|CalculationOperation
+	{
+		return $this->valueRight;
+	}
+
+	public function setValueRight(Number|CalculationOperation $valueRight): void
+	{
+		$this->valueRight = $valueRight;
+	}
+
+	public function setNextValue(Number|CalculationOperation $value): bool
+	{
+		if($this->valueLeft !== null){
+			$this->valueLeft = $value;
+			return true;
+		}elseif($this->valueRight !== null){
+			$this->valueRight = $value;
+			return true;
+		}else {
+			return false;
+		}
+	}
+
 
 }
