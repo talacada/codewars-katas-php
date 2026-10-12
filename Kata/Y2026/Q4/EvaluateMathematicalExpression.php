@@ -66,9 +66,31 @@ class EvaluateMathematicalExpression
 		$stream = [];
 		foreach ($splitExpression as $value) {
 			if (in_array($value, ['+', '-', '*', '/'])) {
-				$stream[] = new Operator($value);
+				if ($value != '-') {
+					$stream[] = new Operator($value);
+				}else {
+					if ($stream[array_key_last($stream)] instanceof Operator || $stream[array_key_last($stream)] instanceof Braclet ||$stream === []) {
+						if (!$stream[array_key_last($stream)] instanceof Braclet) {
+							$stream[] = new Number($value);
+						}else {
+							if ($stream[array_key_last($stream)]->isOpening() === true) {
+								$stream[] = new Number($value);
+							}else {
+								$stream[] = new Operator($value);
+							}
+						}
+					}
+				}
 			}elseif (in_array($value, ['(', ')'])) {
-				$stream[] = new Braclet($value);
+				if ($value === ')') {
+					$stream[] = new Braclet($value);
+				}else {
+					if ($stream[array_key_last($stream)] instanceof Number && $stream[array_key_last($stream)]->getValue() != '-') {
+						$stream[array_key_last($stream)] = new Number('-1');
+						$stream[] = new Operator('*');
+						$stream[] = new Braclet($value);
+					}
+				}
 			}else {
 				if (end($stream) instanceof Number) {
 					$stream[array_key_last($stream)]->addToValue($value);
@@ -136,12 +158,18 @@ class EvaluateMathematicalExpression
 		$operation = new CalculationOperation();
 		$operation->setValueLeft($leftSide);
 
-		for ($i = 0; $i < count($inputOperation); $i++) {
+		// Get all * and /
+		while ($inputOperation) {
+
+		}
+
+		/*for ($i = 0; $i < count($inputOperation); $i++) {
 			if ($inputOperation[$i] instanceof Braclet ) {
 				$endingOfBracelet = $inputOperation[$i]->getPairBraceletIndex();
-				if (!$operation->setNextValue($this->getCalculationOrder(array_splice($inputOperation, $i, $endingOfBracelet)))) {
-					//todo IDK
-					$this->getCalculationOrder(array_splice($inputOperation, $i, $endingOfBracelet));
+				$braceletOperation = $this->getCalculationOrder(array_splice($inputOperation, $i, $endingOfBracelet));
+				if (!$operation->setNextValue($braceletOperation)) {
+
+
 				};
 				$i = $endingOfBracelet;
 			}elseif ($inputOperation[$i] instanceof Operator) {
@@ -149,7 +177,7 @@ class EvaluateMathematicalExpression
 			}elseif ($inputOperation[$i] instanceof Number) {
 				$operation->setNextValue($inputOperation[$i]);
 			}
-		}
+		}*/
 	}
 
 }
@@ -160,7 +188,7 @@ class Number
 	private string $stringValue;
 	private bool $usedInSearch = false;
 
-	public function __construct(float $value){
+	public function __construct(string $value){
 		$this->stringValue = $value;
 	}
 
