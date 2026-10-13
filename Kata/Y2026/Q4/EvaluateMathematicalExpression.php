@@ -89,6 +89,8 @@ class EvaluateMathematicalExpression
 						$stream[array_key_last($stream)] = new Number('-1');
 						$stream[] = new Operator('*');
 						$stream[] = new Braclet($value);
+					}else {
+						$stream[] = new Braclet($value);
 					}
 				}
 			}else {
@@ -105,7 +107,7 @@ class EvaluateMathematicalExpression
 	public function getResult(): float
 	{
 		$this->getBraceletsPairs();
-		$calculationOrder = $this->getCalculationOrder($this->stream);
+		$calculatedBracelets = $this->calculateInsideBracelets($this->stream);
 	}
 
 	private function getBraceletsPairs(): void
@@ -116,8 +118,9 @@ class EvaluateMathematicalExpression
 
 			if ($braceletStartIndex !== false) {
 				$braceletEndIndex = $this->getClosingBraceletIndex($braceletStartIndex);
-				$this->stream[$braceletStartIndex]->setPairBraceletIndex($braceletEndIndex);
-				$this->stream[$braceletEndIndex]->setPairBraceletIndex($braceletStartIndex);
+				$spaceBetween = $braceletEndIndex - $braceletStartIndex;
+				$this->stream[$braceletStartIndex]->setPairBraceletIndex($spaceBetween);
+				$this->stream[$braceletEndIndex]->setPairBraceletIndex(-$spaceBetween);
 			}else {
 				$haveMoreBracelets = false;
 			}
@@ -153,31 +156,28 @@ class EvaluateMathematicalExpression
 		}
 	}
 
-	private function getCalculationOrder(array $inputOperation, CalculationOperation $leftSide = null): CalculationOperation
+	private function calculateInsideBracelets(array $inputOperation): array|CalculationOperation
 	{
-		$operation = new CalculationOperation();
-		$operation->setValueLeft($leftSide);
+		$index = 0;
 
-		// Get all * and /
-		while ($inputOperation) {
-
-		}
-
-		/*for ($i = 0; $i < count($inputOperation); $i++) {
-			if ($inputOperation[$i] instanceof Braclet ) {
-				$endingOfBracelet = $inputOperation[$i]->getPairBraceletIndex();
-				$braceletOperation = $this->getCalculationOrder(array_splice($inputOperation, $i, $endingOfBracelet));
-				if (!$operation->setNextValue($braceletOperation)) {
-
-
-				};
-				$i = $endingOfBracelet;
-			}elseif ($inputOperation[$i] instanceof Operator) {
-				$operation->setOperator($inputOperation[$i]);
-			}elseif ($inputOperation[$i] instanceof Number) {
-				$operation->setNextValue($inputOperation[$i]);
+		while ($index < count($inputOperation)) {
+			if ($inputOperation[$index] instanceof Braclet && $inputOperation[$index]->isOpening() === true) {
+				$start = $index;
+				$braceletLength = $inputOperation[$index]->getPairBraceletIndex();
+				$inputOperation[$index] = $this->calculateInsideBracelets(array_slice(
+					$inputOperation, $start + 1, $braceletLength - 1
+				));
+				for ($u = $start + 1; $u <= $index + $braceletLength; $u++) {
+					unset($inputOperation[$u]);
+				}
+				$index = $index + $braceletLength;
+			}else {
+				$index++;
 			}
-		}*/
+		}
+		//if INSIDE BRACELET RETURN OPERATION
+		return $inputOperation;
+
 	}
 
 }
