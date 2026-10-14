@@ -108,6 +108,7 @@ class EvaluateMathematicalExpression
 	{
 		$this->getBraceletsPairs();
 		$calculatedBracelets = $this->calculateInsideBracelets($this->stream);
+		$singleOperation = $this->getCalculationOrder($calculatedBracelets);
 	}
 
 	private function getBraceletsPairs(): void
@@ -156,7 +157,7 @@ class EvaluateMathematicalExpression
 		}
 	}
 
-	private function calculateInsideBracelets(array $inputOperation): array|CalculationOperation
+	private function calculateInsideBracelets(array $inputOperation): array
 	{
 		$index = 0;
 
@@ -175,11 +176,48 @@ class EvaluateMathematicalExpression
 				$index++;
 			}
 		}
-		//if INSIDE BRACELET RETURN OPERATION
+
 		return $inputOperation;
 
 	}
 
+	private function getCalculationOrder(array $stream): array
+	{
+		foreach ($stream as $index => $value) {
+			if (is_array($value)) {
+				$stream[$index] = $this->getCalculationOrder($value);
+			}
+		}
+
+		$havePriorityOneOperators = true;
+		$operations = [];
+		while ($havePriorityOneOperators) {
+			$index = false;
+			foreach ($stream as $index => $value) {
+				if ($value instanceof Operator) {
+					if ($value->getPriority() === 0) {
+						break;
+					}
+				}
+				$index = false;
+			}
+			if ($index !== false) {
+				$operation[] = new CalculationOperation();
+
+				$operation[count($operation) - 1]->setValueLeft($stream[$index - 1]);
+				$operation[count($operation) - 1]->setOperator($stream[$index]);
+				$operation[count($operation) - 1]->setValueRight($stream[$index + 1]);
+
+				unset($stream[$index - 1]);
+				unset($stream[$index]);
+				unset($stream[$index + 1]);
+
+			}else {
+				$havePriorityOneOperators = false;
+			}
+		}
+		return $operation;
+	}
 }
 
 class Number
@@ -217,6 +255,38 @@ class Operator
 			$this->priority = 0;
 		}
 	}
+
+	public function getOperator(): string
+	{
+		return $this->operator;
+	}
+
+	public function setOperator(string $operator): void
+	{
+		$this->operator = $operator;
+	}
+
+	public function getPriority(): int
+	{
+		return $this->priority;
+	}
+
+	public function setPriority(int $priority): void
+	{
+		$this->priority = $priority;
+	}
+
+	public function isUsedInSearch(): bool
+	{
+		return $this->usedInSearch;
+	}
+
+	public function setUsedInSearch(bool $usedInSearch): void
+	{
+		$this->usedInSearch = $usedInSearch;
+	}
+
+
 }
 
 class Braclet
@@ -261,6 +331,11 @@ class CalculationOperation {
 	private CalculationOperation|Number|null $valueLeft = null;
 	private Operator $operator;
 	private CalculationOperation|Number|null $valueRight = null;
+
+	public function __construct($valueLeft = null)
+	{
+		$this->valueLeft = $valueLeft;
+	}
 
 	public function getValueLeft(): Number|CalculationOperation
 	{
