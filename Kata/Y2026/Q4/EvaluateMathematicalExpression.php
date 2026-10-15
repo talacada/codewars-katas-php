@@ -157,9 +157,13 @@ class EvaluateMathematicalExpression
 		}
 	}
 
-	private function calculateInsideBracelets(array $inputOperation): array
+	private function calculateInsideBracelets(array $inputOperation): array|Number
 	{
 		$index = 0;
+
+		if (count($inputOperation) === 1 && $inputOperation[0] instanceof Number) {
+			return $inputOperation[0];
+		}
 
 		while ($index < count($inputOperation)) {
 			if ($inputOperation[$index] instanceof Braclet && $inputOperation[$index]->isOpening() === true) {
@@ -192,6 +196,7 @@ class EvaluateMathematicalExpression
 		$havePriorityOneOperators = true;
 		$operations = [];
 		while ($havePriorityOneOperators) {
+			$stream = array_values($stream);
 			$index = false;
 			foreach ($stream as $index => $value) {
 				if ($value instanceof Operator) {
@@ -202,21 +207,21 @@ class EvaluateMathematicalExpression
 				$index = false;
 			}
 			if ($index !== false) {
-				$operation[] = new CalculationOperation();
+				$operation = new CalculationOperation();
 
-				$operation[count($operation) - 1]->setValueLeft($stream[$index - 1]);
-				$operation[count($operation) - 1]->setOperator($stream[$index]);
-				$operation[count($operation) - 1]->setValueRight($stream[$index + 1]);
+				$operation->setValueLeft($stream[$index - 1]);
+				$operation->setOperator($stream[$index]);
+				$operation->setValueRight($stream[$index + 1]);
+
+				$stream[$index] = $operation;
 
 				unset($stream[$index - 1]);
-				unset($stream[$index]);
 				unset($stream[$index + 1]);
-
 			}else {
 				$havePriorityOneOperators = false;
 			}
 		}
-		return $operation;
+		return $operations;
 	}
 }
 
