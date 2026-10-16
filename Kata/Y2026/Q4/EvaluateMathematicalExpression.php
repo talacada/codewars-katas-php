@@ -69,8 +69,8 @@ class EvaluateMathematicalExpression
 				if ($value != '-') {
 					$stream[] = new Operator($value);
 				}else {
-					if ($stream[array_key_last($stream)] instanceof Operator || $stream[array_key_last($stream)] instanceof Braclet ||$stream === []) {
-						if (!$stream[array_key_last($stream)] instanceof Braclet) {
+					if ($stream[array_key_last($stream)] instanceof Operator || $stream[array_key_last($stream)] instanceof Bracket ||$stream === []) {
+						if (!$stream[array_key_last($stream)] instanceof Bracket) {
 							$stream[] = new Number($value);
 						}else {
 							if ($stream[array_key_last($stream)]->isOpening() === true) {
@@ -83,14 +83,14 @@ class EvaluateMathematicalExpression
 				}
 			}elseif (in_array($value, ['(', ')'])) {
 				if ($value === ')') {
-					$stream[] = new Braclet($value);
+					$stream[] = new Bracket($value);
 				}else {
 					if ($stream[array_key_last($stream)] instanceof Number && $stream[array_key_last($stream)]->getValue() != '-') {
 						$stream[array_key_last($stream)] = new Number('-1');
 						$stream[] = new Operator('*');
-						$stream[] = new Braclet($value);
+						$stream[] = new Bracket($value);
 					}else {
-						$stream[] = new Braclet($value);
+						$stream[] = new Bracket($value);
 					}
 				}
 			}else {
@@ -131,7 +131,7 @@ class EvaluateMathematicalExpression
 	private function getFirstNotUsedOpeningBraceletIndex(): int|false
 	{
 		foreach ($this->stream as $index => $stream) {
-			if ($stream instanceof Braclet && $stream->getPairBraceletIndex() === null && $stream->isOpening() === true) {
+			if ($stream instanceof Bracket && $stream->getPairBracketIndex() === null && $stream->isOpening() === true) {
 				return $index;
 			}
 		}
@@ -143,7 +143,7 @@ class EvaluateMathematicalExpression
 	{
 		$haveBetweenBracelets = 0;
 		for ($i = $braceletStartIndex + 1; $i < count($this->stream); $i++) {
-			if ($this->stream[$i] instanceof Braclet) {
+			if ($this->stream[$i] instanceof Bracket) {
 				if ($this->stream[$i]->isOpening() === false) {
 					if ($haveBetweenBracelets === 0) {
 						return $i;
@@ -166,9 +166,9 @@ class EvaluateMathematicalExpression
 		}
 
 		while ($index < count($inputOperation)) {
-			if ($inputOperation[$index] instanceof Braclet && $inputOperation[$index]->isOpening() === true) {
+			if ($inputOperation[$index] instanceof Bracket && $inputOperation[$index]->isOpening() === true) {
 				$start = $index;
-				$braceletLength = $inputOperation[$index]->getPairBraceletIndex();
+				$braceletLength = $inputOperation[$index]->getPairBracketIndex();
 				$inputOperation[$index] = $this->calculateInsideBracelets(array_slice(
 					$inputOperation, $start + 1, $braceletLength - 1
 				));
@@ -294,10 +294,10 @@ class Operator
 
 }
 
-class Braclet
+class Bracket
 {
 	private bool $opening;
-	private ?int $pairBraceletIndex = null;
+	private ?int $pairBracketIndex = null;
 
 	public function __construct($value)
 	{
@@ -318,14 +318,14 @@ class Braclet
 		$this->opening = $opening;
 	}
 
-	public function getPairBraceletIndex(): int|null
+	public function getPairBracketIndex(): int|null
 	{
-		return $this->pairBraceletIndex;
+		return $this->pairBracketIndex;
 	}
 
-	public function setPairBraceletIndex(int $pairBraceletIndex): void
+	public function setPairBracketIndex(int $pairBracketIndex): void
 	{
-		$this->pairBraceletIndex = $pairBraceletIndex;
+		$this->pairBracketIndex = $pairBracketIndex;
 	}
 
 
