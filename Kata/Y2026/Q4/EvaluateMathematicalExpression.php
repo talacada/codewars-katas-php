@@ -209,7 +209,7 @@ class EvaluateMathematicalExpression
 	private function getInsideBracket(array $inside): Bracket|Number
 	{
 		for ($index = 0; $index < count($inside); $index++) {
-			if ($inside[$index] instanceof BracketSolo) {
+			if ($inside[$index] instanceof BracketSolo && $inside[$index]->isOpening() === true) {
 				$start = $index;
 				$braceletLength = $inside[$index]->getPairBracketIndex();
 				$insideInside = $this->getInsideBracket(array_slice($inside, $start + 1, $braceletLength - 1));
@@ -220,6 +220,9 @@ class EvaluateMathematicalExpression
 				}
 
 				$inside[$start] = $insideInside;
+
+				ksort($inside);
+				$inside = array_values($inside);
 			}
 		}
 
@@ -227,9 +230,6 @@ class EvaluateMathematicalExpression
 		if (count($inside) === 1) {
 			return $inside[0];
 		}else {
-			ksort($inside);
-			$inside = array_values($inside);
-
 			$bracket = new Bracket();
 			$bracket->setInside($inside);
 			return $bracket;
