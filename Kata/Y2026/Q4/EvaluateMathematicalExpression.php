@@ -108,7 +108,8 @@ class EvaluateMathematicalExpression
 	{
 		$this->getBraceletsPairs();
 		$this->transformBracketSoloToFullBrackets();
-		$singleOperation = $this->getCalculationOrder($this->stream);
+		$orderedOperations = $this->getCalculationOrder($this->stream);
+		return $this->calculate($orderedOperations);
 	}
 
 	private function getBraceletsPairs(): void
@@ -156,34 +157,6 @@ class EvaluateMathematicalExpression
 			}
 		}
 	}
-
-/*	private function calculateInsideBracelets(array $inputOperation): array|Number
-	{
-		$index = 0;
-
-		if (count($inputOperation) === 1 && $inputOperation[0] instanceof Number) {
-			return $inputOperation[0];
-		}
-
-		while ($index < count($inputOperation)) {
-			if ($inputOperation[$index] instanceof BracketSolo && $inputOperation[$index]->isOpening() === true) {
-				$start = $index;
-				$braceletLength = $inputOperation[$index]->getPairBracketIndex();
-				$inputOperation[$index] = $this->calculateInsideBracelets(array_slice(
-					$inputOperation, $start + 1, $braceletLength - 1
-				));
-				for ($u = $start + 1; $u <= $index + $braceletLength; $u++) {
-					unset($inputOperation[$u]);
-				}
-				$index = $index + $braceletLength;
-			}else {
-				$index++;
-			}
-		}
-
-		return $inputOperation;
-
-	}*/
 
 	private function transformBracketSoloToFullBrackets(): void
 	{
@@ -238,20 +211,19 @@ class EvaluateMathematicalExpression
 
 	private function getCalculationOrder(array $stream): array
 	{
-		foreach ($stream as $index => $value) {
-			if (is_array($value)) {
-				$stream[$index] = $this->getCalculationOrder($value);
+		foreach ($stream as $value) {
+			if ($value instanceof Bracket) {
+				$value->setInside($this->getCalculationOrder($value->getInside()));
 			}
 		}
 
 		$havePriorityOneOperators = true;
-		$operations = [];
 		while ($havePriorityOneOperators) {
 			$stream = array_values($stream);
 			$index = false;
 			foreach ($stream as $index => $value) {
 				if ($value instanceof Operator) {
-					if ($value->getPriority() === 0) {
+					if ($value->getPriority() === 1) {
 						break;
 					}
 				}
@@ -272,7 +244,12 @@ class EvaluateMathematicalExpression
 				$havePriorityOneOperators = false;
 			}
 		}
-		return $operations;
+		return $stream;
+	}
+
+	private function calculate(array $orderedOperations): float
+	{
+
 	}
 }
 
@@ -306,9 +283,9 @@ class Operator
 	public function __construct(string $operator) {
 		$this->operator = $operator;
 		if (in_array($operator, ['+', '-'])) {
-			$this->priority = 1;
+			$this->priority = 2;
 		}else {
-			$this->priority = 0;
+			$this->priority = 1;
 		}
 	}
 
@@ -395,9 +372,9 @@ class Bracket
 		$this->inside = $inside;
 	}
 
-	public function getResult(): int
+	public function getResult(): Number
 	{
-		return $this->result;
+		return new Number(1);
 	}
 
 	public function setResult(int $result): void
@@ -408,9 +385,9 @@ class Bracket
 
 class CalculationOperation {
 
-	private CalculationOperation|Number|null $valueLeft = null;
+	private CalculationOperation|Number|Bracket|null $valueLeft = null;
 	private Operator $operator;
-	private CalculationOperation|Number|null $valueRight = null;
+	private CalculationOperation|Number|Bracket|null $valueRight = null;
 
 	public function __construct($valueLeft = null)
 	{
@@ -422,7 +399,7 @@ class CalculationOperation {
 		return $this->valueLeft;
 	}
 
-	public function setValueLeft(Number|CalculationOperation $valueLeft): void
+	public function setValueLeft(Number|CalculationOperation|Bracket $valueLeft): void
 	{
 		$this->valueLeft = $valueLeft;
 	}
@@ -442,7 +419,7 @@ class CalculationOperation {
 		return $this->valueRight;
 	}
 
-	public function setValueRight(Number|CalculationOperation $valueRight): void
+	public function setValueRight(Number|CalculationOperation|Bracket $valueRight): void
 	{
 		$this->valueRight = $valueRight;
 	}
