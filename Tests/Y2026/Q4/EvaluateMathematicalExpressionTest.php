@@ -31,6 +31,7 @@ class EvaluateMathematicalExpressionTest extends TestCase
 
 	public function testMine() {
 		$this->assertSame('30', calc('(-5 * (-5) * 1 * -(2+5)) / 1.25 + 3.75'));
+		$this->assertSame('30', calc('1 + 2 + 3 + 4'));
 		$this->assertSame('30', calc('((-33) * (2+5) / (1))'));
 		$this->assertSame('30', calc('5 * (1 + (2 + ( 3 * 3)))'));
 		$this->assertSame('30', calc('(5 * 5)'));
