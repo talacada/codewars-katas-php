@@ -53,7 +53,7 @@ namespace Kata\Y2026\Q4\EvaluateMathematicalExpression;
 
 function calc(string $expression): float {
 	$calculator = new EvaluateMathematicalExpression($expression);
-	$calculator->getResult();
+	return $calculator->getResult();
 }
 class EvaluateMathematicalExpression
 {
@@ -79,6 +79,8 @@ class EvaluateMathematicalExpression
 								$stream[] = new Operator($value);
 							}
 						}
+					}else {
+						$stream[] = new Operator($value);
 					}
 				}
 			}elseif (in_array($value, ['(', ')'])) {
@@ -109,7 +111,11 @@ class EvaluateMathematicalExpression
 		$this->getBraceletsPairs();
 		$this->transformBracketSoloToFullBrackets();
 		$orderedOperations = $this->getCalculationOrder($this->stream);
-		$orderedOperations->calculate();
+		if ($orderedOperations instanceof Number) {
+			return $orderedOperations->getValue();
+		}
+		$result = $orderedOperations->calculate();
+		return $result->getValue();
 	}
 
 	private function getBraceletsPairs(): void
@@ -160,7 +166,8 @@ class EvaluateMathematicalExpression
 
 	private function transformBracketSoloToFullBrackets(): void
 	{
-		for ($index = 0; $index < count($this->stream); $index++) {
+		$count = count($this->stream);
+		for ($index = 0; $index < $count; $index++) {
 			if ($this->stream[$index] instanceof BracketSolo && $this->stream[$index]->isOpening() === true) {
 
 				$braceletLength = $this->stream[$index]->getPairBracketIndex();
@@ -172,11 +179,10 @@ class EvaluateMathematicalExpression
 				}
 
 				$this->stream[$index] = $inside;
+				ksort($this->stream);
+				$this->stream = array_values($this->stream);
 			}
 		}
-
-		ksort($this->stream);
-		$this->stream = array_values($this->stream);
 	}
 
 	private function getInsideBracket(array $inside): Bracket|Number
@@ -209,11 +215,11 @@ class EvaluateMathematicalExpression
 		}
 	}
 
-	private function getCalculationOrder(array $stream): CalculationOperation
+	private function getCalculationOrder(array $stream): CalculationOperation|Number
 	{
-		foreach ($stream as $value) {
+		foreach ($stream as $bracketIndex => $value) {
 			if ($value instanceof Bracket) {
-				$value->setInside((array)$this->getCalculationOrder($value->getInside()));
+				$stream[$bracketIndex] = $this->getCalculationOrder($value->getInside());
 			}
 		}
 
@@ -421,10 +427,32 @@ class CalculationOperation {
 		$this->valueRight = $valueRight;
 	}
 
-	public function calculate(): bool
+	public function calculate(): Number
 	{
+		if ($this->valueLeft instanceof Bracket) {
+			$this->setValueLeft($this->valueLeft->getInside()[0]->calculate());
+		}
+		if ($this->valueLeft instanceof CalculationOperation) {
+			$this->setValueLeft($this->valueLeft->calculate());
+		}
 
+		if ($this->valueRight instanceof Bracket) {
+			$this->setValueRight($this->valueRight->getInside()[0]->calculate());
+		}
+		if ($this->valueRight instanceof CalculationOperation) {
+			$this->setValueRight($this->valueRight->calculate());
+		}
+
+		if ($this->valueLeft instanceof Number && $this->valueRight instanceof Number) {
+			if ($this->operator->getOperator() === '+') {
+				return new Number($this->valueLeft->getValue() + $this->valueRight->getValue());
+			}elseif ($this->operator->getOperator() === '-') {
+				return new Number($this->valueLeft->getValue() - $this->valueRight->getValue());
+			}elseif ($this->operator->getOperator() === '*') {
+				return new Number($this->valueLeft->getValue() * $this->valueRight->getValue());
+			}elseif ($this->operator->getOperator() === '/') {
+				return new Number($this->valueLeft->getValue() / $this->valueRight->getValue());
+			}
+		}
 	}
-
-
 }
