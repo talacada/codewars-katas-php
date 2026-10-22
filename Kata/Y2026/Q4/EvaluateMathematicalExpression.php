@@ -69,11 +69,15 @@ class EvaluateMathematicalExpression
 				if ($value != '-') {
 					$stream[] = new Operator($value);
 				}else {
-					if ($stream[array_key_last($stream)] instanceof Operator || $stream[array_key_last($stream)] instanceof BracketSolo ||$stream === []) {
-						if (!$stream[array_key_last($stream)] instanceof BracketSolo) {
+					$last = array_key_last($stream);
+					if ($last === null) {
+						$last = 0;
+					}
+					if ($stream === [] || $stream[$last] instanceof Operator || $stream[$last] instanceof BracketSolo) {
+						if ($stream === [] || !$stream[$last] instanceof BracketSolo) {
 							$stream[] = new Number($value);
 						}else {
-							if ($stream[array_key_last($stream)]->isOpening() === true) {
+							if ($stream[$last]->isOpening() === true) {
 								$stream[] = new Number($value);
 							}else {
 								$stream[] = new Operator($value);
@@ -168,7 +172,7 @@ class EvaluateMathematicalExpression
 	{
 		$count = count($this->stream);
 		for ($index = 0; $index < $count; $index++) {
-			if ($this->stream[$index] instanceof BracketSolo && $this->stream[$index]->isOpening() === true) {
+			if (isset($this->stream[$index]) && $this->stream[$index] instanceof BracketSolo && $this->stream[$index]->isOpening() === true) {
 
 				$braceletLength = $this->stream[$index]->getPairBracketIndex();
 				$inside = $this->getInsideBracket(array_slice($this->stream, $index + 1, $braceletLength - 1));
