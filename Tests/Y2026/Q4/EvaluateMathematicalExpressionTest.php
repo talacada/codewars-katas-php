@@ -1,0 +1,58 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Y2026\Q4\EvaluateMathematicalExpression;
+
+use PHPUnit\Framework\TestCase;
+
+require_once __DIR__ . '/../../../Kata/Y2026/Q4/EvaluateMathematicalExpression.php';
+use function Kata\Y2026\Q4\EvaluateMathematicalExpression\calc;
+
+class EvaluateMathematicalExpressionTest extends TestCase
+{
+    protected function randomize(array $a): array
+    {
+        for ($i = 0; $i < 2 * count($a); $i++) {
+            list($a[$j], $a[$k]) = [$a[$k = array_rand($a)], $a[$j = array_rand($a)]];
+        }
+        return $a;
+    }
+    public function testShuffledExamples(): void
+    {
+        foreach ($this->randomize([
+            ['1+1', 2.0],
+            ['1 - 1', 0.0],
+            ['1* 1', 1.0],
+            ['1 /1', 1.0],
+            ['-123', -123.0],
+            ['123', 123.0],
+            ['2 /2+3 * 4.75- -6', 21.25],
+            ['12* 123', 1476.0],
+            ['2 / (2 + 3) * 4.33 - -6', 7.732],
+        ]) as $a) {
+            $this->assertSame($a[1], calc($a[0]));
+        }
+    }
+
+    public function testMine(): void
+    {
+        $this->assertSame(19.0, calc('(1 + 2 * 2) * 4 - -(-1)'));
+        $this->assertSame(2.0, calc('1+ 1'));
+        $this->assertSame(11.0, calc('1 + 1 + 2 + 3 + 4'));
+        $this->assertSame(60.0, calc('5 * (1 + (2 + ( 3 * 3)))'));
+        $this->assertSame(25.0, calc('(5 * 5)'));
+        $this->assertSame(30.0, calc('-5 * - 5 + -(-3) - -2'));
+        $this->assertSame(24.0, calc('-3+2+5*5'));
+        $this->assertSame(4.0, calc('1 + ( 1 + 2)'));
+        $this->assertSame(4.25, calc('1.25 + 3'));
+        $this->assertSame(-3.0, calc('1 + -(4)'));
+        $this->assertSame(2.0, calc('6 + -(4)'));
+        $this->assertSame(10.0, calc('6 + -( -4)'));
+        $this->assertSame(-3.0, calc('-(3)'));
+        $this->assertSame(5.0, calc('1 - -(4)'));
+        $this->assertSame(492.0, calc('12* 123/-(-5 + 2)'));
+        $this->assertSame(1.0, calc('11 / -(-11)'));
+    }
+
+}
