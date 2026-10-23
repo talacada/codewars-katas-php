@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 Instructions
 Given a mathematical expression as a string you must return the result as a number.
@@ -51,412 +53,399 @@ https://www.codewars.com/kata/52a78825cdfc2cfc87000005
 
 namespace Kata\Y2026\Q4\EvaluateMathematicalExpression;
 
-function calc(string $expression): float {
-	$calculator = new EvaluateMathematicalExpression($expression);
-	return $calculator->getResult();
+function calc(string $expression): float
+{
+    $calculator = new EvaluateMathematicalExpression($expression);
+    return $calculator->getResult();
 }
 class EvaluateMathematicalExpression
 {
-	private array $stream;
+    private array $stream;
 
-	public function __construct(string $expression) {
-		$expression = str_replace(' ', '', $expression);
-		$splitExpression = str_split($expression);
+    public function __construct(string $expression)
+    {
+        $expression = str_replace(' ', '', $expression);
+        $splitExpression = str_split($expression);
 
-		$stream = [];
-		foreach ($splitExpression as $value) {
-			if (in_array($value, ['+', '-', '*', '/'])) {
-				if ($value != '-') {
-					$stream[] = new Operator($value);
-				}else {
-					$last = array_key_last($stream);
-					if ($last === null) {
-						$last = 0;
-					}
-					if ($stream === [] || $stream[$last] instanceof Operator || $stream[$last] instanceof BracketSolo) {
-						if ($stream === [] || !$stream[$last] instanceof BracketSolo) {
-							$stream[] = new Number($value);
-						}else {
-							if ($stream[$last]->isOpening() === true) {
-								$stream[] = new Number($value);
-							}else {
-								$stream[] = new Operator($value);
-							}
-						}
-					}else {
-						$stream[] = new Operator($value);
-					}
-				}
-			}elseif (in_array($value, ['(', ')'])) {
-				if ($value === ')') {
-					$stream[] = new BracketSolo($value);
-				}else {
-					if ($stream[array_key_last($stream)] instanceof Number && $stream[array_key_last($stream)]->getValue() != '-') {
-						$stream[array_key_last($stream)] = new Number('-1');
-						$stream[] = new Operator('*');
-						$stream[] = new BracketSolo($value);
-					}else {
-						$stream[] = new BracketSolo($value);
-					}
-				}
-			}else {
-				if (end($stream) instanceof Number) {
-					$stream[array_key_last($stream)]->addToValue($value);
-				}else{
-					$stream[] = new Number($value);
-				}
-			}
-		}
-		
-		$this->stream = $stream;
-	}
-	public function getResult(): float
-	{
-		$this->getBraceletsPairs();
-		$this->transformBracketSoloToFullBrackets();
-		$orderedOperations = $this->getCalculationOrder($this->stream);
-		if ($orderedOperations instanceof Number) {
-			return $orderedOperations->getValue();
-		}
-		$result = $orderedOperations->calculate();
-		return $result->getValue();
-	}
+        $stream = [];
+        foreach ($splitExpression as $value) {
+            if (in_array($value, ['+', '-', '*', '/'])) {
+                if ($value != '-') {
+                    $stream[] = new Operator($value);
+                } else {
+                    $last = array_key_last($stream);
+                    if ($last === null) {
+                        $last = 0;
+                    }
+                    if ($stream === [] || $stream[$last] instanceof Operator || $stream[$last] instanceof BracketSolo) {
+                        if ($stream === [] || !$stream[$last] instanceof BracketSolo) {
+                            $stream[] = new Number($value);
+                        } else {
+                            if ($stream[$last]->isOpening() === true) {
+                                $stream[] = new Number($value);
+                            } else {
+                                $stream[] = new Operator($value);
+                            }
+                        }
+                    } else {
+                        $stream[] = new Operator($value);
+                    }
+                }
+            } elseif (in_array($value, ['(', ')'])) {
+                if ($value === ')') {
+                    $stream[] = new BracketSolo($value);
+                } else {
+                    $last = array_key_last($stream);
+                    if ($last === null) {
+                        $last = 0;
+                    }
 
-	private function getBraceletsPairs(): void
-	{
-		$haveMoreBracelets = true;
-		while ($haveMoreBracelets) {
-			$braceletStartIndex = $this->getFirstNotUsedOpeningBraceletIndex();
+                    if (isset($stream[$last]) && $stream[$last] instanceof Number && $stream[$last]->getStringValue() === '-') {
+                        $operatorToUse = '*';
+                        if ($last > 0 && isset($stream[$last - 1]) && $stream[$last - 1] instanceof Operator && $stream[$last - 1]->getOperator() === '/') {
+                            $operatorToUse = '/';
+                        }
+                        $stream[$last] = new Number('-1');
+                        $stream[] = new Operator($operatorToUse);
+                        $stream[] = new BracketSolo($value);
+                    } else {
+                        $stream[] = new BracketSolo($value);
+                    }
+                }
+            } else {
+                if (end($stream) instanceof Number) {
+                    $last = array_key_last($stream);
+                    if (isset($stream[$last]) && $stream[$last] instanceof Number) {
+                        $stream[$last]->addToValue($value);
+                    }
+                } else {
+                    $stream[] = new Number($value);
+                }
+            }
+        }
 
-			if ($braceletStartIndex !== false) {
-				$braceletEndIndex = $this->getClosingBraceletIndex($braceletStartIndex);
-				$spaceBetween = $braceletEndIndex - $braceletStartIndex;
-				$this->stream[$braceletStartIndex]->setPairBracketIndex($spaceBetween);
-				$this->stream[$braceletEndIndex]->setPairBracketIndex(-$spaceBetween);
-			}else {
-				$haveMoreBracelets = false;
-			}
-		}
-	}
+        $this->stream = $stream;
+    }
+    public function getResult(): float
+    {
+        $this->getBraceletsPairs();
+        $this->transformBracketSoloToFullBrackets();
+        $orderedOperations = $this->getCalculationOrder($this->stream);
+        if ($orderedOperations instanceof Number) {
+            return $orderedOperations->getValue();
+        }
+        $result = $orderedOperations->calculate();
+        return $result->getValue();
+    }
 
-	private function getFirstNotUsedOpeningBraceletIndex(): int|false
-	{
-		foreach ($this->stream as $index => $stream) {
-			if ($stream instanceof BracketSolo && $stream->getPairBracketIndex() === null && $stream->isOpening() === true) {
-				return $index;
-			}
-		}
+    private function getBraceletsPairs(): void
+    {
+        $haveMoreBracelets = true;
+        while ($haveMoreBracelets) {
+            $braceletStartIndex = $this->getFirstNotUsedOpeningBraceletIndex();
 
-		return false;
-	}
+            if ($braceletStartIndex !== false) {
+                $braceletEndIndex = $this->getClosingBraceletIndex($braceletStartIndex);
+                $spaceBetween = $braceletEndIndex - $braceletStartIndex;
+                $this->stream[$braceletStartIndex]->setPairBracketIndex($spaceBetween);
+                $this->stream[$braceletEndIndex]->setPairBracketIndex(-$spaceBetween);
+            } else {
+                $haveMoreBracelets = false;
+            }
+        }
+    }
 
-	private function getClosingBraceletIndex(int $braceletStartIndex): int
-	{
-		$haveBetweenBracelets = 0;
-		for ($i = $braceletStartIndex + 1; $i < count($this->stream); $i++) {
-			if ($this->stream[$i] instanceof BracketSolo) {
-				if ($this->stream[$i]->isOpening() === false) {
-					if ($haveBetweenBracelets === 0) {
-						return $i;
-					}else{
-						$haveBetweenBracelets--;
-					}
-				}else {
-					$haveBetweenBracelets++;
-				}
-			}
-		}
-	}
+    private function getFirstNotUsedOpeningBraceletIndex(): int|false
+    {
+        foreach ($this->stream as $index => $stream) {
+            if ($stream instanceof BracketSolo && $stream->getPairBracketIndex() === null && $stream->isOpening() === true) {
+                return $index;
+            }
+        }
 
-	private function transformBracketSoloToFullBrackets(): void
-	{
-		$count = count($this->stream);
-		for ($index = 0; $index < $count; $index++) {
-			if (isset($this->stream[$index]) && $this->stream[$index] instanceof BracketSolo && $this->stream[$index]->isOpening() === true) {
+        return false;
+    }
 
-				$braceletLength = $this->stream[$index]->getPairBracketIndex();
-				$inside = $this->getInsideBracket(array_slice($this->stream, $index + 1, $braceletLength - 1));
+    private function getClosingBraceletIndex(int $braceletStartIndex): int
+    {
+        $haveBetweenBracelets = 0;
+        for ($i = $braceletStartIndex + 1; $i < count($this->stream); $i++) {
+            if ($this->stream[$i] instanceof BracketSolo) {
+                if ($this->stream[$i]->isOpening() === false) {
+                    if ($haveBetweenBracelets === 0) {
+                        break;
+                    } else {
+                        $haveBetweenBracelets--;
+                    }
+                } else {
+                    $haveBetweenBracelets++;
+                }
+            }
+        }
 
-				// Deleting old indexes, were moved inside Bracket
-				for ($u = $index; $u <= $index + $braceletLength; $u++) {
-					unset($this->stream[$u]);
-				}
+        return $i;
+    }
 
-				$this->stream[$index] = $inside;
-				ksort($this->stream);
-				$this->stream = array_values($this->stream);
-			}
-		}
-	}
+    private function transformBracketSoloToFullBrackets(): void
+    {
+        $count = count($this->stream);
+        for ($index = 0; $index < $count; $index++) {
+            if (isset($this->stream[$index]) && $this->stream[$index] instanceof BracketSolo && $this->stream[$index]->isOpening() === true) {
 
-	private function getInsideBracket(array $inside): Bracket|Number
-	{
-		for ($index = 0; $index < count($inside); $index++) {
-			if ($inside[$index] instanceof BracketSolo && $inside[$index]->isOpening() === true) {
-				$start = $index;
-				$braceletLength = $inside[$index]->getPairBracketIndex();
-				$insideInside = $this->getInsideBracket(array_slice($inside, $start + 1, $braceletLength - 1));
+                $braceletLength = $this->stream[$index]->getPairBracketIndex();
+                $inside = $this->getInsideBracket(array_slice($this->stream, $index + 1, $braceletLength - 1));
 
-				// Deleting old indexes, were moved inside Bracket
-				for ($u = $index; $u <= $index + $braceletLength; $u++) {
-					unset($inside[$u]);
-				}
+                // Deleting old indexes, were moved inside Bracket
+                for ($u = $index; $u <= $index + $braceletLength; $u++) {
+                    unset($this->stream[$u]);
+                }
 
-				$inside[$start] = $insideInside;
+                $this->stream[$index] = $inside;
+                ksort($this->stream);
+                $this->stream = array_values($this->stream);
+            }
+        }
+    }
 
-				ksort($inside);
-				$inside = array_values($inside);
-			}
-		}
+    private function getInsideBracket(array $inside): Bracket|Number
+    {
+        for ($index = 0; $index < count($inside); $index++) {
+            if ($inside[$index] instanceof BracketSolo && $inside[$index]->isOpening() === true) {
+                $start = $index;
+                $braceletLength = $inside[$index]->getPairBracketIndex();
+                $insideInside = $this->getInsideBracket(array_slice($inside, $start + 1, $braceletLength - 1));
 
-		// Only one number inside brackets (-5) -> [Number]
-		if (count($inside) === 1) {
-			return $inside[0];
-		}else {
-			$bracket = new Bracket();
-			$bracket->setInside($inside);
-			return $bracket;
-		}
-	}
+                // Deleting old indexes, were moved inside Bracket
+                for ($u = $index; $u <= $index + $braceletLength; $u++) {
+                    unset($inside[$u]);
+                }
 
-	private function getCalculationOrder(array $stream): CalculationOperation|Number
-	{
-		foreach ($stream as $bracketIndex => $value) {
-			if ($value instanceof Bracket) {
-				$stream[$bracketIndex] = $this->getCalculationOrder($value->getInside());
-			}
-		}
+                $inside[$start] = $insideInside;
 
-		for ($operatorPriority = 1; $operatorPriority < 3; $operatorPriority++) {
-			$havePriorityOneOperators = true;
-			while ($havePriorityOneOperators) {
-				$stream = array_values($stream);
-				$index = false;
-				foreach ($stream as $index => $value) {
-					if ($value instanceof Operator) {
-						if ($value->getPriority() === $operatorPriority) {
-							break;
-						}
-					}
-					$index = false;
-				}
-				if ($index !== false) {
-					$operation = new CalculationOperation();
+                ksort($inside);
+                $inside = array_values($inside);
+            }
+        }
 
-					$operation->setValueLeft($stream[$index - 1]);
-					$operation->setOperator($stream[$index]);
-					$operation->setValueRight($stream[$index + 1]);
+        // Only one number inside brackets (-5) -> [Number]
+        if (count($inside) === 1) {
+            return $inside[0];
+        } else {
+            $bracket = new Bracket();
+            $bracket->setInside($inside);
+            return $bracket;
+        }
+    }
 
-					$stream[$index] = $operation;
+    private function getCalculationOrder(array $stream): CalculationOperation|Number
+    {
+        foreach ($stream as $bracketIndex => $value) {
+            if ($value instanceof Bracket) {
+                $stream[$bracketIndex] = $this->getCalculationOrder($value->getInside());
+            }
+        }
 
-					unset($stream[$index - 1]);
-					unset($stream[$index + 1]);
-				}else {
-					$havePriorityOneOperators = false;
-				}
-			}
-		}
-		return $stream[0];
-	}
+        for ($operatorPriority = 1; $operatorPriority < 3; $operatorPriority++) {
+            $havePriorityOneOperators = true;
+            while ($havePriorityOneOperators) {
+                $stream = array_values($stream);
+                $index = false;
+                foreach ($stream as $index => $value) {
+                    if ($value instanceof Operator) {
+                        if ($value->getPriority() === $operatorPriority) {
+                            break;
+                        }
+                    }
+                    $index = false;
+                }
+                if ($index !== false) {
+                    $operation = new CalculationOperation();
+
+                    $operation->setValueLeft($stream[$index - 1]);
+                    $operation->setOperator($stream[$index]);
+                    $operation->setValueRight($stream[$index + 1]);
+
+                    $stream[$index] = $operation;
+
+                    unset($stream[$index - 1]);
+                    unset($stream[$index + 1]);
+                } else {
+                    $havePriorityOneOperators = false;
+                }
+            }
+        }
+        return $stream[0];
+    }
 }
 
 class Number
 {
-	private float $value;
-	private string $stringValue;
-	private bool $usedInSearch = false;
+    private string $stringValue;
 
-	public function __construct(string $value){
-		$this->stringValue = $value;
-	}
+    public function __construct(string $value)
+    {
+        $this->stringValue = $value;
+    }
 
-	public function getValue(): float
-	{
-		return floatval($this->stringValue);
-	}
+    public function getValue(): float
+    {
+        return floatval($this->stringValue);
+    }
 
-	public function addToValue(string $value): void
-	{
-		$this->stringValue .= $value;
-	}
+    public function getStringValue(): string
+    {
+        return $this->stringValue;
+    }
+
+    public function addToValue(string $value): void
+    {
+        $this->stringValue .= $value;
+    }
 
 }
 class Operator
 {
-	private string $operator;
-	private int $priority;
-	private bool $usedInSearch = false;
+    private string $operator;
+    private int $priority;
 
-	public function __construct(string $operator) {
-		$this->operator = $operator;
-		if (in_array($operator, ['+', '-'])) {
-			$this->priority = 2;
-		}else {
-			$this->priority = 1;
-		}
-	}
+    public function __construct(string $operator)
+    {
+        $this->operator = $operator;
+        if (in_array($operator, ['+', '-'])) {
+            $this->priority = 2;
+        } else {
+            $this->priority = 1;
+        }
+    }
 
-	public function getOperator(): string
-	{
-		return $this->operator;
-	}
+    public function getOperator(): string
+    {
+        return $this->operator;
+    }
 
-	public function setOperator(string $operator): void
-	{
-		$this->operator = $operator;
-	}
+    public function setOperator(string $operator): void
+    {
+        $this->operator = $operator;
+    }
 
-	public function getPriority(): int
-	{
-		return $this->priority;
-	}
+    public function getPriority(): int
+    {
+        return $this->priority;
+    }
 
-	public function setPriority(int $priority): void
-	{
-		$this->priority = $priority;
-	}
-
-	public function isUsedInSearch(): bool
-	{
-		return $this->usedInSearch;
-	}
-
-	public function setUsedInSearch(bool $usedInSearch): void
-	{
-		$this->usedInSearch = $usedInSearch;
-	}
+    public function setPriority(int $priority): void
+    {
+        $this->priority = $priority;
+    }
 
 
 }
 
 class BracketSolo
 {
-	private bool $opening;
-	private ?int $pairBracketIndex = null;
+    private bool $opening;
+    private ?int $pairBracketIndex = null;
 
-	public function __construct($value)
-	{
-		if ($value === '(') {
-			$this->opening = true;
-		}else {
-			$this->opening = false;
-		}
-	}
+    public function __construct(string $value)
+    {
+        if ($value === '(') {
+            $this->opening = true;
+        } else {
+            $this->opening = false;
+        }
+    }
 
-	public function isOpening(): bool
-	{
-		return $this->opening;
-	}
+    public function isOpening(): bool
+    {
+        return $this->opening;
+    }
 
-	public function setOpening(bool $opening): void
-	{
-		$this->opening = $opening;
-	}
+    public function getPairBracketIndex(): int|null
+    {
+        return $this->pairBracketIndex;
+    }
 
-	public function getPairBracketIndex(): int|null
-	{
-		return $this->pairBracketIndex;
-	}
-
-	public function setPairBracketIndex(int $pairBracketIndex): void
-	{
-		$this->pairBracketIndex = $pairBracketIndex;
-	}
+    public function setPairBracketIndex(int $pairBracketIndex): void
+    {
+        $this->pairBracketIndex = $pairBracketIndex;
+    }
 }
 
 class Bracket
 {
-	private array $inside;
-	private int $result;
+    private array $inside;
 
-	public function getInside(): array
-	{
-		return $this->inside;
-	}
+    public function getInside(): array
+    {
+        return $this->inside;
+    }
 
-	public function setInside(array $inside): void
-	{
-		$this->inside = $inside;
-	}
+    public function setInside(array $inside): void
+    {
+        $this->inside = $inside;
+    }
 
-	public function getResult(): Number
-	{
-		return new Number(1);
-	}
-
-	public function setResult(int $result): void
-	{
-		$this->result = $result;
-	}
 }
 
-class CalculationOperation {
+class CalculationOperation
+{
+    private CalculationOperation|Number|Bracket|null $valueLeft;
+    private Operator $operator;
+    private CalculationOperation|Number|Bracket|null $valueRight = null;
 
-	private CalculationOperation|Number|Bracket|null $valueLeft = null;
-	private Operator $operator;
-	private CalculationOperation|Number|Bracket|null $valueRight = null;
+    public function __construct(CalculationOperation|Number|Bracket|null $valueLeft = null)
+    {
+        $this->valueLeft = $valueLeft;
+    }
 
-	public function __construct($valueLeft = null)
-	{
-		$this->valueLeft = $valueLeft;
-	}
+    public function setValueLeft(Number|CalculationOperation|Bracket $valueLeft): void
+    {
+        $this->valueLeft = $valueLeft;
+    }
 
-	public function getValueLeft(): Number|CalculationOperation
-	{
-		return $this->valueLeft;
-	}
+    public function getOperator(): Operator
+    {
+        return $this->operator;
+    }
 
-	public function setValueLeft(Number|CalculationOperation|Bracket $valueLeft): void
-	{
-		$this->valueLeft = $valueLeft;
-	}
+    public function setOperator(Operator $operator): void
+    {
+        $this->operator = $operator;
+    }
 
-	public function getOperator(): Operator
-	{
-		return $this->operator;
-	}
+    public function setValueRight(Number|CalculationOperation|Bracket $valueRight): void
+    {
+        $this->valueRight = $valueRight;
+    }
 
-	public function setOperator(Operator $operator): void
-	{
-		$this->operator = $operator;
-	}
+    public function calculate(): Number
+    {
+        if ($this->valueLeft instanceof Bracket) {
+            $this->setValueLeft($this->valueLeft->getInside()[0]->calculate());
+        }
+        if ($this->valueLeft instanceof CalculationOperation) {
+            $this->setValueLeft($this->valueLeft->calculate());
+        }
 
-	public function getValueRight(): Number|CalculationOperation
-	{
-		return $this->valueRight;
-	}
+        if ($this->valueRight instanceof Bracket) {
+            $this->setValueRight($this->valueRight->getInside()[0]->calculate());
+        }
+        if ($this->valueRight instanceof CalculationOperation) {
+            $this->setValueRight($this->valueRight->calculate());
+        }
 
-	public function setValueRight(Number|CalculationOperation|Bracket $valueRight): void
-	{
-		$this->valueRight = $valueRight;
-	}
+        if ($this->valueLeft instanceof Number && $this->valueRight instanceof Number) {
+            if ($this->operator->getOperator() === '+') {
+                return new Number((string)($this->valueLeft->getValue() + $this->valueRight->getValue()));
+            } elseif ($this->operator->getOperator() === '-') {
+                return new Number((string)($this->valueLeft->getValue() - $this->valueRight->getValue()));
+            } elseif ($this->operator->getOperator() === '*') {
+                return new Number((string)($this->valueLeft->getValue() * $this->valueRight->getValue()));
+            } else {
+                return new Number((string)($this->valueLeft->getValue() / $this->valueRight->getValue()));
+            }
+        }
 
-	public function calculate(): Number
-	{
-		if ($this->valueLeft instanceof Bracket) {
-			$this->setValueLeft($this->valueLeft->getInside()[0]->calculate());
-		}
-		if ($this->valueLeft instanceof CalculationOperation) {
-			$this->setValueLeft($this->valueLeft->calculate());
-		}
-
-		if ($this->valueRight instanceof Bracket) {
-			$this->setValueRight($this->valueRight->getInside()[0]->calculate());
-		}
-		if ($this->valueRight instanceof CalculationOperation) {
-			$this->setValueRight($this->valueRight->calculate());
-		}
-
-		if ($this->valueLeft instanceof Number && $this->valueRight instanceof Number) {
-			if ($this->operator->getOperator() === '+') {
-				return new Number($this->valueLeft->getValue() + $this->valueRight->getValue());
-			}elseif ($this->operator->getOperator() === '-') {
-				return new Number($this->valueLeft->getValue() - $this->valueRight->getValue());
-			}elseif ($this->operator->getOperator() === '*') {
-				return new Number($this->valueLeft->getValue() * $this->valueRight->getValue());
-			}elseif ($this->operator->getOperator() === '/') {
-				return new Number($this->valueLeft->getValue() / $this->valueRight->getValue());
-			}
-		}
-	}
+        return new Number('0');
+    }
 }
