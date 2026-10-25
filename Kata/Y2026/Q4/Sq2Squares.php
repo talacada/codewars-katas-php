@@ -35,11 +35,37 @@ Very often xk will be n-1.
 https://www.codewars.com/kata/54eb33e5bc1a25440d000891
 */
 
-namespace Kata\Y2026\Q4;
+namespace Kata\Y2026\Q4\Sq2Squares;
 
 class Sq2Squares
 {
-	public static function decompose($n): array {
-		// your code
+	private int $target;
+	private float $targetSqr;
+
+	public static function decompose(int $n): ?array {
+		$calculator = new Sq2Squares($n);
+		return $calculator->getNumbers();
 	}
+
+	private function __construct(int $n)
+	{
+		$this->target = $n;
+		$this->targetSqr = $n*$n;
+	}
+
+	private function getNumbers(): array
+	{
+		$currentSum = 0;
+		$currentSelected = [];
+		for ($i = $this->target - 1; $i > 0; $i--) {
+			$iTimesI = $i*$i;
+			if ($iTimesI + $currentSum <= $this->targetSqr) {
+				array_unshift($currentSelected, $i);
+				$currentSum += $iTimesI;
+			}
+		}
+
+		return $currentSelected;
+	}
+
 }
