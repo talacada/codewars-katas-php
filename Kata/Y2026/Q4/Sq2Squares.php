@@ -44,7 +44,7 @@ class Sq2Squares
 
 	public static function decompose(int $n): ?array {
 		$calculator = new Sq2Squares($n);
-		return $calculator->getNumbers();
+		$allCombinations = $calculator->getAllCombinations();
 	}
 
 	private function __construct(int $n)
@@ -53,19 +53,108 @@ class Sq2Squares
 		$this->targetSqr = $n*$n;
 	}
 
-	private function getNumbers(): array
+	private function getAllCombinations(): array
 	{
-		$currentSum = 0;
-		$currentSelected = [];
-		for ($i = $this->target - 1; $i > 0; $i--) {
-			$iTimesI = $i*$i;
-			if ($iTimesI + $currentSum <= $this->targetSqr) {
-				array_unshift($currentSelected, $i);
-				$currentSum += $iTimesI;
-			}
-		}
+		$combinations = [];
 
-		return $currentSelected;
+		$this->getNumbers();
+
+		return $combinations;
 	}
 
+	private function getNumbers(): Combination
+	{
+		$combination = new Combination();
+		$nowBanningIndex = 0;
+
+		do {
+			for ($i = $this->target - 1; $i > 0; $i--) {
+				if (!$combination->getIfCombinationBanned(count($combination->getNumbers()), $i)) {
+					$iTimesI = $i*$i;
+					if ($iTimesI + $combination->getSum() <= $this->targetSqr) {
+						$combination->addFromLeft($i);
+					}
+				}
+			}
+
+			if ($combination < $this->target) {
+				$numbersBehind = count($combination->getNumbers()) - $nowBanningIndex - 1;
+				$combination->addBanned($numbersBehind, $combination->getNumberByIndex($nowBanningIndex));
+				$combination->resetNumbers();
+			}
+		} while ($combination->getSum() != $this->targetSqr);
+
+		return $combination;
+	}
+}
+
+class Combination
+{
+	private array $numbers = [];
+	private int $sum = 0;
+	private array $banned = [];
+
+	public function addFromLeft(int $n) {
+		array_unshift($this->numbers, $n);
+		$this->addToSum($n*$n);
+	}
+
+	public function getNumbers(): array
+	{
+		return $this->numbers;
+	}
+
+	public function getNumberByIndex(int $index): int
+	{
+		return $this->numbers[$index];
+	}
+
+	public function getSum(): int
+	{
+		return $this->sum;
+	}
+
+	public function addToSum(int $n) {
+		$this->sum += $n;
+	}
+
+	public function addBanned(int $numbersBehind, int $number)
+	{
+		$this->banned[] = new Banned($numbersBehind, $number);
+	}
+
+	public function getIfCombinationBanned(int $countLength, int $i): bool
+	{
+		foreach ($this->banned as $banned) {
+			if ($banned->getNumbersBehind === $countLength && $banned->getSum() === $i) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public function resetNumbers()
+	{
+		$this->numbers = [];
+	}
+}
+
+class Banned {
+	private int $numbersBehind;
+	private int $number;
+
+	public function __construct(int $numbersBehind, int $number) {
+		$this->numbersBehind = $numbersBehind;
+		$this->number = $number;
+	}
+
+	public function getNumbersBehind(): int
+	{
+		return $this->numbersBehind;
+	}
+
+	public function getNumber(): int
+	{
+		return $this->number;
+	}
 }

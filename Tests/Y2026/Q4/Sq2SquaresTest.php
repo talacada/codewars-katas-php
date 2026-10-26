@@ -38,9 +38,9 @@ class Sq2SquaresTest extends TestCase
 		$this->assertSame($success, true);
 	}
 	public function testBasic() {
-		$this->revTest(11, [1,2,4, 10]);
-		$this->revTest(50, [1,3,5,8,49]);
 		$this->revTest(44, [2,3,5,7,43]);
+		$this->revTest(50, [1,3,5,8,49]);
+		$this->revTest(11, [1,2,4, 10]);
 		$this->revTest(2, null);
 	}
 }
