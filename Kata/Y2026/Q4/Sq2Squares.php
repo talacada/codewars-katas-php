@@ -44,7 +44,7 @@ class Sq2Squares
 
 	public static function decompose(int $n): ?array {
 		$calculator = new Sq2Squares($n);
-		$allCombinations = $calculator->getAllCombinations();
+		return $calculator->getAllCombinations();
 	}
 
 	private function __construct(int $n)
@@ -53,16 +53,21 @@ class Sq2Squares
 		$this->targetSqr = $n*$n;
 	}
 
-	private function getAllCombinations(): array
+	private function getAllCombinations(): ?array
 	{
 		$combinations = [];
 
-		$this->getNumbers();
+		$combination = $this->getNumbers();
 
-		return $combinations;
+		if ($combination !== null) {
+			return $combination->getNumbers();
+		}else {
+			return null;
+		}
+
 	}
 
-	private function getNumbers(): Combination
+	private function getNumbers(): ?Combination
 	{
 		$combination = new Combination();
 		$nowBanningIndex = 0;
@@ -70,14 +75,19 @@ class Sq2Squares
 		do {
 			for ($i = $this->target - 1; $i > 0; $i--) {
 				if (!$combination->getIfCombinationBanned(count($combination->getNumbers()), $i)) {
-					$iTimesI = $i*$i;
-					if ($iTimesI + $combination->getSum() <= $this->targetSqr) {
-						$combination->addFromLeft($i);
+					if (!$combination->getIfNumberInCombinationAlready($i)) {
+						$iTimesI = $i*$i;
+						if ($iTimesI + $combination->getSum() <= $this->targetSqr) {
+							$combination->addFromLeft($i);
+						}
 					}
 				}
 			}
 
-			if ($combination < $this->target) {
+			if ($combination->getSum() < $this->targetSqr) {
+				if (empty($combination->getNumbers())) {
+					return null;
+				}
 				$numbersBehind = count($combination->getNumbers()) - $nowBanningIndex - 1;
 				$combination->addBanned($numbersBehind, $combination->getNumberByIndex($nowBanningIndex));
 				$combination->resetNumbers();
@@ -126,7 +136,7 @@ class Combination
 	public function getIfCombinationBanned(int $countLength, int $i): bool
 	{
 		foreach ($this->banned as $banned) {
-			if ($banned->getNumbersBehind === $countLength && $banned->getSum() === $i) {
+			if ($banned->getNumbersBehind() === $countLength && $banned->getNumber() === $i) {
 				return true;
 			}
 		}
@@ -136,6 +146,17 @@ class Combination
 	public function resetNumbers()
 	{
 		$this->numbers = [];
+		$this->sum = 0;
+	}
+
+	public function getIfNumberInCombinationAlready(int $i): bool
+	{
+		$result = in_array($i, $this->numbers);
+		if ($result === false) {
+			return false;
+		}else {
+			return true;
+		}
 	}
 }
 
