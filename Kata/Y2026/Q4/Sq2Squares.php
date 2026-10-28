@@ -57,7 +57,7 @@ class Sq2Squares
 	{
 		$combinations = [];
 
-		$combination = $this->getNumbers();
+		$combination = $this->getCombination();
 
 		if ($combination !== null) {
 			return $combination->getNumbers();
@@ -67,14 +67,14 @@ class Sq2Squares
 
 	}
 
-	private function getNumbers(): ?Combination
+	private function getCombination(): ?Combination
 	{
 		$combination = new Combination();
 		$nowBanningIndex = 0;
 
 		do {
 			for ($i = $this->target - 1; $i > 0; $i--) {
-				if (!$combination->getIfCombinationBanned(count($combination->getNumbers()), $i)) {
+				if (!$combination->getIfCombinationBanned()) {
 					if (!$combination->getIfNumberInCombinationAlready($i)) {
 						$iTimesI = $i*$i;
 						if ($iTimesI + $combination->getSum() <= $this->targetSqr) {
@@ -88,8 +88,7 @@ class Sq2Squares
 				if (empty($combination->getNumbers())) {
 					return null;
 				}
-				$numbersBehind = count($combination->getNumbers()) - $nowBanningIndex - 1;
-				$combination->addBanned($numbersBehind, $combination->getNumberByIndex($nowBanningIndex));
+				$combination->addBanned();
 				$combination->resetNumbers();
 			}
 		} while ($combination->getSum() != $this->targetSqr);
@@ -128,15 +127,18 @@ class Combination
 		$this->sum += $n;
 	}
 
-	public function addBanned(int $numbersBehind, int $number)
+	public function addBanned()
 	{
-		$this->banned[] = new Banned($numbersBehind, $number);
+		$withoutBanned = $this->removeBanned();
+		$this->banned[] = $withoutBanned;
 	}
 
-	public function getIfCombinationBanned(int $countLength, int $i): bool
+	public function getIfCombinationBanned(): bool
 	{
+		$withoutBanned = $this->removeBanned();
+		/** @var $banned Combination*/
 		foreach ($this->banned as $banned) {
-			if ($banned->getNumbersBehind() === $countLength && $banned->getNumber() === $i) {
+			if ($withoutBanned == $banned) {
 				return true;
 			}
 		}
@@ -158,24 +160,11 @@ class Combination
 			return true;
 		}
 	}
-}
 
-class Banned {
-	private int $numbersBehind;
-	private int $number;
-
-	public function __construct(int $numbersBehind, int $number) {
-		$this->numbersBehind = $numbersBehind;
-		$this->number = $number;
-	}
-
-	public function getNumbersBehind(): int
+	private function removeBanned(): Combination
 	{
-		return $this->numbersBehind;
-	}
-
-	public function getNumber(): int
-	{
-		return $this->number;
+		$newCombination = clone $this;
+		$newCombination->banned = [];
+		return $newCombination;
 	}
 }
