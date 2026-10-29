@@ -55,8 +55,6 @@ class Sq2Squares
 
 	private function getAllCombinations(): ?array
 	{
-		$combinations = [];
-
 		$combination = $this->getCombination();
 
 		if ($combination !== null) {
@@ -74,11 +72,13 @@ class Sq2Squares
 
 		do {
 			for ($i = $this->target - 1; $i > 0; $i--) {
-				if (!$combination->getIfCombinationBanned()) {
+				$iTimesI = $i*$i;
+				if ($iTimesI <= $this->targetSqr - $combination->getSum()) {
 					if (!$combination->getIfNumberInCombinationAlready($i)) {
-						$iTimesI = $i*$i;
-						if ($iTimesI + $combination->getSum() <= $this->targetSqr) {
-							$combination->addFromLeft($i);
+						if (!$combination->getIfCombinationBanned($i)) {
+							if ($iTimesI + $combination->getSum() <= $this->targetSqr) {
+								$combination->addFromLeft($i);
+							}
 						}
 					}
 				}
@@ -91,6 +91,7 @@ class Sq2Squares
 				$combination->addBanned();
 				$combination->resetNumbers();
 			}
+
 		} while ($combination->getSum() != $this->targetSqr);
 
 		return $combination;
@@ -133,9 +134,11 @@ class Combination
 		$this->banned[] = $withoutBanned;
 	}
 
-	public function getIfCombinationBanned(): bool
+	public function getIfCombinationBanned($next): bool
 	{
-		$withoutBanned = $this->removeBanned();
+		$withoutBanned = clone $this;
+		$withoutBanned->addFromLeft($next);
+		$withoutBanned = $withoutBanned->removeBanned();
 		/** @var $banned Combination*/
 		foreach ($this->banned as $banned) {
 			if ($withoutBanned == $banned) {
@@ -161,7 +164,7 @@ class Combination
 		}
 	}
 
-	private function removeBanned(): Combination
+	private function removeBanned()
 	{
 		$newCombination = clone $this;
 		$newCombination->banned = [];

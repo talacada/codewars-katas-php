@@ -47,7 +47,7 @@ class Sq2SquaresTest extends TestCase
 
 	public function testRandom(): void
 	{
-		$numbers = [50, 100, 254];
+		$numbers = [50, 100, 254, 30000, 50003];
 		foreach ($numbers as $n) {
 			$ans = Sq2Squares::decompose($n);
 			$this->assertNotNull($ans, "decompose($n) should not return null");
