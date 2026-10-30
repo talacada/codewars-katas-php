@@ -76,9 +76,8 @@ class Sq2Squares
 				if ($iTimesI <= $this->targetSqr - $combination->getSum()) {
 					if (!$combination->getIfNumberInCombinationAlready($i)) {
 						if (!$combination->getIfCombinationBanned($i)) {
-							if ($iTimesI + $combination->getSum() <= $this->targetSqr) {
-								$combination->addFromLeft($i);
-							}
+							$combination->addFromLeft($i);
+							$i = intval(ceil(sqrt($this->targetSqr - $combination->getSum()))) + 1;
 						}
 					}
 				}
