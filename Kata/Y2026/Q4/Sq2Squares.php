@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 My little sister came back home from school with the following task: given a squared sheet of paper she has to cut it in pieces which, when assembled, give squares the sides of which form an increasing sequence of numbers. At the beginning it was lot of fun but little by little we were tired of seeing the pile of torn paper. So we decided to write a program that could help us and protects trees.
 
@@ -39,134 +41,128 @@ namespace Kata\Y2026\Q4\Sq2Squares;
 
 class Sq2Squares
 {
-	private int $target;
-	private float $targetSqr;
+    private int $target;
+    private float $targetSqr;
 
-	public static function decompose(int $n): ?array {
-		$calculator = new Sq2Squares($n);
-		return $calculator->getAllCombinations();
-	}
+    public static function decompose(int $n): ?array
+    {
+        $calculator = new Sq2Squares($n);
+        return $calculator->getResult();
+    }
 
-	private function __construct(int $n)
-	{
-		$this->target = $n;
-		$this->targetSqr = $n*$n;
-	}
+    private function __construct(int $n)
+    {
+        $this->target = $n;
+        $this->targetSqr = $n * $n;
+    }
 
-	private function getAllCombinations(): ?array
-	{
-		$combination = $this->getCombination();
+    private function getResult(): ?array
+    {
+        $combination = $this->getCombination();
 
-		if ($combination !== null) {
-			return $combination->getNumbers();
-		}else {
-			return null;
-		}
+        if ($combination !== null) {
+            return $combination->getNumbers();
+        } else {
+            return null;
+        }
 
-	}
+    }
 
-	private function getCombination(): ?Combination
-	{
-		$combination = new Combination();
-		$nowBanningIndex = 0;
+    private function getCombination(): ?Combination
+    {
+        $combination = new Combination();
 
-		do {
-			for ($i = $this->target - 1; $i > 0; $i--) {
-				$iTimesI = $i*$i;
-				if ($iTimesI <= $this->targetSqr - $combination->getSum()) {
-					if (!$combination->getIfNumberInCombinationAlready($i)) {
-						if (!$combination->getIfCombinationBanned($i)) {
-							$combination->addFromLeft($i);
-							$i = intval(ceil(sqrt($this->targetSqr - $combination->getSum()))) + 1;
-						}
-					}
-				}
-			}
+        do {
+            for ($i = $this->target - 1; $i > 0; $i--) {
+                $iTimesI = $i * $i;
+                if ($iTimesI <= $this->targetSqr - $combination->getSum()) {
+                    if (!$combination->getIfNumberInCombinationAlready($i)) {
+                        if (!$combination->getIfCombinationBanned($i)) {
+                            $combination->addFromLeft($i);
+                            $i = intval(ceil(sqrt($this->targetSqr - $combination->getSum()))) + 1;
+                        }
+                    }
+                }
+            }
 
-			if ($combination->getSum() < $this->targetSqr) {
-				if (empty($combination->getNumbers())) {
-					return null;
-				}
-				$combination->addBanned();
-				$combination->resetNumbers();
-			}
+            if ($combination->getSum() < $this->targetSqr) {
+                if (empty($combination->getNumbers())) {
+                    return null;
+                }
+                $combination->addBanned();
+                $combination->resetNumbers();
+            }
 
-		} while ($combination->getSum() != $this->targetSqr);
+        } while ($combination->getSum() != $this->targetSqr);
 
-		return $combination;
-	}
+        return $combination;
+    }
 }
 
 class Combination
 {
-	private array $numbers = [];
-	private int $sum = 0;
-	private array $banned = [];
+    private array $numbers = [];
+    private int $sum = 0;
+    private array $banned = [];
 
-	public function addFromLeft(int $n) {
-		array_unshift($this->numbers, $n);
-		$this->addToSum($n*$n);
-	}
+    public function addFromLeft(int $n): void
+    {
+        array_unshift($this->numbers, $n);
+        $this->addToSum($n * $n);
+    }
 
-	public function getNumbers(): array
-	{
-		return $this->numbers;
-	}
+    public function getNumbers(): array
+    {
+        return $this->numbers;
+    }
 
-	public function getNumberByIndex(int $index): int
-	{
-		return $this->numbers[$index];
-	}
+    public function getSum(): int
+    {
+        return $this->sum;
+    }
 
-	public function getSum(): int
-	{
-		return $this->sum;
-	}
+    public function addToSum(int $n): void
+    {
+        $this->sum += $n;
+    }
 
-	public function addToSum(int $n) {
-		$this->sum += $n;
-	}
+    public function addBanned(): void
+    {
+        $withoutBanned = $this->removeBanned();
+        $this->banned[] = $withoutBanned;
+    }
 
-	public function addBanned()
-	{
-		$withoutBanned = $this->removeBanned();
-		$this->banned[] = $withoutBanned;
-	}
+    public function getIfCombinationBanned(int $next): bool
+    {
+        $withoutBanned = clone $this;
+        $withoutBanned->addFromLeft($next);
+        $withoutBanned = $withoutBanned->removeBanned();
+        if (in_array($withoutBanned, $this->banned)) {
+            return true;
+        }
+        return false;
+    }
 
-	public function getIfCombinationBanned($next): bool
-	{
-		$withoutBanned = clone $this;
-		$withoutBanned->addFromLeft($next);
-		$withoutBanned = $withoutBanned->removeBanned();
-		/** @var $banned Combination*/
-		foreach ($this->banned as $banned) {
-			if ($withoutBanned == $banned) {
-				return true;
-			}
-		}
-		return false;
-	}
+    public function resetNumbers(): void
+    {
+        $this->numbers = [];
+        $this->sum = 0;
+    }
 
-	public function resetNumbers()
-	{
-		$this->numbers = [];
-		$this->sum = 0;
-	}
+    public function getIfNumberInCombinationAlready(int $i): bool
+    {
+        $result = in_array($i, $this->numbers);
+        if ($result === false) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
-	public function getIfNumberInCombinationAlready(int $i): bool
-	{
-		$result = in_array($i, $this->numbers);
-		if ($result === false) {
-			return false;
-		}else {
-			return true;
-		}
-	}
-
-	private function removeBanned()
-	{
-		$newCombination = clone $this;
-		$newCombination->banned = [];
-		return $newCombination;
-	}
+    private function removeBanned(): Combination
+    {
+        $newCombination = clone $this;
+        $newCombination->banned = [];
+        return $newCombination;
+    }
 }
