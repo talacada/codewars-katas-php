@@ -63,10 +63,103 @@ https://www.codewars.com/kata/537e18b6147aa838f600001b
  */
 
 function justify(string $str, int $len) : string {
-	return $str;
+	$transformer = new JustifyText($str, $len);
+	$transformer->getJustifiedText();
 }
 
 class JustifyText
 {
+	private int $rowlength;
+	private array $avalibleWords;
+	public function __construct(string $str, int $length) {
+		$this->rowlength = $length;
+		$this->avalibleWords = $this->splitStringToWords($str);
+	}
 
+	private function splitStringToWords(string $str): array
+	{
+		$split = explode(" ", $str);
+		$wordList = [];
+
+		foreach ($split as $word) {
+			$wordList[] = new Word($word);
+		}
+
+		return $wordList;
+	}
+
+	public function getJustifiedText(): string
+	{
+		$rows = [];
+		$row[] = new Row($this->rowlength);
+
+		foreach ($this->avalibleWords as $word) {
+			$lastRow = $rows[count($rows) - 1];
+
+			assert($lastRow instanceof Row);
+
+			//TODO pokracovat tady. Jesli se slovo vejde tedy pokud aktualni delka row + mezery je mensi nez slovo + mezera tak se prida jinak se vytvori dalsi row.
+			if ($lastRow->getCurrentLength()) {
+
+			}
+		}
+
+
+	}
+}
+
+class Word {
+	private int $length;
+	private string $value;
+
+	public function __construct(string $word) {
+		$this->length = strlen($word);
+		$this->value = $word;
+	}
+}
+
+class Row {
+	private int $maxlength;
+	private int $currentLength;
+	private array $words;
+
+
+	public function __construct($maxlength) {
+		$this->maxlength = $maxlength;
+	}
+
+	public function getMaxlength(): int
+	{
+		return $this->maxlength;
+	}
+
+	public function setMaxlength(int $maxlength): void
+	{
+		$this->maxlength = $maxlength;
+	}
+
+	public function getCurrentLength(): int
+	{
+		return $this->currentLength;
+	}
+
+	public function setCurrentLength(int $currentLength): void
+	{
+		$this->currentLength = $currentLength;
+	}
+
+	public function getWords(): array
+	{
+		return $this->words;
+	}
+
+	public function setWords(array $words): void
+	{
+		$this->words = $words;
+	}
+
+	public function getWordsCount():int
+	{
+		return count($this->words);
+	}
 }

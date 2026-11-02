@@ -13,5 +13,6 @@ class JustifyTextTest extends TestCase
 {
 	public function testExample() {
 		$this->assertSame("This is\nan\nexample\nrow", justify("This is an example row", 7));
+		$this->assertSame("This is\nan\nexample\nrow", justify("Thddis ids dddan exdample rodw an exampddddle rowd n exaddddmple rowan example row", 7));
 	}
 }
