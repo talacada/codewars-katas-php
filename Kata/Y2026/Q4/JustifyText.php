@@ -64,7 +64,8 @@ https://www.codewars.com/kata/537e18b6147aa838f600001b
 
 function justify(string $str, int $len) : string {
 	$transformer = new JustifyText($str, $len);
-	$transformer->getJustifiedText();
+	$rows = $transformer->getRows();
+	return $transformer->getJustifiedString($rows);
 }
 
 class JustifyText
@@ -88,23 +89,33 @@ class JustifyText
 		return $wordList;
 	}
 
-	public function getJustifiedText(): string
+	public function getRows(): array
 	{
 		$rows = [];
-		$row[] = new Row($this->rowlength);
+		$rows[] = new Row($this->rowlength);
 
 		foreach ($this->avalibleWords as $word) {
-			$lastRow = $rows[count($rows) - 1];
+			$lastRowIndex = count($rows) - 1;
+			$lastRow = $rows[$lastRowIndex];
 
+			assert($word instanceof Word);
 			assert($lastRow instanceof Row);
 
-			//TODO pokracovat tady. Jesli se slovo vejde tedy pokud aktualni delka row + mezery je mensi nez slovo + mezera tak se prida jinak se vytvori dalsi row.
-			if ($lastRow->getCurrentLength()) {
-
+			if (max($lastRow->getCurrentLength() + $lastRow->getWordsCount(), 0) + $word->getLength() <= $lastRow->getMaxlength()) {
+				$rows[$lastRowIndex]->addWord($word);
+			}else {
+				$rows[] = new Row($this->rowlength);
+				$lastRowIndex = count($rows) - 1;
+				$rows[$lastRowIndex]->addWord($word);
 			}
 		}
 
+		return $rows;
+	}
 
+	public function getJustifiedString(array $rows):string
+	{
+		//TODO split rows and add spaces
 	}
 }
 
@@ -116,12 +127,34 @@ class Word {
 		$this->length = strlen($word);
 		$this->value = $word;
 	}
+
+	public function getLength(): int
+	{
+		return $this->length;
+	}
+
+	public function setLength(int $length): void
+	{
+		$this->length = $length;
+	}
+
+	public function getValue(): string
+	{
+		return $this->value;
+	}
+
+	public function setValue(string $value): void
+	{
+		$this->value = $value;
+	}
+
+
 }
 
 class Row {
 	private int $maxlength;
-	private int $currentLength;
-	private array $words;
+	private int $currentLength = 0;
+	private array $words = [];
 
 
 	public function __construct($maxlength) {
@@ -161,5 +194,10 @@ class Row {
 	public function getWordsCount():int
 	{
 		return count($this->words);
+	}
+
+	public function addWord(Word $word) {
+		$this->words[] = $word;
+		$this->currentLength += $word->getLength();
 	}
 }
