@@ -65,6 +65,7 @@ https://www.codewars.com/kata/537e18b6147aa838f600001b
 function justify(string $str, int $len) : string {
 	$transformer = new JustifyText($str, $len);
 	$rows = $transformer->getRows();
+	$rows = $transformer->addSpaces($rows);
 	return $transformer->getJustifiedString($rows);
 }
 
@@ -115,8 +116,31 @@ class JustifyText
 
 	public function getJustifiedString(array $rows):string
 	{
-		//TODO split rows and add spaces
+		$finalString = "";
+
+		foreach ($rows as $row) {
+			assert($row instanceof Row);
+			$words = $row->getWords();
+
+			foreach ($words as $word) {
+				/** @var Word|Space $words */
+				$finalString .= $word->getValue();
+			}
+
+			$finalString .= "\n";
+		}
+
+		return $finalString;
 	}
+
+	public function addSpaces(array $rows): array
+	{
+
+	}
+}
+
+class Space{
+
 }
 
 class Word {
@@ -147,8 +171,6 @@ class Word {
 	{
 		$this->value = $value;
 	}
-
-
 }
 
 class Row {
