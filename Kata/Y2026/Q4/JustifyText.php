@@ -135,7 +135,26 @@ class JustifyText
 
 	public function addSpaces(array $rows): array
 	{
+		/** @var Row $row */
+		foreach ($rows as $row) {
+			$missingSpaces = $row->getMaxLength() - $row->getCurrentLength();
+			$pointer = 1;
+			$cycle = 0;
+			for ($i = 0; $i < $missingSpaces; $i++) {
+				$array = $row->getWords();
+				array_splice($array, $pointer, 0, [new Space]);
+				$row->setWords($array);
 
+				if ($pointer + 2 >= count($row->getWords())) {
+					$cycle ++;
+					$pointer = 1 + $cycle;
+				}else {
+					$pointer += 2 + $cycle;
+				}
+			}
+		}
+
+		return $rows;
 	}
 }
 
