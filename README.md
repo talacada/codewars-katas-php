@@ -41,6 +41,7 @@ Work on Kata every day.
 
 | #  | Kata                                      | Dificulty | Solution                                                       | Completed  |
 |----|-------------------------------------------|-----------|----------------------------------------------------------------|------------|
+| 58 | Text align justify                        | 4 kyu     | [Kata](Kata/Y2026/Q4/JustifyText.php)                          | 06.11.2026 |
 | 57 | Square into Squares. Protect trees!       | 4 kyu     | [Kata](Kata/Y2026/Q4/Sq2Squares.php)                           | 31.10.2026 |
 | 56 | Evaluate mathematical expression          | 2 kyu 💎    | [Kata](Kata/Y2026/Q4/EvaluateMathematicalExpression.php)       | 23.10.2026 |
 | 55 | Sum by Factors                            | 4 kyu     | [Kata](Kata/Y2026/Q4/SumByFactors.php)                         | 05.10.2026 |
