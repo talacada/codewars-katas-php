@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kata\Y2026\Q4\JustifyText;
 
 /*
@@ -62,183 +64,201 @@ https://www.codewars.com/kata/537e18b6147aa838f600001b
  - Postupně z leva přidávat mezery dokud není požadovaný počet dosažen
  */
 
-function justify(string $str, int $len) : string {
-	$transformer = new JustifyText($str, $len);
-	$rows = $transformer->getRows();
-	$rows = $transformer->addSpaces($rows);
-	return $transformer->getJustifiedString($rows);
+function justify(string $str, int $len): string
+{
+    $transformer = new JustifyText($str, $len);
+    $rows = $transformer->getRows();
+    $rows = $transformer->addSpaces($rows);
+    return $transformer->getJustifiedString($rows);
 }
 
 class JustifyText
 {
-	private int $rowlength;
-	private array $avalibleWords;
-	public function __construct(string $str, int $length) {
-		$this->rowlength = $length;
-		$this->avalibleWords = $this->splitStringToWords($str);
-	}
+    private int $rowlength;
+    private array $avalibleWords;
+    public function __construct(string $str, int $length)
+    {
+        $this->rowlength = $length;
+        $this->avalibleWords = $this->splitStringToWords($str);
+    }
 
-	private function splitStringToWords(string $str): array
-	{
-		$split = explode(" ", $str);
-		$wordList = [];
+    private function splitStringToWords(string $str): array
+    {
+        $split = explode(" ", $str);
+        $wordList = [];
 
-		foreach ($split as $word) {
-			$wordList[] = new Word($word);
-		}
+        foreach ($split as $word) {
+            $wordList[] = new Word($word);
+        }
 
-		return $wordList;
-	}
+        return $wordList;
+    }
 
-	public function getRows(): array
-	{
-		$rows = [];
-		$rows[] = new Row($this->rowlength);
+    public function getRows(): array
+    {
+        $rows = [];
+        $rows[] = new Row($this->rowlength);
 
-		foreach ($this->avalibleWords as $word) {
-			$lastRowIndex = count($rows) - 1;
-			$lastRow = $rows[$lastRowIndex];
+        foreach ($this->avalibleWords as $word) {
+            $lastRowIndex = count($rows) - 1;
+            $lastRow = $rows[$lastRowIndex];
 
-			assert($word instanceof Word);
-			assert($lastRow instanceof Row);
+            if (max($lastRow->getCurrentLength() + $lastRow->getWordsCount(), 0) + $word->getLength() <= $lastRow->getMaxlength()) {
+                $rows[$lastRowIndex]->addWord($word);
+            } else {
+                $rows[] = new Row($this->rowlength);
+                $lastRowIndex = count($rows) - 1;
+                $rows[$lastRowIndex]->addWord($word);
+            }
+        }
 
-			if (max($lastRow->getCurrentLength() + $lastRow->getWordsCount(), 0) + $word->getLength() <= $lastRow->getMaxlength()) {
-				$rows[$lastRowIndex]->addWord($word);
-			}else {
-				$rows[] = new Row($this->rowlength);
-				$lastRowIndex = count($rows) - 1;
-				$rows[$lastRowIndex]->addWord($word);
-			}
-		}
+        return $rows;
+    }
 
-		return $rows;
-	}
+    public function addSpaces(array $rows): array
+    {
+        $lastRowIndex = count($rows) - 1;
+        /** @var Row $row */
+        foreach ($rows as $index => $row) {
+            $missingSpaces = $row->getMaxLength() - $row->getCurrentLength();
+            $pointer = 1;
+            $cycle = 0;
+            if ($index === $lastRowIndex) {
+                $missingSpaces = $row->getWordsCount() - 1;
+            }
+            if ($row->getWordsCount() === 1) {
+                $missingSpaces = 0;
+            }
+            for ($i = 0; $i < $missingSpaces; $i++) {
+                $array = $row->getWords();
+                array_splice($array, $pointer, 0, [new Space()]);
+                $row->setWords($array);
 
-	public function getJustifiedString(array $rows):string
-	{
-		$finalString = "";
+                if ($pointer + 2 >= count($row->getWords())) {
+                    $cycle++;
+                    $pointer = 1 + $cycle;
+                } else {
+                    $pointer += 2 + $cycle;
+                }
+            }
+        }
 
-		foreach ($rows as $row) {
-			assert($row instanceof Row);
-			$words = $row->getWords();
+        return $rows;
+    }
 
-			foreach ($words as $word) {
-				/** @var Word|Space $words */
-				$finalString .= $word->getValue();
-			}
+    public function getJustifiedString(array $rows): string
+    {
+        $finalString = "";
+        $lastRowIndex = count($rows) - 1;
 
-			$finalString .= "\n";
-		}
+        foreach ($rows as $index => $row) {
+            assert($row instanceof Row);
+            $words = $row->getWords();
 
-		return $finalString;
-	}
+            /** @var Word|Space $value */
+            foreach ($words as $value) {
+                if ($value instanceof Word) {
+                    $finalString .= $value->getValue();
+                } else {
+                    $finalString .= " ";
+                }
+            }
 
-	public function addSpaces(array $rows): array
-	{
-		/** @var Row $row */
-		foreach ($rows as $row) {
-			$missingSpaces = $row->getMaxLength() - $row->getCurrentLength();
-			$pointer = 1;
-			$cycle = 0;
-			for ($i = 0; $i < $missingSpaces; $i++) {
-				$array = $row->getWords();
-				array_splice($array, $pointer, 0, [new Space]);
-				$row->setWords($array);
+            if ($index !== $lastRowIndex) {
+                $finalString .= "\n";
+            }
+        }
 
-				if ($pointer + 2 >= count($row->getWords())) {
-					$cycle ++;
-					$pointer = 1 + $cycle;
-				}else {
-					$pointer += 2 + $cycle;
-				}
-			}
-		}
-
-		return $rows;
-	}
+        return $finalString;
+    }
 }
 
-class Space{
-
+class Space
+{
 }
 
-class Word {
-	private int $length;
-	private string $value;
+class Word
+{
+    private int $length;
+    private string $value;
 
-	public function __construct(string $word) {
-		$this->length = strlen($word);
-		$this->value = $word;
-	}
+    public function __construct(string $word)
+    {
+        $this->length = strlen($word);
+        $this->value = $word;
+    }
 
-	public function getLength(): int
-	{
-		return $this->length;
-	}
+    public function getLength(): int
+    {
+        return $this->length;
+    }
 
-	public function setLength(int $length): void
-	{
-		$this->length = $length;
-	}
+    public function setLength(int $length): void
+    {
+        $this->length = $length;
+    }
 
-	public function getValue(): string
-	{
-		return $this->value;
-	}
+    public function getValue(): string
+    {
+        return $this->value;
+    }
 
-	public function setValue(string $value): void
-	{
-		$this->value = $value;
-	}
+    public function setValue(string $value): void
+    {
+        $this->value = $value;
+    }
 }
 
-class Row {
-	private int $maxlength;
-	private int $currentLength = 0;
-	private array $words = [];
+class Row
+{
+    private int $maxlength;
+    private int $currentLength = 0;
+    private array $words = [];
 
 
-	public function __construct($maxlength) {
-		$this->maxlength = $maxlength;
-	}
+    public function __construct(int $maxlength)
+    {
+        $this->maxlength = $maxlength;
+    }
 
-	public function getMaxlength(): int
-	{
-		return $this->maxlength;
-	}
+    public function getMaxlength(): int
+    {
+        return $this->maxlength;
+    }
 
-	public function setMaxlength(int $maxlength): void
-	{
-		$this->maxlength = $maxlength;
-	}
+    public function setMaxlength(int $maxlength): void
+    {
+        $this->maxlength = $maxlength;
+    }
 
-	public function getCurrentLength(): int
-	{
-		return $this->currentLength;
-	}
+    public function getCurrentLength(): int
+    {
+        return $this->currentLength;
+    }
 
-	public function setCurrentLength(int $currentLength): void
-	{
-		$this->currentLength = $currentLength;
-	}
+    public function setCurrentLength(int $currentLength): void
+    {
+        $this->currentLength = $currentLength;
+    }
 
-	public function getWords(): array
-	{
-		return $this->words;
-	}
+    public function getWords(): array
+    {
+        return $this->words;
+    }
 
-	public function setWords(array $words): void
-	{
-		$this->words = $words;
-	}
+    public function setWords(array $words): void
+    {
+        $this->words = $words;
+    }
 
-	public function getWordsCount():int
-	{
-		return count($this->words);
-	}
+    public function getWordsCount(): int
+    {
+        return count($this->words);
+    }
 
-	public function addWord(Word $word) {
-		$this->words[] = $word;
-		$this->currentLength += $word->getLength();
-	}
+    public function addWord(Word $word): void
+    {
+        $this->words[] = $word;
+        $this->currentLength += $word->getLength();
+    }
 }
