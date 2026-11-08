@@ -40,17 +40,46 @@ PLAN
 
 function whoIsWinner($piecesPositionList): string
 {
+	$calculator = new ConnectFour($piecesPositionList);
 	//return "Red", "Yellow" or "Draw"
 }
 
 class ConnectFour
 {
+	const array ROWTOINT = [
+		"A" => 0,
+		"B" => 1,
+		"C" => 2,
+		"D" => 3,
+		"E" => 4,
+		"F" => 5,
+		"G" => 6,
+		"H" => 7,
+	];
+	private array $input;
 
-}
+	public function __construct(array $inputRow){
+		$inputs = [];
+		foreach ($inputRow as $singleInput) {
+			$split = explode("_", $singleInput);
+			$token = $split[1] === "Red" ? new Red : new Yellow();
+
+			$inputs[] = new Input($this::ROWTOINT[$split[0]], $token);
+		}
+
+		$this->input = $inputs;
+	}
+ }
 
 class Input {
 	private int $column;
 	private Yellow|Red $token;
+
+	public function __construct(int $column, Yellow|Red $token)
+	{
+		$this->column = $column;
+		$this->token = $token;
+	}
 }
 interface Token {
 
