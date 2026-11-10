@@ -42,6 +42,7 @@ function whoIsWinner($piecesPositionList): string
 {
 	$calculator = new ConnectFour($piecesPositionList);
 	$calculator->dropTokensInField();
+	return 's';
 }
 
 class ConnectFour
@@ -56,11 +57,13 @@ class ConnectFour
 		"G" => 6,
 		"H" => 7,
 	];
+	/** @var Input[] $input */
 	private array $input;
 	private Board $board;
 
 	public function __construct(array $inputRow){
 		$inputs = [];
+		$this->board = new Board;
 		foreach ($inputRow as $singleInput) {
 			$split = explode("_", $singleInput);
 			$token = $split[1] === "Red" ? new Red() : new Yellow();
@@ -88,6 +91,28 @@ class Input {
 		$this->column = $column;
 		$this->token = $token;
 	}
+
+	public function getColumn(): int
+	{
+		return $this->column;
+	}
+
+	public function setColumn(int $column): void
+	{
+		$this->column = $column;
+	}
+
+	public function getToken(): Yellow|Red
+	{
+		return $this->token;
+	}
+
+	public function setToken(Yellow|Red $token): void
+	{
+		$this->token = $token;
+	}
+
+
 }
 class Red
 {
@@ -100,15 +125,44 @@ class Yellow
 }
 
 class Board {
-	/* @var Row $board */
-	private Row $board;
+	/* @var Row[] $board */
+	private array $board = [];
+	private const ROWCOUNT = 6;
 
-	public function dropToken(Red|Yellow $token):void
+	public function __construct()
 	{
+		for ($i = 0; $i < self::ROWCOUNT; $i++) {
+			$this->board[] = new Row;
+		}
+	}
 
+	public function dropToken(Input $token):void
+	{
+		$column = $token->getColumn();
+		$row = 0;
+		
+		foreach ($this->board as $index =>$row) {
+			if ($row->getColumn($column) === null) {
+				$row = $index;
+				break;
+			}
+		}
+
+		$this->board[$row]->addToken($column, $token->getToken());
 	}
 }
 
 class Row {
 
+	/** @var Yellow|Red[] $tokens */
+	private array $tokens = [];
+	public function addToken(int $column, Yellow|Red $token): void
+	{
+		$this->tokens[$column] = $token;
+	}
+
+	public function getColumn(int $column): Yellow|Red|null
+	{
+		return $this->tokens[$column];
+	}
 }
