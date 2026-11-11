@@ -42,12 +42,17 @@ function whoIsWinner($piecesPositionList): string
 {
 	$calculator = new ConnectFour($piecesPositionList);
 	$calculator->dropTokensInField();
+	$calculator->getWinner();
 	return 's';
 }
-
+/*
+Class for holding unified inputs and board
+*/
 class ConnectFour
 {
-	const array ROWTOINT = [
+	/*Constant mapping of letters to columns
+	+ its defining number of possible columns*/
+	const ROWTOINT = [
 		"A" => 0,
 		"B" => 1,
 		"C" => 2,
@@ -61,6 +66,7 @@ class ConnectFour
 	private array $input;
 	private Board $board;
 
+	/* Construct function to deserialize string input into Input objects */
 	public function __construct(array $inputRow){
 		$inputs = [];
 		$this->board = new Board;
@@ -74,14 +80,30 @@ class ConnectFour
 		$this->input = $inputs;
 	}
 
+	/* Each input is dropped into board in sequence it was played */
 	public function dropTokensInField():void
 	{
 		foreach ($this->input as $input) {
 			$this->board->dropToken($input);
 		}
 	}
+
+	/*  */
+	public function getWinner():Yellow|Red|null
+	{
+
+		foreach ([new Yellow, new Red] as $color) {
+			$win = $this->board->isHorizontalWinner($color);
+			if ($win) {
+				return $color;
+			}
+		}
+
+		return null;
+	}
 }
 
+/* class for holding user input as column where was token dropped and its color*/
 class Input {
 	private int $column;
 	private Yellow|Red $token;
@@ -114,44 +136,74 @@ class Input {
 
 
 }
+
+/* class indicating token color is red */
 class Red
 {
 
 }
 
+/* class indicating token color is yellow */
 class Yellow
 {
 
 }
 
+/* class representing playing board */
 class Board {
-	/* @var Row[] $board */
-	private array $board = [];
+	/* @var Row[] $rows */
+	private array $rows = [];
+	/* defining number of rows that will be generated */
 	private const ROWCOUNT = 6;
 
+	/* pregenerating empty rows into board*/
 	public function __construct()
 	{
 		for ($i = 0; $i < self::ROWCOUNT; $i++) {
-			$this->board[] = new Row;
+			$this->rows[] = new Row;
 		}
 	}
 
+	/* Token is passed and placed into right row/column in board */
 	public function dropToken(Input $token):void
 	{
 		$column = $token->getColumn();
 		$row = 0;
-		
-		foreach ($this->board as $index =>$row) {
+
+		/* Cycle to determine witch row in column is first empty */
+		foreach ($this->rows as $index => $row) {
 			if ($row->getColumn($column) === null) {
 				$row = $index;
 				break;
 			}
 		}
 
-		$this->board[$row]->addToken($column, $token->getToken());
+		$this->rows[$row]->addToken($column, $token->getToken());
+	}
+
+	/* Function that accepts color and determine if color has winning combination in horizontal order (rows) */
+	public function isHorizontalWinner(Red|Yellow $color):bool
+	{
+		foreach ($this->rows as $row) {
+			$count = 0;
+			foreach ($row->getTokens() as $token) {
+				if ($token instanceof $color) {
+					$count ++;
+				}else {
+					$count = 0;
+				}
+
+				if ($count === 4) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 }
 
+/* Class representing row on playing board */
 class Row {
 
 	/** @var Yellow|Red[] $tokens */
@@ -165,4 +217,16 @@ class Row {
 	{
 		return $this->tokens[$column];
 	}
+
+	public function getTokens(): array
+	{
+		return $this->tokens;
+	}
+
+	public function setTokens(array $tokens): void
+	{
+		$this->tokens = $tokens;
+	}
+
+
 }

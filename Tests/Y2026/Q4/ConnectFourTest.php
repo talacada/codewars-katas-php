@@ -12,6 +12,12 @@ class ConnectFourTest extends TestCase
 {
 	public function testBasic() {
 		$this->assertSame(whoIsWinner([
+			"A_Yellow", "B_Yellow", "C_Red", "C_Yellow", "D_Yellow", "A_Yellow", "B_Yellow", "D_Yellow",
+		]),
+			"Yellow"
+		);
+
+		$this->assertSame(whoIsWinner([
 			"C_Yellow", "E_Red", "G_Yellow", "B_Red",
 			"D_Yellow", "B_Red", "B_Yellow", "G_Red",
 			"C_Yellow", "C_Red", "D_Yellow", "F_Red",
