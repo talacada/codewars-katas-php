@@ -93,14 +93,18 @@ class ConnectFour
 	{
 
 		foreach ([new Yellow, new Red] as $color) {
-			$win = $this->board->isHorizontalWinner($color);
-			if ($win) {
+			if ($this->board->isHorizontalWinner($color)) {
 				return $color;
 			}
+			if ($this->board->isVerticalWinner($color)) {
+				return $color;
+			}
+
 		}
 
 		return null;
 	}
+
 }
 
 /* class for holding user input as column where was token dropped and its color*/
@@ -201,6 +205,27 @@ class Board {
 
 		return false;
 	}
+
+	/*  */
+	public function isVerticalWinner(Red|Yellow $color): bool
+	{
+		for ($i = 0; $i < count(ConnectFour::ROWTOINT); $i++) {
+			$count = 0;
+			for ($j = 0; $j < self::ROWCOUNT; $j++) {
+				if ($this->rows[$j]->getTokenByIndex($i) instanceof $color) {
+					$count ++;
+				}else {
+					$count = 0;
+				}
+
+				if ($count === 4) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
 }
 
 /* Class representing row on playing board */
@@ -212,7 +237,11 @@ class Row {
 	{
 		$this->tokens[$column] = $token;
 	}
-
+	
+	public function getTokenByIndex(int $index): Yellow|Red|null
+	{
+		return $this->tokens[$index] ?? null;
+	}
 	public function getColumn(int $column): Yellow|Red|null
 	{
 		return $this->tokens[$column];
