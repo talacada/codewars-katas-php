@@ -38,12 +38,18 @@ PLAN
 - Analyzovat jestli někdo má 4 v jednom z osmi směrů.
 */
 
+use ReflectionClass;
+
 function whoIsWinner($piecesPositionList): string
 {
 	$calculator = new ConnectFour($piecesPositionList);
 	$calculator->dropTokensInField();
-	$calculator->getWinner();
-	return 's';
+	$winner = $calculator->getWinner();
+	if ($winner === null) {
+		return "Draw";
+	}else {
+		return (new ReflectionClass($winner))->getShortName();
+	}
 }
 /*
 Class for holding unified inputs and board
@@ -93,13 +99,9 @@ class ConnectFour
 	{
 
 		foreach ([new Yellow, new Red] as $color) {
-			if ($this->board->isHorizontalWinner($color)) {
+			if ($this->board->isHorizontalWinner($color) || $this->board->isVerticalWinner($color) || $this->board->isVDiagonalWinner($color)) {
 				return $color;
 			}
-			if ($this->board->isVerticalWinner($color)) {
-				return $color;
-			}
-
 		}
 
 		return null;
@@ -225,6 +227,42 @@ class Board {
 		}
 
 		return false;
+	}
+
+	public function isVDiagonalWinner(mixed $color)
+	{
+		for ($rowIndex = self::ROWCOUNT - 1; $rowIndex > self::ROWCOUNT - 4; $rowIndex--) {
+			for ($colIndex = 0; $colIndex < count(ConnectFour::ROWTOINT); $colIndex++) {
+				if($this->rows[$rowIndex]->getTokenByIndex($colIndex) instanceof $color) {
+					$count = 1;
+					for ($j = 1; $j <= 3; $j++) {
+						if ($this->rows[$rowIndex - $j]->getTokenByIndex($colIndex + $j) instanceof $color) {
+							$count ++;
+						}else {
+							$count = 0;
+						}
+					}
+
+					if ($count === 4) {
+						return true;
+					}else {
+						$count = 1;
+					}
+
+					for ($j = 1; $j <= 3; $j++) {
+						if ($this->rows[$rowIndex - $j]->getTokenByIndex($colIndex - $j) instanceof $color) {
+							$count ++;
+						}else {
+							$count = 0;
+						}
+					}
+
+					if ($count === 4) {
+						return true;
+					}
+				}
+			}
+		}
 	}
 }
 
