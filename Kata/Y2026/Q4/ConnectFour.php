@@ -39,17 +39,15 @@ PLAN
 */
 
 use ReflectionClass;
+use ReflectionException;
 
+/**
+ * @throws ReflectionException
+ */
 function whoIsWinner($piecesPositionList): string
 {
 	$calculator = new ConnectFour($piecesPositionList);
-	$calculator->dropTokensInField();
-	$winner = $calculator->getWinner();
-	if ($winner === null) {
-		return "Draw";
-	}else {
-		return (new ReflectionClass($winner))->getShortName();
-	}
+	return $calculator->dropTokensInField();
 }
 /*
 Class for holding unified inputs and board
@@ -87,10 +85,23 @@ class ConnectFour
 	}
 
 	/* Each input is dropped into board in sequence it was played */
-	public function dropTokensInField():void
+	public function dropTokensInField(): string
 	{
 		foreach ($this->input as $input) {
 			$this->board->dropToken($input);
+			$winner = $this->getWinner();
+
+			if ($winner != null) {
+				return (new ReflectionClass($winner))->getShortName();
+			}
+		}
+
+		$winner = $this->getWinner();
+
+		if ($winner != null) {
+			return (new ReflectionClass($winner))->getShortName();
+		}else {
+			return "Draw";
 		}
 	}
 
@@ -185,6 +196,9 @@ class Board {
 		}
 
 		$this->rows[$row]->addToken($column, $token->getToken());
+		$rowSorted = $this->rows[$row]->getTokens();
+		sort($rowSorted);
+		$this->rows[$row]->setTokens($rowSorted);
 	}
 
 	/* Function that accepts color and determine if color has winning combination in horizontal order (rows) */
