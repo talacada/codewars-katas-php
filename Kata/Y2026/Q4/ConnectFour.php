@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kata\Y2026\Q4\ConnectFour;
 
 /*
@@ -30,21 +32,9 @@ https://www.codewars.com/kata/56882731514ec3ec3d000009
 
 */
 
-/*
-PLAN
-- Classa Red a Yellow Implementují Token a Input - Což bude index sloupce a Token
-- Deserializovat vstup na Input
-- Naházet Input tokeny do 2D arraye
-- Analyzovat jestli někdo má 4 v jednom z osmi směrů.
-*/
-
 use ReflectionClass;
-use ReflectionException;
 
-/**
- * @throws ReflectionException
- */
-function whoIsWinner($piecesPositionList): string
+function whoIsWinner(array $piecesPositionList): string
 {
 	$calculator = new ConnectFour($piecesPositionList);
 	return $calculator->dropTokensInField();
@@ -53,103 +43,98 @@ function whoIsWinner($piecesPositionList): string
 Class for holding unified inputs and board
 */
 class ConnectFour
-{
 	/*Constant mapping of letters to columns
 	+ its defining number of possible columns*/
-	const ROWTOINT = [
-		"A" => 0,
-		"B" => 1,
-		"C" => 2,
-		"D" => 3,
-		"E" => 4,
-		"F" => 5,
-		"G" => 6,
-		"H" => 7,
-	];
-	/** @var Input[] $input */
-	private array $input;
-	private Board $board;
+{
+    public const ROWTOINT = [
+        "A" => 0,
+        "B" => 1,
+        "C" => 2,
+        "D" => 3,
+        "E" => 4,
+        "F" => 5,
+        "G" => 6,
+    ];
+    /** @var Input[] $input */
+    private array $input;
+    private Board $board;
 
-	/* Construct function to deserialize string input into Input objects */
-	public function __construct(array $inputRow){
-		$inputs = [];
-		$this->board = new Board;
-		foreach ($inputRow as $singleInput) {
-			$split = explode("_", $singleInput);
-			$token = $split[1] === "Red" ? new Red() : new Yellow();
+    /* Construct function to deserialize string input into Input objects */
+    public function __construct(array $inputRow)
+    {
+        $inputs = [];
+        $this->board = new Board();
+        foreach ($inputRow as $singleInput) {
+            $split = explode("_", $singleInput);
+            $token = $split[1] === "Red" ? new Red() : new Yellow();
 
-			$inputs[] = new Input($this::ROWTOINT[$split[0]], $token);
-		}
+            $inputs[] = new Input($this::ROWTOINT[$split[0]], $token);
+        }
 
-		$this->input = $inputs;
-	}
+        $this->input = $inputs;
+    }
 
-	/* Each input is dropped into board in sequence it was played */
-	public function dropTokensInField(): string
-	{
-		foreach ($this->input as $input) {
-			$this->board->dropToken($input);
-			$winner = $this->getWinner();
+    /* Each input is dropped into board in sequence it was played */
+    public function dropTokensInField(): string
+    {
+        foreach ($this->input as $input) {
+            $this->board->dropToken($input);
+            $winner = $this->getWinner();
 
-			if ($winner != null) {
-				return (new ReflectionClass($winner))->getShortName();
-			}
-		}
+            if ($winner != null) {
+                return (new ReflectionClass($winner))->getShortName();
+            }
+        }
 
-		$winner = $this->getWinner();
+        return "Draw";
+    }
 
-		if ($winner != null) {
-			return (new ReflectionClass($winner))->getShortName();
-		}else {
-			return "Draw";
-		}
-	}
+    /* Checks conditions in vertical, horizontal and diagonal */
+    public function getWinner(): Yellow|Red|null
+    {
 
-	/*  */
-	public function getWinner():Yellow|Red|null
-	{
+        foreach ([new Yellow(), new Red()] as $color) {
+            if ($this->board->isHorizontalWinner($color) || $this->board->isVerticalWinner($color) || $this->board->isVDiagonalWinner($color)) {
+                return $color;
+            }
+        }
 
-		foreach ([new Yellow, new Red] as $color) {
-			if ($this->board->isHorizontalWinner($color) || $this->board->isVerticalWinner($color) || $this->board->isVDiagonalWinner($color)) {
-				return $color;
-			}
-		}
-
-		return null;
-	}
+        return null;
+    }
 
 }
 
 /* class for holding user input as column where was token dropped and its color*/
-class Input {
-	private int $column;
-	private Yellow|Red $token;
+class Input
+{
+    private int $column;
+    private Yellow|Red $token;
 
-	public function __construct(int $column, Yellow|Red $token)
-	{
-		$this->column = $column;
-		$this->token = $token;
-	}
+    public function __construct(int $column, Yellow|Red $token)
+    {
+        $this->column = $column;
+        $this->token = $token;
+    }
 
-	public function getColumn(): int
-	{
-		return $this->column;
-	}
+    public function getColumn(): int
+    {
+        return $this->column;
+    }
 
-	public function setColumn(int $column): void
-	{
-		$this->column = $column;
-	}
+    public function setColumn(int $column): void
+    {
+        $this->column = $column;
+    }
 
-	public function getToken(): Yellow|Red
-	{
-		return $this->token;
-	}
+    public function getToken(): Yellow|Red
+    {
+        return $this->token;
+    }
 
-	public function setToken(Yellow|Red $token): void
-	{
-		$this->token = $token;
-	}
+    public function setToken(Yellow|Red $token): void
+    {
+        $this->token = $token;
+    }
 
 
 }
@@ -157,157 +142,159 @@ class Input {
 /* class indicating token color is red */
 class Red
 {
-
 }
 
 /* class indicating token color is yellow */
 class Yellow
 {
-
 }
 
 /* class representing playing board */
-class Board {
-	/* @var Row[] $rows */
-	private array $rows = [];
-	/* defining number of rows that will be generated */
-	private const ROWCOUNT = 6;
+class Board
+{
+    /* @var Row[] $rows */
+    private array $rows = [];
+    /* defining number of rows that will be generated */
+    private const ROWCOUNT = 6;
 
-	/* pregenerating empty rows into board*/
-	public function __construct()
-	{
-		for ($i = 0; $i < self::ROWCOUNT; $i++) {
-			$this->rows[] = new Row;
-		}
-	}
+    /* pregenerating empty rows into board*/
+    public function __construct()
+    {
+        for ($i = 0; $i < self::ROWCOUNT; $i++) {
+            $this->rows[] = new Row();
+        }
+    }
 
-	/* Token is passed and placed into right row/column in board */
-	public function dropToken(Input $token):void
-	{
-		$column = $token->getColumn();
-		$row = 0;
+    /* Token is passed and placed into right row/column in board */
+    public function dropToken(Input $token): void
+    {
+        $column = $token->getColumn();
+        $row = 0;
 
-		/* Cycle to determine witch row in column is first empty */
-		foreach ($this->rows as $index => $row) {
-			if ($row->getColumn($column) === null) {
-				$row = $index;
-				break;
-			}
-		}
+        /* Cycle to determine witch row in column is first empty */
+        foreach ($this->rows as $index => $row) {
+            if ($row->getColumn($column) === null) {
+                $row = $index;
+                break;
+            }
+        }
 
-		$this->rows[$row]->addToken($column, $token->getToken());
-		$rowSorted = $this->rows[$row]->getTokens();
-		sort($rowSorted);
-		$this->rows[$row]->setTokens($rowSorted);
-	}
+        $this->rows[$row]->addToken($column, $token->getToken());
+    }
 
-	/* Function that accepts color and determine if color has winning combination in horizontal order (rows) */
-	public function isHorizontalWinner(Red|Yellow $color):bool
-	{
-		foreach ($this->rows as $row) {
-			$count = 0;
-			foreach ($row->getTokens() as $token) {
-				if ($token instanceof $color) {
-					$count ++;
-				}else {
-					$count = 0;
-				}
+    /* Function that accepts color and determine if color has winning combination in horizontal order (rows) */
+    public function isHorizontalWinner(Red|Yellow $color): bool
+    {
+        foreach ($this->rows as $row) {
+            $count = 0;
+            for ($column = 0; $column < 7; $column++) {
+                $token = $row->getTokenByIndex($column);
+                if ($token instanceof $color) {
+                    $count++;
+                } else {
+                    $count = 0;
+                }
 
-				if ($count === 4) {
-					return true;
-				}
-			}
-		}
+                if ($count === 4) {
+                    return true;
+                }
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/*  */
-	public function isVerticalWinner(Red|Yellow $color): bool
-	{
-		for ($i = 0; $i < count(ConnectFour::ROWTOINT); $i++) {
-			$count = 0;
-			for ($j = 0; $j < self::ROWCOUNT; $j++) {
-				if ($this->rows[$j]->getTokenByIndex($i) instanceof $color) {
-					$count ++;
-				}else {
-					$count = 0;
-				}
+    public function isVerticalWinner(Red|Yellow $color): bool
+    {
+        for ($i = 0; $i < count(ConnectFour::ROWTOINT); $i++) {
+            $count = 0;
+            for ($j = 0; $j < self::ROWCOUNT; $j++) {
+                if ($this->rows[$j]->getTokenByIndex($i) instanceof $color) {
+                    $count++;
+                } else {
+                    $count = 0;
+                }
 
-				if ($count === 4) {
-					return true;
-				}
-			}
-		}
+                if ($count === 4) {
+                    return true;
+                }
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public function isVDiagonalWinner(mixed $color)
-	{
-		for ($rowIndex = self::ROWCOUNT - 1; $rowIndex > self::ROWCOUNT - 4; $rowIndex--) {
-			for ($colIndex = 0; $colIndex < count(ConnectFour::ROWTOINT); $colIndex++) {
-				if($this->rows[$rowIndex]->getTokenByIndex($colIndex) instanceof $color) {
-					$count = 1;
-					for ($j = 1; $j <= 3; $j++) {
-						if ($this->rows[$rowIndex - $j]->getTokenByIndex($colIndex + $j) instanceof $color) {
-							$count ++;
-						}else {
-							$count = 0;
-						}
-					}
+    public function isVDiagonalWinner(Red|Yellow $color): bool
+    {
+        for ($rowIndex = self::ROWCOUNT - 1; $rowIndex > self::ROWCOUNT - 4; $rowIndex--) {
+            for ($colIndex = 0; $colIndex < count(ConnectFour::ROWTOINT); $colIndex++) {
+                if ($this->rows[$rowIndex]->getTokenByIndex($colIndex) instanceof $color) {
+                    $count = 1;
+                    for ($j = 1; $j <= 3; $j++) {
+                        if ($this->rows[$rowIndex - $j]->getTokenByIndex($colIndex + $j) instanceof $color) {
+                            $count++;
+                        } else {
+                            $count = 0;
+                        }
+                    }
 
-					if ($count === 4) {
-						return true;
-					}else {
-						$count = 1;
-					}
+                    if ($count === 4) {
+                        return true;
+                    } else {
+                        $count = 1;
+                    }
 
-					for ($j = 1; $j <= 3; $j++) {
-						if ($this->rows[$rowIndex - $j]->getTokenByIndex($colIndex - $j) instanceof $color) {
-							$count ++;
-						}else {
-							$count = 0;
-						}
-					}
+                    for ($j = 1; $j <= 3; $j++) {
+                        if ($this->rows[$rowIndex - $j]->getTokenByIndex($colIndex - $j) instanceof $color) {
+                            $count++;
+                        } else {
+                            $count = 0;
+                        }
+                    }
 
-					if ($count === 4) {
-						return true;
-					}
-				}
-			}
-		}
-	}
+                    if ($count === 4) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
 }
 
 /* Class representing row on playing board */
-class Row {
+class Row
+{
+    /** @var Yellow[]|Red[] $tokens */
+    private array $tokens = [];
+    public function addToken(int $column, Yellow|Red $token): void
+    {
+        $this->tokens[$column] = $token;
+    }
 
-	/** @var Yellow|Red[] $tokens */
-	private array $tokens = [];
-	public function addToken(int $column, Yellow|Red $token): void
-	{
-		$this->tokens[$column] = $token;
-	}
-	
-	public function getTokenByIndex(int $index): Yellow|Red|null
-	{
-		return $this->tokens[$index] ?? null;
-	}
-	public function getColumn(int $column): Yellow|Red|null
-	{
-		return $this->tokens[$column];
-	}
+    public function getTokenByIndex(int $index): Yellow|Red|null
+    {
+        return $this->tokens[$index] ?? null;
+    }
+    public function getColumn(int $column): Yellow|Red|null
+    {
+        if (isset($this->tokens[$column])) {
+            return $this->tokens[$column];
+        }
 
-	public function getTokens(): array
-	{
-		return $this->tokens;
-	}
+        return null;
+    }
 
-	public function setTokens(array $tokens): void
-	{
-		$this->tokens = $tokens;
-	}
+    public function getTokens(): array
+    {
+        return $this->tokens;
+    }
+
+    public function setTokens(array $tokens): void
+    {
+        $this->tokens = $tokens;
+    }
 
 
 }
