@@ -29,15 +29,29 @@ https://www.codewars.com/kata/56c04261c3fcf33f2d000534
 
 namespace Kata\Y2026\Q4\MagnetParticulesInBoxes;
 
-function doubles(int $maxk, int $maxn): float {
+function doubles(int $maxk, int $maxn): float
+{
 	$calculator = new MagnetParticulesInBoxes($maxk, $maxn);
 	return $calculator->calculate();
 }
 
+/*
+ - Napsat prosté for cykly DVA v sobě
+ - Prvni cyklus mění k druhý mění n
+
+*/
 class MagnetParticulesInBoxes
 {
 
-	public function calculate()
+	private int $maxk;
+	private int $maxn;
+
+	public function __construct(int $maxk, int $maxn) {
+		$this->maxk = $maxk;
+		$this->maxn = $maxn;
+	}
+
+	public function calculate():float
 	{
 	}
 }
