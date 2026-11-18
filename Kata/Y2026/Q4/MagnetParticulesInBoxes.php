@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 Professor Chambouliard hast just discovered a new type of magnet material. He put particles of this material in a box made of small boxes arranged in K rows and N columns as a kind of 2D matrix K x N where K and N are postive integers. He thinks that his calculations show that the force exerted by the particle in the small box (k, n) is:
 
@@ -31,27 +33,38 @@ namespace Kata\Y2026\Q4\MagnetParticulesInBoxes;
 
 function doubles(int $maxk, int $maxn): float
 {
-	$calculator = new MagnetParticulesInBoxes($maxk, $maxn);
-	return $calculator->calculate();
+    $calculator = new MagnetParticulesInBoxes($maxk, $maxn);
+    return $calculator->calculate();
 }
 
-/*
- - Napsat prosté for cykly DVA v sobě
- - Prvni cyklus mění k druhý mění n
-
-*/
 class MagnetParticulesInBoxes
 {
+    private int $maxk;
+    private int $maxn;
 
-	private int $maxk;
-	private int $maxn;
+    public function __construct(int $maxk, int $maxn)
+    {
+        $this->maxk = $maxk;
+        $this->maxn = $maxn;
+    }
 
-	public function __construct(int $maxk, int $maxn) {
-		$this->maxk = $maxk;
-		$this->maxn = $maxn;
-	}
+    /* Was thinking about recursion soo I define only one for but didn't find solution there
+    Now each for represents one Sigma symbol and formula is the v(k, n) calculation
+     */
+    public function calculate(): float
+    {
+        $result = 0.0;
+        for ($k = 1; $k <= $this->maxk; $k++) {
+            for ($n = 1; $n <= $this->maxn; $n++) {
+                $result += $this->formula($k, $n);
+            }
+        }
 
-	public function calculate():float
-	{
-	}
+        return $result;
+    }
+
+    private function formula(int $k, int $n): float
+    {
+        return 1 / ($k * ($n + 1) ** (2 * $k));
+    }
 }
