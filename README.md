@@ -41,7 +41,8 @@ Work on Kata every day.
 
 | #  | Kata                                      | Dificulty | Solution                                                       | Completed  |
 |----|-------------------------------------------|-----------|----------------------------------------------------------------|------------|
-| 59 | Magnet particules in boxes                | 4 kyu     | [Kata](Kata/Y2026/Q4/MagnetParticulesInBoxes.php)              | 18.11.2026 |
+| 60 | Magnet particules in boxes                | 4 kyu     | [Kata](Kata/Y2026/Q4/MagnetParticulesInBoxes.php)              | 18.11.2026 |
+| 59 | Connect Four                              | 4 kyu     | [Kata](Kata/Y2026/Q4/ConnectFour.php)                          | 15.11.2026 |
 | 58 | Text align justify                        | 4 kyu     | [Kata](Kata/Y2026/Q4/JustifyText.php)                          | 06.11.2026 |
 | 57 | Square into Squares. Protect trees!       | 4 kyu     | [Kata](Kata/Y2026/Q4/Sq2Squares.php)                           | 31.10.2026 |
 | 56 | Evaluate mathematical expression          | 2 kyu 💎    | [Kata](Kata/Y2026/Q4/EvaluateMathematicalExpression.php)       | 23.10.2026 |
