@@ -36,15 +36,14 @@ use ReflectionClass;
 
 function whoIsWinner(array $piecesPositionList): string
 {
-	$calculator = new ConnectFour($piecesPositionList);
-	return $calculator->dropTokensInField();
+    $calculator = new ConnectFour($piecesPositionList);
+    return $calculator->dropTokensInField();
 }
 /*
 Class for holding unified inputs and board
 */
-class ConnectFour
-	/*Constant mapping of letters to columns
-	+ its defining number of possible columns*/
+class ConnectFour /*Constant mapping of letters to columns
+    + its defining number of possible columns*/
 {
     public const ROWTOINT = [
         "A" => 0,
