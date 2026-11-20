@@ -36,7 +36,22 @@ function simplify(string $poly) : string
 	return '';
 }
 
+/*
+PLAN
+- Rozdelit do objektů Term - Ten bude mit cislo a člen
+- Term se stejným člene spojit a zvýšit číslo
+- Podle pravidel postavit finální output
+	- Podle počtu proměnných v členu
+		- Když stejně tak abecedně
+	- Když první začíná + nedávat, ale když - přidat na začátek
+
+*/
+
 class SimplifyingMultilinearPolynomials
 {
+
+}
+
+class Term {
 
 }
